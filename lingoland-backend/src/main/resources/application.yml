@@ -1,0 +1,6 @@
+# 스프링 시큐리티 기본 name 및 비밀번호
+spring:
+  security:
+    user:
+      name: user
+      password: 1234
