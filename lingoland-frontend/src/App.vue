@@ -1,11 +1,11 @@
-<script setup>
-import HomeView from './views/HomeView.vue';
-</script>
+<script setup></script>
 
 <template>
-  <HomeView></HomeView>
+  <div id="app">
+    <v-container>
+      <RouterView />
+    </v-container>
+  </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
