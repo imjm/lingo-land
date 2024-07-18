@@ -1,14 +1,11 @@
-<script setup>
-
-
-</script>
+<script setup></script>
 
 <template>
-  <div>
-    <RouterView /> 
+  <div id="app">
+    <v-container>
+      <RouterView />
+    </v-container>
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
