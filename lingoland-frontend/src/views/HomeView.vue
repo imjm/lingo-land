@@ -1,9 +1,9 @@
 <script setup>
-import TheSignUp from "@/components/authorization/TheSignUp.vue";
+import RankList from '@/components/rank/RankList.vue';
 </script>
 
 <template>
     <main>
-        <TheSignUp />
+        <RankList />
     </main>
 </template>
