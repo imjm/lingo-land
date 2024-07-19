@@ -9,7 +9,6 @@ const props = defineProps({
     id: String,
     type: String,
     data: String,
-    color: String,
     width: String,
 });
 </script>
@@ -20,7 +19,7 @@ const props = defineProps({
             :id="id"
             @click="$emit('clickEvent')"
             :width="width"
-            :color="color"
+            color="#4C4637"
             >{{ data }}</v-btn
         >
     </div>

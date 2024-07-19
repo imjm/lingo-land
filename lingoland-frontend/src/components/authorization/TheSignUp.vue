@@ -35,12 +35,7 @@ function signUp() {
 
                 <v-col cols="6">
                     <div class="ma-10">
-                        <GenericInput
-                            type="text"
-                            data="이름"
-                            id="userName"
-                            variant="outlined"
-                        />
+                        <GenericInput type="text" data="이름" id="userName" />
 
                         <v-row class="d-flex align-center justify-center">
                             <v-col cols="10">
@@ -48,14 +43,12 @@ function signUp() {
                                     type="text"
                                     data="아이디"
                                     id="userId"
-                                    variant="outlined"
                                 />
                             </v-col>
                             <v-col cols="2" class="px-0">
                                 <GenericButton
                                     data="중복확인"
                                     id="checkDuplicate"
-                                    color="#FFF1C2"
                                     height="56"
                                 />
                             </v-col>
@@ -65,20 +58,17 @@ function signUp() {
                             type="password"
                             data="비밀번호"
                             id="userPassword"
-                            variant="outlined"
                         />
                         <GenericInput
                             type="password"
                             data="비밀번호확인"
                             id="userPasswordCheck"
-                            variant="outlined"
                         />
 
                         <SubmitButton
                             id="signUp"
                             data="로그인"
-                            width="100%"
-                            color="#4C4637"
+                            width="100%"                            
                             @click-event="signUp"
                         />
                     </div>
