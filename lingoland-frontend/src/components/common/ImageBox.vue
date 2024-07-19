@@ -1,23 +1,29 @@
 <script setup>
 /*
- id: 컴포넌트 id
- type: button 컴포넌트 type 지정
- data: button 컴포넌트에 지정할 이름 
+ aspectRatio: String, 이미지 가로세로 비율
+ height: Number, 높이
+ width: Number, 폭
+ source: String, 이미지 소스
+ setting: String, 설정
 */
 const props = defineProps({
     aspectRatio: String,
+    height: Number,
     width: Number,
     source: String,
+    setting: String,
 });
 </script>
 
 <template>
     <div>
         <v-img
-            :width=width
+            :width="width"
+            :height="height"
             :aspect-ratio="aspectRatio"
             cover
             :src="source"
+            :class="setting"
         ></v-img>
     </div>
 </template>

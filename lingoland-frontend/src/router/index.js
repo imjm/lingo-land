@@ -1,24 +1,23 @@
 import LoginView from "@/views/LoginView.vue";
-import HomeView from "@/views/HomeView.vue";
+import SignUpView from "@/views/SignUpView.vue";
 
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+    history: createWebHistory(import.meta.env.BASE_URL),
 
-  routes: [
-    {
-      path: "/login",
-      name: "login",
-      component: LoginView,
-    },
-
-    {
-      path: "",
-      name: "home",
-      component: HomeView,
-    },
-  ]
+    routes: [
+        {
+            path: "/signup",
+            name: "signUp",
+            component: SignUpView,
+        },
+        {
+            path: "/login",
+            name: "login",
+            component: LoginView,
+        },
+    ],
 });
 
 export default router;
