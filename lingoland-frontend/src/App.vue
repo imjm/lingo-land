@@ -3,9 +3,12 @@ import { RouterView } from "vue-router";
 </script>
 
 <template>
-    <v-app class="bg-amber-lighten-3">
-        <RouterView></RouterView>
-    </v-app>
+  <RouterLink :to="{ name: 'login' }"> login</RouterLink> |
+  <RouterLink :to="{ name: 'gameRoom' }"> gameRoom</RouterLink> |
+  <RouterLink :to="{ name: 'signUp' }"> signup</RouterLink> |
+  <v-app class="bg-amber-lighten-3">
+    <RouterView></RouterView>
+  </v-app>
 </template>
 
 <style scoped></style>
