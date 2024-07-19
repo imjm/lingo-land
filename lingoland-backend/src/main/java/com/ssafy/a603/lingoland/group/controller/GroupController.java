@@ -69,4 +69,11 @@ public class GroupController {
 		groupService.addMemberToGroupWithPasswordCheck(groupsId, userId, joinGroupRequestDTO);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
+
+	@DeleteMapping("/{groupsId}/users/{userId}")
+	public ResponseEntity<?> quitGroup(@PathVariable("groupsId") Integer groupsId,
+		@PathVariable("userId") Integer userId) {
+		groupService.removeMemberFromGroup(groupsId, userId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
 }

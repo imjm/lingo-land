@@ -94,7 +94,11 @@ public class Group {
 
 	public void join(GroupMember groupMember) {
 		this.groupMembers.add(groupMember);
-		memberCount++;
+		this.memberCount++;
+	}
+
+	public void quit() {
+		this.memberCount--;
 	}
 
 	//    id serial NOT NULL,

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.a603.lingoland.group.dto.CreateGroupDTO;
@@ -85,10 +86,24 @@ public class GroupServiceImpl implements GroupService {
 		}
 
 		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new NoSuchElementException("no such user"));
+			.orElseThrow(() -> new NoSuchElementException("no such member"));
 
 		addMemberToGroup(group, member, joinGroupRequestDTO.description());
 
+	}
+
+	@Override
+	@Transactional
+	public void removeMemberFromGroup(int groupsId, int memberId) {
+		GroupMemberId groupMemberId = GroupMemberId.builder()
+			.groupId(groupsId)
+			.memberId(memberId)
+			.build();
+		GroupMember groupMember = groupMemberRepository.findById(groupMemberId)
+			.orElseThrow(() -> new NoSuchElementException("no such connection"));
+		groupMember.quit();
+		Group group = groupRepository.findById(groupsId).get();
+		group.quit();
 	}
 
 	private void addMemberToGroup(Group group, Member member, String description) {
