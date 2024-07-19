@@ -5,7 +5,6 @@ import { RouterView } from "vue-router";
 <template>
   <RouterLink :to="{ name: 'login' }"> login</RouterLink> |
   <RouterLink :to="{ name: 'gameRoom' }"> gameRoom</RouterLink> |
-  <RouterLink :to="{ name: 'joinRoom' }"> joinRoom</RouterLink> |
   <RouterLink :to="{ name: 'signUp' }"> signup</RouterLink> |
   <v-app class="bg-amber-lighten-3">
     <RouterView></RouterView>
