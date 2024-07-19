@@ -4,14 +4,12 @@
  height: Number, 높이
  width: Number, 폭
  source: String, 이미지 소스
- setting: String, 설정
 */
 const props = defineProps({
     aspectRatio: String,
     height: Number,
     width: Number,
     source: String,
-    setting: String,
 });
 </script>
 
@@ -23,7 +21,7 @@ const props = defineProps({
             :aspect-ratio="aspectRatio"
             cover
             :src="source"
-            :class="setting"
+            class="rounded-circle"
         ></v-img>
     </div>
 </template>

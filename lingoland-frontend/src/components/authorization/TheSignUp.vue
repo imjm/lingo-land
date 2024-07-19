@@ -68,7 +68,7 @@ function signUp() {
                         <SubmitButton
                             id="signUp"
                             data="로그인"
-                            width="100%"                            
+                            width="100%"
                             @click-event="signUp"
                         />
                     </div>
