@@ -1,7 +1,7 @@
 import LoginView from "@/views/LoginView.vue";
-import HomeView from "@/views/HomeView.vue";
 import GameRoomView from "@/views/GameRoomView.vue";
 import GameRoomFindView from "@/views/GameRoomFindView.vue";
+import SignUpView from "@/views/SignUpView.vue";
 
 import { createRouter, createWebHistory } from "vue-router";
 
@@ -14,13 +14,6 @@ const router = createRouter({
       name: "login",
       component: LoginView,
     },
-
-    {
-      path: "",
-      name: "home",
-      component: HomeView,
-    },
-
     {
       path: "/rooms",
       name: "gameRoom",
@@ -30,6 +23,11 @@ const router = createRouter({
       path: "/rooms/join",
       name: "joinRoom",
       component: GameRoomFindView,
+    },
+    {
+      path: "/signup",
+      name: "signUp",
+      component: SignUpView,
     },
   ],
 });

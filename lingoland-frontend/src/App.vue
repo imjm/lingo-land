@@ -1,14 +1,14 @@
-<script setup></script>
+<script setup>
+import { RouterView } from "vue-router";
+</script>
 
 <template>
-  <div id="app">
-    <v-container>
-      <RouterLink :to="{ name: 'login' }"> login</RouterLink> |
-      <RouterLink :to="{ name: 'gameRoom' }"> gameRoom</RouterLink> |
-      <RouterLink :to="{ name: 'joinRoom' }"> joinRoom</RouterLink> |
-      <RouterView />
-    </v-container>
-  </div>
+  <RouterLink :to="{ name: 'login' }"> login</RouterLink> |
+  <RouterLink :to="{ name: 'gameRoom' }"> gameRoom</RouterLink> |
+  <RouterLink :to="{ name: 'joinRoom' }"> joinRoom</RouterLink> |
+  <v-app class="bg-amber-lighten-3">
+    <RouterView></RouterView>
+  </v-app>
 </template>
 
 <style scoped></style>
