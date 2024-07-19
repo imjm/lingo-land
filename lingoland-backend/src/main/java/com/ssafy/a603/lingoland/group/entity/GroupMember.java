@@ -24,7 +24,7 @@ public class GroupMember {
 
 	private String description;
 
-	private LocalDateTime createdAt;
+	private LocalDateTime createdAt = LocalDateTime.now();
 
 	private LocalDateTime deletedAt;
 
@@ -41,10 +41,25 @@ public class GroupMember {
 	private Member member;
 
 	@Builder
-	public GroupMember(GroupMemberId id, String description, Group group, Member member) {
+	public GroupMember(GroupMemberId id, String description) {
 		this.id = id;
 		this.description = description;
-		this.group = group;
+		this.createdAt = LocalDateTime.now();
+	}
+
+	public void addMember(Member member) {
 		this.member = member;
+	}
+
+	public void removeMember() {
+		this.member = null;
+	}
+
+	public void addGroup(Group group) {
+		this.group = group;
+	}
+
+	public void removeGroup() {
+		this.group = null;
 	}
 }
