@@ -3,6 +3,7 @@ package com.ssafy.a603.lingoland.member.jwt;
 import com.ssafy.a603.lingoland.member.CustomUserDetails;
 import com.ssafy.a603.lingoland.member.Member;
 import com.ssafy.a603.lingoland.member.MemberRepository;
+import com.ssafy.a603.lingoland.member.MemberService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -26,7 +27,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -53,9 +54,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String access = jwtUtil.createToken("access", loginId, 600000L);
         String refresh = jwtUtil.createToken("refresh", loginId, 86400000L);
 
-        addRefreshToken(loginId, refresh);
+        memberService.addRefreshToken(loginId, refresh);
 
-        response.addHeader("access", access);
+        response.addHeader("Authorization", "Bearer " + access);
         response.addCookie(createCookie("refresh", refresh));
         response.setStatus(HttpStatus.OK.value());
     }
@@ -78,9 +79,4 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         return cookie;
     }
 
-    protected void addRefreshToken(String loginId, String refresh) {
-        Member member = memberRepository.findByLoginId(loginId);
-        member.updateRefreshToken(refresh);
-        memberRepository.save(member);
-    }
 }

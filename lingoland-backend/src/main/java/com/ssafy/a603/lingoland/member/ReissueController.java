@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReissueController {
 
     private final JWTUtil jwtUtil;
+    private final MemberService memberService;
     private final MemberRepository memberRepository;
 
     @PostMapping("/reissue")
@@ -55,10 +56,9 @@ public class ReissueController {
         String newAccess = jwtUtil.createToken("access", loginId, 600000L);
         String newRefresh = jwtUtil.createToken("refresh", loginId, 86400000L);
 
-        member.updateRefreshToken(newRefresh);
-        memberRepository.save(member);
+        memberService.addRefreshToken(loginId, newRefresh);
 
-        response.setHeader("access", newAccess);
+        response.setHeader("Authorization", "Bearer " + newAccess);
         response.addCookie(createCookie("refresh", newRefresh));
 
         return new ResponseEntity<>(HttpStatus.OK);

@@ -1,6 +1,7 @@
 package com.ssafy.a603.lingoland.config;
 
 import com.ssafy.a603.lingoland.member.MemberRepository;
+import com.ssafy.a603.lingoland.member.MemberService;
 import com.ssafy.a603.lingoland.member.jwt.JWTFilter;
 import com.ssafy.a603.lingoland.member.jwt.LoginFilter;
 import com.ssafy.a603.lingoland.member.jwt.JWTUtil;
@@ -27,7 +28,7 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
 
     @Bean
@@ -54,7 +55,7 @@ public class SecurityConfig {
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
 
         http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, memberRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, memberService), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -62,11 +63,6 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Bean
