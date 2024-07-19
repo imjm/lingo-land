@@ -1,5 +1,6 @@
 package com.ssafy.a603.lingoland.config;
 
+import com.ssafy.a603.lingoland.member.security.CustomLogoutFilter;
 import com.ssafy.a603.lingoland.member.service.MemberService;
 import com.ssafy.a603.lingoland.member.security.JWTFilter;
 import com.ssafy.a603.lingoland.member.security.LoginFilter;
@@ -17,6 +18,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -54,6 +56,8 @@ public class SecurityConfig {
         http
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, memberService), UsernamePasswordAuthenticationFilter.class);
 
+        http
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, memberService), LogoutFilter.class);
         return http.build();
     }
 
