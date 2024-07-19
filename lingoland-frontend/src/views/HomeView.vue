@@ -1,9 +1,9 @@
 <script setup>
-import RankList from '@/components/rank/RankList.vue';
+import GroupMemberList from "@/components/group/GroupMemberList.vue";
 </script>
 
 <template>
-    <main>
-        <RankList />
-    </main>
+  <main>
+    <GroupMemberList />
+  </main>
 </template>
