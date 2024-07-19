@@ -2,6 +2,8 @@ package com.ssafy.a603.lingoland.member;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.a603.lingoland.member.dto.SignUpRequest;
+import com.ssafy.a603.lingoland.member.entity.Member;
+import com.ssafy.a603.lingoland.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

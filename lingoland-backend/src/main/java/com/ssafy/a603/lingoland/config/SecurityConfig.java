@@ -1,10 +1,9 @@
 package com.ssafy.a603.lingoland.config;
 
-import com.ssafy.a603.lingoland.member.MemberRepository;
-import com.ssafy.a603.lingoland.member.MemberService;
-import com.ssafy.a603.lingoland.member.jwt.JWTFilter;
-import com.ssafy.a603.lingoland.member.jwt.LoginFilter;
-import com.ssafy.a603.lingoland.member.jwt.JWTUtil;
+import com.ssafy.a603.lingoland.member.service.MemberService;
+import com.ssafy.a603.lingoland.member.security.JWTFilter;
+import com.ssafy.a603.lingoland.member.security.LoginFilter;
+import com.ssafy.a603.lingoland.member.security.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -16,8 +15,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 

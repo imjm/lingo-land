@@ -2,7 +2,7 @@ package com.ssafy.a603.lingoland.group.entity;
 
 import java.time.LocalDateTime;
 
-import com.ssafy.a603.lingoland.member.Member;
+import com.ssafy.a603.lingoland.member.entity.Member;
 
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;

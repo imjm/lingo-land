@@ -1,9 +1,6 @@
-package com.ssafy.a603.lingoland.member.jwt;
+package com.ssafy.a603.lingoland.member.security;
 
-import com.ssafy.a603.lingoland.member.CustomUserDetails;
-import com.ssafy.a603.lingoland.member.Member;
-import com.ssafy.a603.lingoland.member.MemberRepository;
-import com.ssafy.a603.lingoland.member.MemberService;
+import com.ssafy.a603.lingoland.member.service.MemberService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -17,10 +14,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.Date;
 
 @RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {

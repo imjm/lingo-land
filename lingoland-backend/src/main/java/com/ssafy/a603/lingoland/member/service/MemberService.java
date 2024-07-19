@@ -1,6 +1,9 @@
-package com.ssafy.a603.lingoland.member;
+package com.ssafy.a603.lingoland.member.service;
 
+import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
+import com.ssafy.a603.lingoland.member.repository.MemberRepository;
 import com.ssafy.a603.lingoland.member.dto.SignUpRequest;
+import com.ssafy.a603.lingoland.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

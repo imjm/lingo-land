@@ -10,7 +10,7 @@ import com.ssafy.a603.lingoland.group.dto.CreateGroupDTO;
 import com.ssafy.a603.lingoland.group.dto.UpdateGroupDTO;
 import com.ssafy.a603.lingoland.group.entity.Group;
 import com.ssafy.a603.lingoland.group.repository.GroupRepository;
-import com.ssafy.a603.lingoland.member.MemberRepository;
+import com.ssafy.a603.lingoland.member.repository.MemberRepository;
 import com.ssafy.a603.lingoland.util.ImgUtils;
 
 import lombok.RequiredArgsConstructor;
