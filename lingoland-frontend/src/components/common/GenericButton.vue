@@ -9,13 +9,12 @@ const props = defineProps({
     id: String,
     type: String,
     data: String,
-    color: String,
     height: String,
 });
 </script>
 
 <template>
-    <v-btn :id="id" :color="color" :height="height">{{ data }}</v-btn>
+    <v-btn :id="id" color="#FFF1C2" :height="height">{{ data }}</v-btn>
 </template>
 
 <style scoped></style>
