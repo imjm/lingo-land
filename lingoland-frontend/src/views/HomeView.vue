@@ -1,9 +1,9 @@
 <script setup>
-import TheSignUp from "@/components/authorization/TheSignUp.vue";
+import GroupMemberList from "@/components/group/GroupMemberList.vue";
 </script>
 
 <template>
-    <main>
-        <TheSignUp />
-    </main>
+  <main>
+    <GroupMemberList />
+  </main>
 </template>
