@@ -1,7 +1,13 @@
 <script setup>
 import ImageBox from "./ImageBox.vue";
 
-const imageSource = "src\\assets\\sampleImg.jpg";
+const props = defineProps({
+    height: Number,
+    width: Number,
+    source: String,
+});
+
+
 </script>
 
 <template>
@@ -10,10 +16,9 @@ const imageSource = "src\\assets\\sampleImg.jpg";
             <v-row class="d-flex flex-column ma-6"e>
                 <v-col class="d-flex align-center justify-center">
                     <ImageBox
-                        aspectRatio="1/1"
                         :width="300"
                         :height="300"
-                        :source="imageSource"
+                        :source="source"
                     />
                 </v-col>
                 <v-col class="d-flex align-center justify-center"> 이름 </v-col>
