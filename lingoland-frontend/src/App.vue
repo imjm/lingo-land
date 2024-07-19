@@ -1,11 +1,11 @@
 <script setup>
-import HomeView from './views/HomeView.vue';
+import SignUpView from "./views/SignUpView.vue";
 </script>
 
 <template>
-  <HomeView></HomeView>
+    <v-app class="bg-amber-lighten-3">
+        <SignUpView></SignUpView>
+    </v-app>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
