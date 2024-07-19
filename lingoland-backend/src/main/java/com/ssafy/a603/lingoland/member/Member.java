@@ -50,4 +50,8 @@ public class Member {
     private long writingPlayedCount;
 
     private String refreshToken;
+
+    public void updateRefreshToken(String refresh) {
+        this.refreshToken = refresh;
+    }
 }

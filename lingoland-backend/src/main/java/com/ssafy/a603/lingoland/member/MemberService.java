@@ -39,4 +39,10 @@ public class MemberService implements UserDetailsService {
         }
         return null;
     }
+
+    @Transactional
+    public void addRefreshToken(String loginId, String refresh) {
+        Member member = memberRepository.findByLoginId(loginId);
+        member.updateRefreshToken(refresh);
+    }
 }
