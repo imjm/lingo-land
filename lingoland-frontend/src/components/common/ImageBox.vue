@@ -6,7 +6,6 @@
  source: String, 이미지 소스
 */
 const props = defineProps({
-    aspectRatio: String,
     height: Number,
     width: Number,
     source: String,
@@ -18,7 +17,6 @@ const props = defineProps({
         <v-img
             :width="width"
             :height="height"
-            :aspect-ratio="aspectRatio"
             cover
             :src="source"
             class="rounded-circle"
