@@ -1,10 +1,11 @@
 <script setup>
+import { RouterView } from "vue-router";
 import SignUpView from "./views/SignUpView.vue";
 </script>
 
 <template>
     <v-app class="bg-amber-lighten-3">
-        <SignUpView></SignUpView>
+        <RouterView></RouterView>
     </v-app>
 </template>
 
