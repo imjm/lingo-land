@@ -16,7 +16,7 @@ const props = defineProps({
 <template>
     <div>
         {{ data }}
-        <v-text-field :type="type" :id="id" :variant="variant"></v-text-field>
+        <v-text-field :type="type" :id="id" variant="outlined"></v-text-field>
     </div>
 </template>
 

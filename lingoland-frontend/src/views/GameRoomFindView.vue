@@ -1,14 +1,9 @@
-<script setup>
-
-</script>
+<script setup></script>
 
 <template>
-    <div>
-        <h1>GameRoomFindView</h1>
-        
-    </div>
+    <v-container>
+      <h1>GameRoomFindView</h1>
+    </v-container>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

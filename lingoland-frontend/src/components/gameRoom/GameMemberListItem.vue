@@ -8,7 +8,7 @@ const props = defineProps({
 
 <template>
   <v-list-item-content >
-    <v-container class="border-md bg-yellow">
+    <v-container class="border-md">
       <v-row rows="2">
         <div>member.name</div>
       </v-row>
@@ -30,5 +30,8 @@ const props = defineProps({
 </template>
 
 <style scoped>
+.border-md{
+  background-color: #FFF1C2;
+}
 
 </style>
