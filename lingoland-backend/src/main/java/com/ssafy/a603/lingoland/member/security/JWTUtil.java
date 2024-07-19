@@ -1,4 +1,4 @@
-package com.ssafy.a603.lingoland.member.jwt;
+package com.ssafy.a603.lingoland.member.security;
 
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;

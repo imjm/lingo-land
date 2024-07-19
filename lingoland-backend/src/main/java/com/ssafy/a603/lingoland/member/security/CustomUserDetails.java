@@ -1,5 +1,6 @@
-package com.ssafy.a603.lingoland.member;
+package com.ssafy.a603.lingoland.member.security;
 
+import com.ssafy.a603.lingoland.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

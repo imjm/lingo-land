@@ -1,6 +1,9 @@
-package com.ssafy.a603.lingoland.member;
+package com.ssafy.a603.lingoland.member.controller;
 
+import com.ssafy.a603.lingoland.member.service.MemberService;
+import com.ssafy.a603.lingoland.member.validator.SignUpValidator;
 import com.ssafy.a603.lingoland.member.dto.SignUpRequest;
+import com.ssafy.a603.lingoland.member.entity.Member;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

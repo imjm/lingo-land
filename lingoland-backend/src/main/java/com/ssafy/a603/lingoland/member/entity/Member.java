@@ -1,4 +1,4 @@
-package com.ssafy.a603.lingoland.member;
+package com.ssafy.a603.lingoland.member.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

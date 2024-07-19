@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ssafy.a603.lingoland.group.dto.UpdateGroupDTO;
-import com.ssafy.a603.lingoland.member.Member;
+import com.ssafy.a603.lingoland.member.entity.Member;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

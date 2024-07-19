@@ -27,7 +27,7 @@ import com.ssafy.a603.lingoland.group.dto.UpdateGroupDTO;
 import com.ssafy.a603.lingoland.group.entity.Group;
 import com.ssafy.a603.lingoland.group.entity.GroupMember;
 import com.ssafy.a603.lingoland.group.repository.GroupRepository;
-import com.ssafy.a603.lingoland.member.Member;
+import com.ssafy.a603.lingoland.member.entity.Member;
 import com.ssafy.a603.lingoland.util.ImgUtils;
 
 @ContextConfiguration(classes = {GroupServiceImpl.class})

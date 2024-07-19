@@ -1,7 +1,7 @@
-package com.ssafy.a603.lingoland.member;
+package com.ssafy.a603.lingoland.member.validator;
 
 import com.ssafy.a603.lingoland.member.dto.SignUpRequest;
-import io.lettuce.core.dynamic.annotation.CommandNaming;
+import com.ssafy.a603.lingoland.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;

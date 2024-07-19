@@ -1,7 +1,6 @@
-package com.ssafy.a603.lingoland.member.jwt;
+package com.ssafy.a603.lingoland.member.security;
 
-import com.ssafy.a603.lingoland.member.CustomUserDetails;
-import com.ssafy.a603.lingoland.member.Member;
+import com.ssafy.a603.lingoland.member.entity.Member;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
