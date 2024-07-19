@@ -20,7 +20,9 @@ public interface GroupService {
 
 	void deleteById(int id);
 
-	void addMemberToGroupWithPasswordCheck(int groupsId, int userId, JoinGroupRequestDTO joinGroupRequestDTO);
+	void addMemberToGroupWithPasswordCheck(int groupsId, int memberId, JoinGroupRequestDTO joinGroupRequestDTO);
+
+	void removeMemberFromGroup(int groupsId, int memberId);
 
 	Group save(Group group);
 }
