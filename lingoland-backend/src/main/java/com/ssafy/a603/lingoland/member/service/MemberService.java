@@ -48,4 +48,15 @@ public class MemberService implements UserDetailsService {
         Member member = memberRepository.findByLoginId(loginId);
         member.updateRefreshToken(refresh);
     }
+
+    @Transactional
+    public void deleteRefreshToken(String loginId) {
+        Member member = memberRepository.findByLoginId(loginId);
+        member.updateRefreshToken(null);
+    }
+
+    public Boolean checkExistRefreshToken(String loginId) {
+        Member member = memberRepository.findByLoginId(loginId);
+        return member != null;
+    }
 }
