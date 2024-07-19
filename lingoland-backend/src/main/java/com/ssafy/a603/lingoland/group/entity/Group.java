@@ -16,6 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,11 +24,12 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@Table(name = "\"group\"")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Group {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "group_seq")
-	@SequenceGenerator(name = "group_seq", sequenceName = "group_sequence", allocationSize = 1)
+	@SequenceGenerator(name = "group_seq", sequenceName = "group_id_seq", allocationSize = 1)
 	private Integer id;
 
 	@Column(name = "name", nullable = false, length = 20)
@@ -46,13 +48,13 @@ public class Group {
 	private String groupImage;
 
 	@Column(name = "created_at")
-	private LocalDateTime createdAt;
+	private LocalDateTime createdAt = LocalDateTime.now();
 
 	@Column(name = "deleted_at")
 	private LocalDateTime deletedAt;
 
 	@Column(name = "is_deleted", nullable = false, columnDefinition = "boolean default false")
-	private boolean isDeleted;
+	private boolean isDeleted = false;
 
 	// 그룹장 Member 에 대한 정보가 없는데 어떤 방식을 생각하고 있는지 궁금합니다.
 	@ManyToOne
@@ -70,6 +72,8 @@ public class Group {
 		this.groupImage = groupImage;
 		this.leader = leader;
 		this.memberCount = 1;
+		this.createdAt = LocalDateTime.now();
+		this.isDeleted = false;
 	}
 
 	public void updateUser(UpdateGroupDTO request) {

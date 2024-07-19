@@ -29,7 +29,7 @@ public class GroupController {
 	private final GroupService groupService;
 
 	@PostMapping(produces = "application/json", consumes = "multipart/form-data")
-	public ResponseEntity<?> createGroup(@RequestPart(value = "makeGroup") CreateGroupDTO createGroupDTO,
+	public ResponseEntity<?> createGroup(@RequestPart(value = "createGroup") CreateGroupDTO createGroupDTO,
 		@RequestPart(value = "groupImage", required = false) MultipartFile groupImage) {
 		groupService.create(createGroupDTO, groupImage);
 		return ResponseEntity.status(HttpStatus.CREATED).body("group made.");
@@ -49,7 +49,7 @@ public class GroupController {
 
 	@PutMapping(path = "/{groupsId}", produces = "application/json", consumes = "multipart/form-data")
 	public ResponseEntity<?> updateGroupInfo(@PathVariable Integer groupsId,
-		@RequestPart(value = "makeGroup") UpdateGroupDTO updateGroupDTO,
+		@RequestPart(value = "updateGroup") UpdateGroupDTO updateGroupDTO,
 		@RequestPart(value = "groupImage", required = false) MultipartFile groupImage) {
 		groupService.update(updateGroupDTO, groupImage);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
