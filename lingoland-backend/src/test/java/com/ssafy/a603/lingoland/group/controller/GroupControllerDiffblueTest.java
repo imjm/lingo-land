@@ -12,8 +12,10 @@ import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
@@ -23,6 +25,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
@@ -35,13 +38,19 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.a603.lingoland.group.dto.CreateGroupDTO;
+import com.ssafy.a603.lingoland.group.dto.JoinGroupRequestDTO;
 import com.ssafy.a603.lingoland.group.dto.UpdateGroupDTO;
 import com.ssafy.a603.lingoland.group.entity.Group;
+import com.ssafy.a603.lingoland.group.entity.GroupMember;
+import com.ssafy.a603.lingoland.group.entity.GroupMemberId;
+import com.ssafy.a603.lingoland.group.repository.GroupMemberRepository;
 import com.ssafy.a603.lingoland.group.repository.GroupRepository;
 import com.ssafy.a603.lingoland.group.service.GroupService;
 import com.ssafy.a603.lingoland.group.service.GroupServiceImpl;
-import com.ssafy.a603.lingoland.member.Member;
+import com.ssafy.a603.lingoland.member.entity.Member;
+import com.ssafy.a603.lingoland.member.repository.MemberRepository;
 import com.ssafy.a603.lingoland.util.ImgUtils;
 
 @ContextConfiguration(classes = {GroupController.class})
@@ -72,8 +81,17 @@ class GroupControllerDiffblueTest {
 				.groupImage("Group Image");
 			Group buildResult = groupImageResult.leader(new Member()).name("Name").password(1).build();
 			when(groupRepository.save(Mockito.<Group>any())).thenReturn(buildResult);
+			MemberRepository memberRepository = mock(MemberRepository.class);
+			Optional<Member> ofResult = Optional.of(new Member());
+			when(memberRepository.findById(Mockito.<Integer>any())).thenReturn(ofResult);
+			GroupMemberRepository groupMemberRepository = mock(GroupMemberRepository.class);
+			GroupMember.GroupMemberBuilder descriptionResult = GroupMember.builder()
+				.description("The characteristics of someone or something");
+			GroupMemberId id = GroupMemberId.builder().groupId(1).memberId(1).build();
+			GroupMember buildResult2 = descriptionResult.id(id).build();
+			when(groupMemberRepository.save(Mockito.<GroupMember>any())).thenReturn(buildResult2);
 			GroupController groupController = new GroupController(
-				new GroupServiceImpl(groupRepository, new ImgUtils()));
+				new GroupServiceImpl(groupRepository, memberRepository, groupMemberRepository, new ImgUtils()));
 			CreateGroupDTO createGroupDTO = new CreateGroupDTO("Name", 1, "The characteristics of someone or something",
 				1);
 
@@ -83,7 +101,9 @@ class GroupControllerDiffblueTest {
 
 			// Assert
 			mockFiles.verify(() -> Files.newOutputStream(Mockito.<Path>any(), isA(OpenOption[].class)));
+			verify(memberRepository).findById(eq(1));
 			verify(groupRepository).save(isA(Group.class));
+			verify(groupMemberRepository).save(isA(GroupMember.class));
 			HttpStatusCode statusCode = actualCreateGroupResult.getStatusCode();
 			assertTrue(statusCode instanceof HttpStatus);
 			assertEquals("group made.", actualCreateGroupResult.getBody());
@@ -94,6 +114,58 @@ class GroupControllerDiffblueTest {
 			assertTrue(headers.isEmpty());
 			assertEquals(headers, groupController.getGroups().getHeaders());
 		}
+	}
+
+	/**
+	 * Method under test: {@link GroupController#getGroupById(Integer)}
+	 */
+	@Test
+	void testGetGroupById() {
+		//   Diffblue Cover was unable to create a Spring-specific test for this Spring method.
+
+		// Arrange
+		GroupRepository groupRepository = mock(GroupRepository.class);
+		Group.GroupBuilder groupImageResult = Group.builder()
+			.description("The characteristics of someone or something")
+			.groupImage("Group Image");
+		Member leader = new Member();
+		Group buildResult = groupImageResult.leader(leader).name("Name").password(1).build();
+		Optional<Group> ofResult = Optional.of(buildResult);
+		when(groupRepository.findById(Mockito.<Integer>any())).thenReturn(ofResult);
+		MemberRepository memberRepository = mock(MemberRepository.class);
+		GroupMemberRepository groupMemberRepository = mock(GroupMemberRepository.class);
+		GroupController groupController = new GroupController(
+			new GroupServiceImpl(groupRepository, memberRepository, groupMemberRepository, new ImgUtils()));
+
+		// Act
+		ResponseEntity<?> actualGroupById = groupController.getGroupById(1);
+
+		// Assert
+		verify(groupRepository).findById(eq(1));
+		Object body = actualGroupById.getBody();
+		assertTrue(body instanceof Group);
+		HttpStatusCode statusCode = actualGroupById.getStatusCode();
+		assertTrue(statusCode instanceof HttpStatus);
+		assertEquals("Group Image", ((Group)body).getGroupImage());
+		assertEquals("Name", ((Group)body).getName());
+		assertEquals("The characteristics of someone or something", ((Group)body).getDescription());
+		assertNull(((Group)body).getId());
+		assertNull(((Group)body).getDeletedAt());
+		assertEquals(0, ((Group)body).getMemberCount());
+		assertEquals(1, ((Group)body).getPassword().intValue());
+		assertEquals(200, actualGroupById.getStatusCodeValue());
+		assertEquals(HttpStatus.OK, statusCode);
+		assertFalse(((Group)body).isDeleted());
+		List<GroupMember> groupMembers = ((Group)body).getGroupMembers();
+		assertTrue(groupMembers.isEmpty());
+		assertTrue(actualGroupById.hasBody());
+		HttpHeaders headers = actualGroupById.getHeaders();
+		assertTrue(headers.isEmpty());
+		ResponseEntity<?> groups = groupController.getGroups();
+		assertEquals(groupMembers, groups.getBody());
+		assertEquals(headers, groups.getHeaders());
+		assertSame(leader, ((Group)body).getLeader());
+		assertSame(statusCode, groups.getStatusCode());
 	}
 
 	/**
@@ -116,8 +188,10 @@ class GroupControllerDiffblueTest {
 			Group buildResult = groupImageResult.leader(new Member()).name("Name").password(1).build();
 			Optional<Group> ofResult = Optional.of(buildResult);
 			when(groupRepository.findById(Mockito.<Integer>any())).thenReturn(ofResult);
+			MemberRepository memberRepository = mock(MemberRepository.class);
+			GroupMemberRepository groupMemberRepository = mock(GroupMemberRepository.class);
 			GroupController groupController = new GroupController(
-				new GroupServiceImpl(groupRepository, new ImgUtils()));
+				new GroupServiceImpl(groupRepository, memberRepository, groupMemberRepository, new ImgUtils()));
 			UpdateGroupDTO updateGroupDTO = new UpdateGroupDTO(1, "Name", 1,
 				"The characteristics of someone or something");
 
@@ -182,7 +256,11 @@ class GroupControllerDiffblueTest {
 	 * Method under test: {@link GroupController#getGroupById(Integer)}
 	 */
 	@Test
-	void testGetGroupById() throws Exception {
+	@Disabled("TODO: Complete this test")
+	void testGetGroupById2() throws Exception {
+		// TODO: Diffblue Cover was only able to create a partial test for this method:
+		//   Diffblue AI was unable to find a test
+
 		// Arrange
 		Group.GroupBuilder groupImageResult = Group.builder()
 			.description("The characteristics of someone or something")
@@ -200,10 +278,10 @@ class GroupControllerDiffblueTest {
 			.andExpect(MockMvcResultMatchers.content()
 				.string(
 					"{\"id\":null,\"name\":\"Name\",\"password\":1,\"description\":\"The characteristics of someone or something\","
-						+ "\"memberCount\":1,\"groupImage\":\"Group Image\",\"createdAt\":null,\"deletedAt\":null,\"leader\":{\"id\":0,\"loginId"
-						+ "\":null,\"nickname\":null,\"password\":null,\"profile_image\":null,\"experiencePoint\":0,\"rank\":null,\"createdAt"
-						+ "\":null,\"deletedAt\":null,\"runningPlayedCount\":0,\"writingPlayedCount\":0,\"refreshToken\":null,\"deleted\""
-						+ ":false},\"groupMembers\":[],\"deleted\":false}"));
+						+ "\"memberCount\":0,\"groupImage\":\"Group Image\",\"createdAt\":[2024,7,19,15,38,44,769174200],\"deletedAt\":null"
+						+ ",\"leader\":{\"id\":0,\"loginId\":null,\"nickname\":null,\"password\":null,\"profile_image\":null,\"experiencePoint"
+						+ "\":0,\"rank\":null,\"createdAt\":null,\"deletedAt\":null,\"runningPlayedCount\":0,\"writingPlayedCount\":0,"
+						+ "\"refreshToken\":null,\"groupMembers\":[],\"deleted\":false},\"groupMembers\":[],\"deleted\":false}"));
 	}
 
 	/**
@@ -222,5 +300,31 @@ class GroupControllerDiffblueTest {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 			.andExpect(MockMvcResultMatchers.content().string("[]"));
+	}
+
+	/**
+	 * Method under test:
+	 * {@link GroupController#joinGroup(Integer, Integer, JoinGroupRequestDTO)}
+	 */
+	@Test
+	void testJoinGroup() throws Exception {
+		// Arrange
+		doNothing().when(groupService)
+			.addMemberToGroupWithPasswordCheck(anyInt(), anyInt(), Mockito.<JoinGroupRequestDTO>any());
+		MockHttpServletRequestBuilder contentTypeResult = MockMvcRequestBuilders
+			.post("/api/v1/groups/{groupsId}/users/{userId}", 1, 1)
+			.contentType(MediaType.APPLICATION_JSON);
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		MockHttpServletRequestBuilder requestBuilder = contentTypeResult.content(
+			objectMapper.writeValueAsString(new JoinGroupRequestDTO("The characteristics of someone or something", 1)));
+
+		// Act
+		ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(groupController)
+			.build()
+			.perform(requestBuilder);
+
+		// Assert
+		actualPerformResult.andExpect(MockMvcResultMatchers.status().isNoContent());
 	}
 }

@@ -23,17 +23,24 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.a603.lingoland.group.dto.CreateGroupDTO;
+import com.ssafy.a603.lingoland.group.dto.JoinGroupRequestDTO;
 import com.ssafy.a603.lingoland.group.dto.UpdateGroupDTO;
 import com.ssafy.a603.lingoland.group.entity.Group;
 import com.ssafy.a603.lingoland.group.entity.GroupMember;
+import com.ssafy.a603.lingoland.group.entity.GroupMemberId;
+import com.ssafy.a603.lingoland.group.repository.GroupMemberRepository;
 import com.ssafy.a603.lingoland.group.repository.GroupRepository;
-import com.ssafy.a603.lingoland.member.Member;
+import com.ssafy.a603.lingoland.member.entity.Member;
+import com.ssafy.a603.lingoland.member.entity.MemberRepository;
 import com.ssafy.a603.lingoland.util.ImgUtils;
 
 @ContextConfiguration(classes = {GroupServiceImpl.class})
 @ExtendWith(SpringExtension.class)
 @DisabledInAotMode
 class GroupServiceImplDiffblueTest {
+	@MockBean
+	private GroupMemberRepository groupMemberRepository;
+
 	@MockBean
 	private GroupRepository groupRepository;
 
@@ -42,6 +49,9 @@ class GroupServiceImplDiffblueTest {
 
 	@MockBean
 	private ImgUtils imgUtils;
+
+	@MockBean
+	private MemberRepository memberRepository;
 
 	/**
 	 * Method under test:
@@ -56,6 +66,13 @@ class GroupServiceImplDiffblueTest {
 		Member leader = new Member();
 		Group buildResult = groupImageResult.leader(leader).name("Name").password(1).build();
 		when(groupRepository.save(Mockito.<Group>any())).thenReturn(buildResult);
+		Optional<Member> ofResult = Optional.of(new Member());
+		when(memberRepository.findById(Mockito.<Integer>any())).thenReturn(ofResult);
+		GroupMember.GroupMemberBuilder descriptionResult = GroupMember.builder()
+			.description("The characteristics of someone or something");
+		GroupMemberId id = GroupMemberId.builder().groupId(1).memberId(1).build();
+		GroupMember buildResult2 = descriptionResult.id(id).build();
+		when(groupMemberRepository.save(Mockito.<GroupMember>any())).thenReturn(buildResult2);
 		when(imgUtils.saveImage(Mockito.<MultipartFile>any(), Mockito.<String>any())).thenReturn("Save Image");
 		CreateGroupDTO request = new CreateGroupDTO("Name", 1, "The characteristics of someone or something", 1);
 
@@ -65,14 +82,15 @@ class GroupServiceImplDiffblueTest {
 
 		// Assert
 		verify(imgUtils).saveImage(isA(MultipartFile.class), eq("GROUP"));
+		verify(memberRepository).findById(eq(1));
 		verify(groupRepository).save(isA(Group.class));
+		verify(groupMemberRepository).save(isA(GroupMember.class));
 		assertEquals("Group Image", actualCreateResult.getGroupImage());
 		assertEquals("Name", actualCreateResult.getName());
 		assertEquals("The characteristics of someone or something", actualCreateResult.getDescription());
 		assertNull(actualCreateResult.getId());
-		assertNull(actualCreateResult.getCreatedAt());
 		assertNull(actualCreateResult.getDeletedAt());
-		assertEquals(1, actualCreateResult.getMemberCount());
+		assertEquals(0, actualCreateResult.getMemberCount());
 		assertEquals(1, actualCreateResult.getPassword().intValue());
 		assertFalse(actualCreateResult.isDeleted());
 		List<GroupMember> groupMembers = actualCreateResult.getGroupMembers();
@@ -88,14 +106,50 @@ class GroupServiceImplDiffblueTest {
 	@Test
 	void testCreate2() throws IOException {
 		// Arrange
+		Optional<Member> ofResult = Optional.of(new Member());
+		when(memberRepository.findById(Mockito.<Integer>any())).thenReturn(ofResult);
 		when(imgUtils.saveImage(Mockito.<MultipartFile>any(), Mockito.<String>any()))
-			.thenThrow(new NoSuchElementException("GROUP"));
+			.thenThrow(new RuntimeException("GROUP"));
+		CreateGroupDTO request = new CreateGroupDTO("Name", 1, "The characteristics of someone or something", 1);
+
+		// Act and Assert
+		assertThrows(RuntimeException.class, () -> groupServiceImpl.create(request,
+			new MockMultipartFile("Name", new ByteArrayInputStream("AXAXAXAX".getBytes("UTF-8")))));
+		verify(imgUtils).saveImage(isA(MultipartFile.class), eq("GROUP"));
+		verify(memberRepository).findById(eq(1));
+	}
+
+	/**
+	 * Method under test:
+	 * {@link GroupServiceImpl#create(CreateGroupDTO, MultipartFile)}
+	 */
+	@Test
+	void testCreate3() throws IOException {
+		// Arrange
+		Group.GroupBuilder groupImageResult = Group.builder()
+			.description("The characteristics of someone or something")
+			.groupImage("Group Image");
+		Group buildResult = groupImageResult.leader(new Member()).name("Name").password(1).build();
+		when(groupRepository.save(Mockito.<Group>any())).thenReturn(buildResult);
+		Member member = mock(Member.class);
+		when(member.getId()).thenThrow(new NoSuchElementException("foo"));
+		Optional<Member> ofResult = Optional.of(member);
+		when(memberRepository.findById(Mockito.<Integer>any())).thenReturn(ofResult);
+		GroupMember.GroupMemberBuilder descriptionResult = GroupMember.builder()
+			.description("The characteristics of someone or something");
+		GroupMemberId id = GroupMemberId.builder().groupId(1).memberId(1).build();
+		GroupMember buildResult2 = descriptionResult.id(id).build();
+		when(groupMemberRepository.save(Mockito.<GroupMember>any())).thenReturn(buildResult2);
+		when(imgUtils.saveImage(Mockito.<MultipartFile>any(), Mockito.<String>any())).thenReturn("Save Image");
 		CreateGroupDTO request = new CreateGroupDTO("Name", 1, "The characteristics of someone or something", 1);
 
 		// Act and Assert
 		assertThrows(NoSuchElementException.class, () -> groupServiceImpl.create(request,
 			new MockMultipartFile("Name", new ByteArrayInputStream("AXAXAXAX".getBytes("UTF-8")))));
+		verify(member).getId();
 		verify(imgUtils).saveImage(isA(MultipartFile.class), eq("GROUP"));
+		verify(memberRepository).findById(eq(1));
+		verify(groupRepository).save(isA(Group.class));
 	}
 
 	/**
@@ -122,10 +176,10 @@ class GroupServiceImplDiffblueTest {
 	@Test
 	void testFindAll2() {
 		// Arrange
-		when(groupRepository.findAll()).thenThrow(new NoSuchElementException("foo"));
+		when(groupRepository.findAll()).thenThrow(new RuntimeException("foo"));
 
 		// Act and Assert
-		assertThrows(NoSuchElementException.class, () -> groupServiceImpl.findAll());
+		assertThrows(RuntimeException.class, () -> groupServiceImpl.findAll());
 		verify(groupRepository).findAll();
 	}
 
@@ -152,9 +206,8 @@ class GroupServiceImplDiffblueTest {
 		assertEquals("Name", actualFindByIdResult.getName());
 		assertEquals("The characteristics of someone or something", actualFindByIdResult.getDescription());
 		assertNull(actualFindByIdResult.getId());
-		assertNull(actualFindByIdResult.getCreatedAt());
 		assertNull(actualFindByIdResult.getDeletedAt());
-		assertEquals(1, actualFindByIdResult.getMemberCount());
+		assertEquals(0, actualFindByIdResult.getMemberCount());
 		assertEquals(1, actualFindByIdResult.getPassword().intValue());
 		assertFalse(actualFindByIdResult.isDeleted());
 		List<GroupMember> groupMembers = actualFindByIdResult.getGroupMembers();
@@ -183,10 +236,10 @@ class GroupServiceImplDiffblueTest {
 	@Test
 	void testFindById3() {
 		// Arrange
-		when(groupRepository.findById(Mockito.<Integer>any())).thenThrow(new NoSuchElementException("No such group"));
+		when(groupRepository.findById(Mockito.<Integer>any())).thenThrow(new RuntimeException("No such group"));
 
 		// Act and Assert
-		assertThrows(NoSuchElementException.class, () -> groupServiceImpl.findById(1));
+		assertThrows(RuntimeException.class, () -> groupServiceImpl.findById(1));
 		verify(groupRepository).findById(eq(1));
 	}
 
@@ -298,11 +351,158 @@ class GroupServiceImplDiffblueTest {
 	@Test
 	void testDeleteById3() {
 		// Arrange
-		when(groupRepository.findById(Mockito.<Integer>any())).thenThrow(new NoSuchElementException("no such user"));
+		when(groupRepository.findById(Mockito.<Integer>any())).thenThrow(new RuntimeException("no such member"));
 
 		// Act and Assert
-		assertThrows(NoSuchElementException.class, () -> groupServiceImpl.deleteById(1));
+		assertThrows(RuntimeException.class, () -> groupServiceImpl.deleteById(1));
 		verify(groupRepository).findById(eq(1));
+	}
+
+	/**
+	 * Method under test:
+	 * {@link GroupServiceImpl#addMemberToGroupWithPasswordCheck(int, int, JoinGroupRequestDTO)}
+	 */
+	@Test
+	void testAddMemberToGroupWithPasswordCheck() {
+		// Arrange
+		Group.GroupBuilder groupImageResult = Group.builder()
+			.description("The characteristics of someone or something")
+			.groupImage("Group Image");
+		Group buildResult = groupImageResult.leader(new Member()).name("Name").password(1).build();
+		Optional<Group> ofResult = Optional.of(buildResult);
+		when(groupRepository.findById(Mockito.<Integer>any())).thenReturn(ofResult);
+		Optional<Member> ofResult2 = Optional.of(new Member());
+		when(memberRepository.findById(Mockito.<Integer>any())).thenReturn(ofResult2);
+		GroupMember.GroupMemberBuilder descriptionResult = GroupMember.builder()
+			.description("The characteristics of someone or something");
+		GroupMemberId id = GroupMemberId.builder().groupId(1).memberId(1).build();
+		GroupMember buildResult2 = descriptionResult.id(id).build();
+		when(groupMemberRepository.save(Mockito.<GroupMember>any())).thenReturn(buildResult2);
+
+		// Act
+		groupServiceImpl.addMemberToGroupWithPasswordCheck(1, 1,
+			new JoinGroupRequestDTO("The characteristics of someone or something", 1));
+
+		// Assert
+		verify(groupRepository).findById(eq(1));
+		verify(memberRepository).findById(eq(1));
+		verify(groupMemberRepository).save(isA(GroupMember.class));
+	}
+
+	/**
+	 * Method under test:
+	 * {@link GroupServiceImpl#addMemberToGroupWithPasswordCheck(int, int, JoinGroupRequestDTO)}
+	 */
+	@Test
+	void testAddMemberToGroupWithPasswordCheck2() {
+		// Arrange
+		Group.GroupBuilder groupImageResult = Group.builder()
+			.description("The characteristics of someone or something")
+			.groupImage("Group Image");
+		Group buildResult = groupImageResult.leader(new Member()).name("Name").password(1).build();
+		Optional<Group> ofResult = Optional.of(buildResult);
+		when(groupRepository.findById(Mockito.<Integer>any())).thenReturn(ofResult);
+		Optional<Member> ofResult2 = Optional.of(new Member());
+		when(memberRepository.findById(Mockito.<Integer>any())).thenReturn(ofResult2);
+		when(groupMemberRepository.save(Mockito.<GroupMember>any())).thenThrow(new RuntimeException("foo"));
+
+		// Act and Assert
+		assertThrows(RuntimeException.class, () -> groupServiceImpl.addMemberToGroupWithPasswordCheck(1, 1,
+			new JoinGroupRequestDTO("The characteristics of someone or something", 1)));
+		verify(groupRepository).findById(eq(1));
+		verify(memberRepository).findById(eq(1));
+		verify(groupMemberRepository).save(isA(GroupMember.class));
+	}
+
+	/**
+	 * Method under test:
+	 * {@link GroupServiceImpl#addMemberToGroupWithPasswordCheck(int, int, JoinGroupRequestDTO)}
+	 */
+	@Test
+	void testAddMemberToGroupWithPasswordCheck3() {
+		// Arrange
+		Group.GroupBuilder groupImageResult = Group.builder()
+			.description("The characteristics of someone or something")
+			.groupImage("Group Image");
+		Group buildResult = groupImageResult.leader(new Member()).name("Name").password(0).build();
+		Optional<Group> ofResult = Optional.of(buildResult);
+		when(groupRepository.findById(Mockito.<Integer>any())).thenReturn(ofResult);
+		Optional<Member> ofResult2 = Optional.of(new Member());
+		when(memberRepository.findById(Mockito.<Integer>any())).thenReturn(ofResult2);
+
+		// Act and Assert
+		assertThrows(RuntimeException.class, () -> groupServiceImpl.addMemberToGroupWithPasswordCheck(1, 1,
+			new JoinGroupRequestDTO("The characteristics of someone or something", 1)));
+		verify(groupRepository).findById(eq(1));
+	}
+
+	/**
+	 * Method under test:
+	 * {@link GroupServiceImpl#addMemberToGroupWithPasswordCheck(int, int, JoinGroupRequestDTO)}
+	 */
+	@Test
+	void testAddMemberToGroupWithPasswordCheck4() {
+		// Arrange
+		Optional<Group> emptyResult = Optional.empty();
+		when(groupRepository.findById(Mockito.<Integer>any())).thenReturn(emptyResult);
+		Optional<Member> ofResult = Optional.of(new Member());
+		when(memberRepository.findById(Mockito.<Integer>any())).thenReturn(ofResult);
+
+		// Act and Assert
+		assertThrows(NoSuchElementException.class, () -> groupServiceImpl.addMemberToGroupWithPasswordCheck(1, 1,
+			new JoinGroupRequestDTO("The characteristics of someone or something", 1)));
+		verify(groupRepository).findById(eq(1));
+	}
+
+	/**
+	 * Method under test:
+	 * {@link GroupServiceImpl#addMemberToGroupWithPasswordCheck(int, int, JoinGroupRequestDTO)}
+	 */
+	@Test
+	void testAddMemberToGroupWithPasswordCheck5() {
+		// Arrange
+		Group.GroupBuilder groupImageResult = Group.builder()
+			.description("The characteristics of someone or something")
+			.groupImage("Group Image");
+		Group buildResult = groupImageResult.leader(new Member()).name("Name").password(1).build();
+		Optional<Group> ofResult = Optional.of(buildResult);
+		when(groupRepository.findById(Mockito.<Integer>any())).thenReturn(ofResult);
+		Member member = mock(Member.class);
+		when(member.getId()).thenThrow(new NoSuchElementException("foo"));
+		Optional<Member> ofResult2 = Optional.of(member);
+		when(memberRepository.findById(Mockito.<Integer>any())).thenReturn(ofResult2);
+
+		// Act and Assert
+		assertThrows(NoSuchElementException.class, () -> groupServiceImpl.addMemberToGroupWithPasswordCheck(1, 1,
+			new JoinGroupRequestDTO("The characteristics of someone or something", 1)));
+		verify(member).getId();
+		verify(groupRepository).findById(eq(1));
+		verify(memberRepository).findById(eq(1));
+	}
+
+	/**
+	 * Method under test:
+	 * {@link GroupServiceImpl#addMemberToGroupWithPasswordCheck(int, int, JoinGroupRequestDTO)}
+	 */
+	@Test
+	void testAddMemberToGroupWithPasswordCheck6() {
+		// Arrange
+		Group.GroupBuilder groupImageResult = Group.builder()
+			.description("The characteristics of someone or something")
+			.groupImage("Group Image");
+		Group buildResult = groupImageResult.leader(new Member()).name("Name").password(1).build();
+		Optional<Group> ofResult = Optional.of(buildResult);
+		when(groupRepository.findById(Mockito.<Integer>any())).thenReturn(ofResult);
+		Optional<Member> emptyResult = Optional.empty();
+		when(memberRepository.findById(Mockito.<Integer>any())).thenReturn(emptyResult);
+		new NoSuchElementException("foo");
+		new NoSuchElementException("foo");
+
+		// Act and Assert
+		assertThrows(NoSuchElementException.class, () -> groupServiceImpl.addMemberToGroupWithPasswordCheck(1, 1,
+			new JoinGroupRequestDTO("The characteristics of someone or something", 1)));
+		verify(groupRepository).findById(eq(1));
+		verify(memberRepository).findById(eq(1));
 	}
 
 	/**
@@ -327,9 +527,8 @@ class GroupServiceImplDiffblueTest {
 		assertEquals("Name", actualSaveResult.getName());
 		assertEquals("The characteristics of someone or something", actualSaveResult.getDescription());
 		assertNull(actualSaveResult.getId());
-		assertNull(actualSaveResult.getCreatedAt());
 		assertNull(actualSaveResult.getDeletedAt());
-		assertEquals(1, actualSaveResult.getMemberCount());
+		assertEquals(0, actualSaveResult.getMemberCount());
 		assertEquals(1, actualSaveResult.getPassword().intValue());
 		assertFalse(actualSaveResult.isDeleted());
 		List<GroupMember> groupMembers = actualSaveResult.getGroupMembers();
@@ -344,10 +543,10 @@ class GroupServiceImplDiffblueTest {
 	@Test
 	void testSave2() {
 		// Arrange
-		when(groupRepository.save(Mockito.<Group>any())).thenThrow(new NoSuchElementException("foo"));
+		when(groupRepository.save(Mockito.<Group>any())).thenThrow(new RuntimeException("foo"));
 
 		// Act and Assert
-		assertThrows(NoSuchElementException.class, () -> groupServiceImpl.save(null));
+		assertThrows(RuntimeException.class, () -> groupServiceImpl.save(null));
 		verify(groupRepository).save(isNull());
 	}
 }

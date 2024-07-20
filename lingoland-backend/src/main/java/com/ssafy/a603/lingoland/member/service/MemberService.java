@@ -1,6 +1,9 @@
-package com.ssafy.a603.lingoland.member;
+package com.ssafy.a603.lingoland.member.service;
 
+import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
+import com.ssafy.a603.lingoland.member.repository.MemberRepository;
 import com.ssafy.a603.lingoland.member.dto.SignUpRequest;
+import com.ssafy.a603.lingoland.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -38,5 +41,22 @@ public class MemberService implements UserDetailsService {
             return new CustomUserDetails(member);
         }
         return null;
+    }
+
+    @Transactional
+    public void addRefreshToken(String loginId, String refresh) {
+        Member member = memberRepository.findByLoginId(loginId);
+        member.updateRefreshToken(refresh);
+    }
+
+    @Transactional
+    public void deleteRefreshToken(String loginId) {
+        Member member = memberRepository.findByLoginId(loginId);
+        member.updateRefreshToken(null);
+    }
+
+    public Boolean checkExistRefreshToken(String loginId) {
+        Member member = memberRepository.findByLoginId(loginId);
+        return member != null;
     }
 }

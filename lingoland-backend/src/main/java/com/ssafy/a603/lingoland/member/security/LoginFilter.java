@@ -1,10 +1,13 @@
-package com.ssafy.a603.lingoland.member;
+package com.ssafy.a603.lingoland.member.security;
 
+import com.ssafy.a603.lingoland.member.service.MemberService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +21,8 @@ import java.io.IOException;
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
+    private final JWTUtil jwtUtil;
+    private final MemberService memberService;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -27,18 +32,33 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginId, password, null);
 
-        System.out.println(loginId + " " + password);
         return authenticationManager.authenticate(authToken);
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        // TODO jwt 반환 로직
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
+
+        String loginId = authentication.getName();
+
+//        추후 role 고려
+//        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+//        Iterator<? extends GrantedAuthority> iterator = authentication.iterator();
+//        GrantedAuthority auth = iterator.next();
+//        String role = auth.getAuthority();
+
+        String access = jwtUtil.createToken("access", loginId, 600000L);
+        String refresh = jwtUtil.createToken("refresh", loginId, 86400000L);
+
+        memberService.addRefreshToken(loginId, refresh);
+
+        response.addHeader("Authorization", "Bearer " + access);
+        response.addCookie(createCookie("refresh", refresh));
+        response.setStatus(HttpStatus.OK.value());
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        // TODO 로그인 실패 로직
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 
     @Nullable
@@ -46,4 +66,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String loginIdParameter = "loginId";
         return request.getParameter(loginIdParameter);
     }
+
+    private Cookie createCookie(String key, String value) {
+        Cookie cookie = new Cookie(key, value);
+        cookie.setMaxAge(24*60*60);
+        cookie.setHttpOnly(true);
+        return cookie;
+    }
+
 }

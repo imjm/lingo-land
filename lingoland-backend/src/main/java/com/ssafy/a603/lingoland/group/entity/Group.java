@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ssafy.a603.lingoland.group.dto.UpdateGroupDTO;
-import com.ssafy.a603.lingoland.member.Member;
+import com.ssafy.a603.lingoland.member.entity.Member;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -71,12 +71,12 @@ public class Group {
 		this.description = description;
 		this.groupImage = groupImage;
 		this.leader = leader;
-		this.memberCount = 1;
+		this.memberCount = 0;
 		this.createdAt = LocalDateTime.now();
 		this.isDeleted = false;
 	}
 
-	public void updateUser(UpdateGroupDTO request) {
+	public void updateGroup(UpdateGroupDTO request) {
 		this.name = request.name();
 		this.password = request.password();
 		this.description = request.description();
@@ -90,6 +90,15 @@ public class Group {
 
 	public void setGroupImagePath(String path) {
 		this.groupImage = path;
+	}
+
+	public void join(GroupMember groupMember) {
+		this.groupMembers.add(groupMember);
+		this.memberCount++;
+	}
+
+	public void quit() {
+		this.memberCount--;
 	}
 
 	//    id serial NOT NULL,

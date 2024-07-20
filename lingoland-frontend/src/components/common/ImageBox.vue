@@ -17,6 +17,7 @@ const props = defineProps({
         <v-img
             :width="width"
             :height="height"
+            aspect-ratio="1/1"
             cover
             :src="source"
             class="rounded-circle"
