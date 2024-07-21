@@ -1,26 +1,21 @@
 <script setup>
 import GroupMemberListItem from "./GroupMemberListItem.vue";
-import { useProfileStore } from "@/stores/profiles";
+import { useMemberStore } from "@/stores/members";
 
-const store = useProfileStore();
+const store = useMemberStore();
 </script>
 
 <template>
-  <div>
-    <h1>group.name</h1>
-
-    <v-expansion-panels class="pa-4" variant="popout">
-      <GroupMemberListItem />
-
-      <!-- 데이터가 없어 v-for문을 돌렸을 경우 예시가 보이지 않아 임의로 작성 후에 추가로 코드 수정 필요 groups store 코드에서 데이터 받아오는 코드도 수정 필요
-        -->
-      <!-- <GroupMemberListItem
-            v-for="group in store.groups"
-            :key="group.id"
-            :group="group"
-            /> -->
-    </v-expansion-panels>
-  </div>
+  <v-expansion-panels class="pa-4" variant="popout">
+    <v-expansion-panel
+      v-for="(member, i) in store.members"
+      :key="i"
+      hide-actions
+    >
+      <!-- 아직 변수 값을 몰라 임의로 작성하였습니다. 데이터는 store에 임의로 작성하여 구성했습니다. -->
+      <GroupMemberListItem :member="member" />
+    </v-expansion-panel>
+  </v-expansion-panels>
 </template>
 
 <style scoped></style>
