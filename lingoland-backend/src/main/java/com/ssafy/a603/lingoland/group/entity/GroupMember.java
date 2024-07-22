@@ -47,6 +47,11 @@ public class GroupMember {
 		this.createdAt = LocalDateTime.now();
 	}
 
+	public void quit() {
+		this.isDeleted = true;
+		this.deletedAt = LocalDateTime.now();
+	}
+
 	public void addMember(Member member) {
 		this.member = member;
 	}
