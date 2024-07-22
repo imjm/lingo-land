@@ -8,6 +8,8 @@ import GroupJoinView from "@/views/GroupJoinView.vue";
 import GroupDetailView from "@/views/GroupDetailView.vue";
 
 import { createRouter, createWebHistory } from "vue-router";
+import GroupManageView from "@/views/GroupManageView.vue";
+import GroupCreate from "@/components/group/GroupCreate.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -52,6 +54,18 @@ const router = createRouter({
           path: "/main-page",
           name: "mainPage",
           component: MainPageView,
+        },
+        {
+          path: "/group",
+          component: GroupManageView,
+          children: [
+            {
+                path: "create",
+                name: "groupCreate",
+                component: GroupCreate
+            }
+
+          ]
         },
     ]
 });
