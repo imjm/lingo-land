@@ -8,21 +8,24 @@ import com.ssafy.a603.lingoland.group.dto.CreateGroupDTO;
 import com.ssafy.a603.lingoland.group.dto.JoinGroupRequestDTO;
 import com.ssafy.a603.lingoland.group.dto.UpdateGroupDTO;
 import com.ssafy.a603.lingoland.group.entity.Group;
+import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 
 public interface GroupService {
-	Group create(CreateGroupDTO request, MultipartFile groupImage);
+	Group create(CreateGroupDTO request, MultipartFile groupImage, CustomUserDetails customUserDetails);
 
 	List<Group> findAll();
 
 	Group findById(int id);
 
-	void update(UpdateGroupDTO request, MultipartFile groupImage);
+	void update(Integer groupId, UpdateGroupDTO request, MultipartFile groupImage,
+		CustomUserDetails customUserDetails);
 
-	void deleteById(int id);
+	void deleteById(int id, CustomUserDetails customUserDetails);
 
-	void addMemberToGroupWithPasswordCheck(int groupsId, int memberId, JoinGroupRequestDTO joinGroupRequestDTO);
+	void addMemberToGroupWithPasswordCheck(int groupId, JoinGroupRequestDTO joinGroupRequestDTO,
+		CustomUserDetails customUserDetails);
 
-	void removeMemberFromGroup(int groupsId, int memberId);
+	void removeMemberFromGroup(int groupId, CustomUserDetails customUserDetails);
 
 	Group save(Group group);
 }

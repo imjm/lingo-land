@@ -20,6 +20,8 @@ import com.ssafy.a603.lingoland.group.dto.JoinGroupRequestDTO;
 import com.ssafy.a603.lingoland.group.dto.UpdateGroupDTO;
 import com.ssafy.a603.lingoland.group.entity.Group;
 import com.ssafy.a603.lingoland.group.service.GroupService;
+import com.ssafy.a603.lingoland.member.security.CurrentUser;
+import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,8 +34,9 @@ public class GroupController {
 
 	@PostMapping(produces = "application/json", consumes = "multipart/form-data")
 	public ResponseEntity<?> createGroup(@RequestPart(value = "createGroup") CreateGroupDTO createGroupDTO,
-		@RequestPart(value = "groupImage", required = false) MultipartFile groupImage) {
-		groupService.create(createGroupDTO, groupImage);
+		@RequestPart(value = "groupImage", required = false) MultipartFile groupImage,
+		@CurrentUser CustomUserDetails customUserDetails) {
+		groupService.create(createGroupDTO, groupImage, customUserDetails);
 		return ResponseEntity.status(HttpStatus.CREATED).body("group made.");
 	}
 
@@ -52,28 +55,31 @@ public class GroupController {
 	@PutMapping(path = "/{groupsId}", produces = "application/json", consumes = "multipart/form-data")
 	public ResponseEntity<?> updateGroupInfo(@PathVariable Integer groupsId,
 		@RequestPart(value = "updateGroup") UpdateGroupDTO updateGroupDTO,
-		@RequestPart(value = "groupImage", required = false) MultipartFile groupImage) {
-		groupService.update(updateGroupDTO, groupImage);
+		@RequestPart(value = "groupImage", required = false) MultipartFile groupImage,
+		@CurrentUser CustomUserDetails customUserDetails) {
+		groupService.update(groupsId, updateGroupDTO, groupImage, customUserDetails);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
 	@DeleteMapping(path = "/{groupsId}")
-	public ResponseEntity<?> deleteGroup(@PathVariable Integer groupsId) {
-		groupService.deleteById(groupsId);
+	public ResponseEntity<?> deleteGroup(@PathVariable Integer groupsId,
+		@CurrentUser CustomUserDetails customUserDetails) {
+		groupService.deleteById(groupsId, customUserDetails);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
-	@PostMapping("/{groupsId}/users/{userId}")
+	@PostMapping("/{groupsId}/users")
 	public ResponseEntity<?> joinGroup(@PathVariable("groupsId") Integer groupsId,
-		@PathVariable("userId") Integer userId, @RequestBody JoinGroupRequestDTO joinGroupRequestDTO) {
-		groupService.addMemberToGroupWithPasswordCheck(groupsId, userId, joinGroupRequestDTO);
+		@RequestBody JoinGroupRequestDTO joinGroupRequestDTO,
+		@CurrentUser CustomUserDetails customUserDetails) {
+		groupService.addMemberToGroupWithPasswordCheck(groupsId, joinGroupRequestDTO, customUserDetails);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
-	@DeleteMapping("/{groupsId}/users/{userId}")
+	@DeleteMapping("/{groupsId}/users")
 	public ResponseEntity<?> quitGroup(@PathVariable("groupsId") Integer groupsId,
-		@PathVariable("userId") Integer userId) {
-		groupService.removeMemberFromGroup(groupsId, userId);
+		@CurrentUser CustomUserDetails customUserDetails) {
+		groupService.removeMemberFromGroup(groupsId, customUserDetails);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }
