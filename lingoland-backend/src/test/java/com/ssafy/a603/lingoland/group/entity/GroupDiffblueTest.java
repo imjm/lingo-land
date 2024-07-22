@@ -11,6 +11,89 @@ import com.ssafy.a603.lingoland.member.entity.Member;
 
 class GroupDiffblueTest {
 	/**
+	 * Methods under test:
+	 * <ul>
+	 *   <li>{@link Group#setGroupImagePath(String)}
+	 *   <li>{@link Group#quit()}
+	 * </ul>
+	 */
+	@Test
+	void testGettersAndSetters() {
+		// TODO: Diffblue Cover was only able to create a partial test for this method:
+		//   Reason: Missing observers.
+		//   Diffblue Cover was unable to create an assertion.
+		//   Add getters for the following fields or make them package-private:
+		//     Group.createdAt
+		//     Group.deletedAt
+		//     Group.description
+		//     Group.groupImage
+		//     Group.groupMembers
+		//     Group.id
+		//     Group.isDeleted
+		//     Group.leader
+		//     Group.memberCount
+		//     Group.name
+		//     Group.password
+
+		// Arrange
+		Group group = new Group();
+		group.join(new GroupMember());
+		group.setGroupImagePath("Path");
+
+		Member member = new Member();
+		member.updateRefreshToken("Refresh");
+
+		GroupMember groupMember = new GroupMember();
+		groupMember.addGroup(group);
+		groupMember.addMember(member);
+
+		Group group2 = new Group();
+		group2.join(groupMember);
+		group2.setGroupImagePath("Path");
+
+		Member member2 = new Member();
+		member2.updateRefreshToken("Refresh");
+
+		GroupMember groupMember2 = new GroupMember();
+		groupMember2.addGroup(group2);
+		groupMember2.addMember(member2);
+
+		Group group3 = new Group();
+		group3.join(groupMember2);
+		group3.setGroupImagePath("Path");
+
+		// Act
+		group3.setGroupImagePath("Path");
+		group3.quit();
+	}
+
+	/**
+	 * Method under test:
+	 * {@link Group#Group(String, Integer, String, String, Member)}
+	 */
+	@Test
+	void testNewGroup() {
+		// Arrange
+		Member leader = new Member();
+		leader.updateRefreshToken("Refresh");
+
+		// Act
+		Group actualGroup = new Group("Name", 1, "The characteristics of someone or something", "Group Image", leader);
+
+		// Assert
+		assertEquals("Group Image", actualGroup.getGroupImage());
+		assertEquals("Name", actualGroup.getName());
+		assertEquals("The characteristics of someone or something", actualGroup.getDescription());
+		assertNull(actualGroup.getId());
+		assertNull(actualGroup.getDeletedAt());
+		assertEquals(0, actualGroup.getMemberCount());
+		assertEquals(1, actualGroup.getPassword().intValue());
+		assertFalse(actualGroup.isDeleted());
+		assertTrue(actualGroup.getGroupMembers().isEmpty());
+		assertSame(leader, actualGroup.getLeader());
+	}
+
+	/**
 	 * Method under test: {@link Group#updateGroup(UpdateGroupDTO)}
 	 */
 	@Test
@@ -40,31 +123,6 @@ class GroupDiffblueTest {
 
 		// Assert
 		assertTrue(group.isDeleted());
-	}
-
-	/**
-	 * Method under test:
-	 * {@link Group#Group(String, Integer, String, String, Member)}
-	 */
-	@Test
-	void testNewGroup() {
-		// Arrange
-		Member leader = new Member();
-
-		// Act
-		Group actualGroup = new Group("Name", 1, "The characteristics of someone or something", "Group Image", leader);
-
-		// Assert
-		assertEquals("Group Image", actualGroup.getGroupImage());
-		assertEquals("Name", actualGroup.getName());
-		assertEquals("The characteristics of someone or something", actualGroup.getDescription());
-		assertNull(actualGroup.getId());
-		assertNull(actualGroup.getDeletedAt());
-		assertEquals(0, actualGroup.getMemberCount());
-		assertEquals(1, actualGroup.getPassword().intValue());
-		assertFalse(actualGroup.isDeleted());
-		assertTrue(actualGroup.getGroupMembers().isEmpty());
-		assertSame(leader, actualGroup.getLeader());
 	}
 
 	/**
@@ -125,17 +183,23 @@ class GroupDiffblueTest {
 		group2.join(new GroupMember());
 		group2.setGroupImagePath("Path");
 
+		Member member = new Member();
+		member.updateRefreshToken("Refresh");
+
 		GroupMember groupMember = new GroupMember();
 		groupMember.addGroup(group2);
-		groupMember.addMember(new Member());
+		groupMember.addMember(member);
 
 		Group group3 = new Group();
 		group3.join(groupMember);
 		group3.setGroupImagePath("Path");
 
+		Member member2 = new Member();
+		member2.updateRefreshToken("Refresh");
+
 		GroupMember groupMember2 = new GroupMember();
 		groupMember2.addGroup(group3);
-		groupMember2.addMember(new Member());
+		groupMember2.addMember(member2);
 
 		// Act
 		group.join(groupMember2);
@@ -146,4 +210,5 @@ class GroupDiffblueTest {
 		assertEquals(2, group.getMemberCount());
 		assertSame(groupMember2, groupMembers.get(0));
 	}
+
 }
