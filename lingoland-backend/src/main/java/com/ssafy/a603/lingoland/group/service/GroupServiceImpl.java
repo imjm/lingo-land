@@ -144,6 +144,7 @@ public class GroupServiceImpl implements GroupService {
 
 	private Member getMemberFromUserDetails(CustomUserDetails customUserDetails) {
 		String loginId = customUserDetails.getUsername();
-		return memberRepository.findByLoginId(loginId);
+		return memberRepository.findByLoginId(loginId)
+			.orElseThrow(() -> new NoSuchElementException("no such member"));
 	}
 }
