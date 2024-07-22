@@ -14,12 +14,20 @@ const clickGroup = () => {
 </script>
 
 <template>
-  <v-col cols="12" md="6" @click="clickGroup()">
-    <v-card class="mx-auto" subtitle="group.description" title="group.name">
-<!-- 해당파트는 원래 v-bind로 연결해야 하지만 group data가 없어 자료가 뜨지 않아 그냥 작성함 -->
+  <v-expansion-panel-title>
+    <v-row align="center" class="spacer" no-gutters>
+      <v-col class="hidden-xs-only text-left ms-2" md="3" sm="5">
+        <strong v-html="group.name"></strong>
+        <span v-if="group.total" class="text-grey">
+          &nbsp;({{ group.total }})
+        </span>
+      </v-col>
 
-    </v-card>
-  </v-col>
+      <v-col class="text-no-wrap text-left text-grey" sm="3">
+        <strong v-html="group.description"></strong>
+      </v-col>
+    </v-row>
+  </v-expansion-panel-title>
 </template>
 
 <style scoped></style>
