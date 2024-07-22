@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.a603.lingoland.group.dto.CreateGroupDTO;
+import com.ssafy.a603.lingoland.group.dto.JoinGroupRequestDTO;
 import com.ssafy.a603.lingoland.group.dto.UpdateGroupDTO;
 import com.ssafy.a603.lingoland.group.entity.Group;
 import com.ssafy.a603.lingoland.group.service.GroupService;
@@ -58,6 +60,20 @@ public class GroupController {
 	@DeleteMapping(path = "/{groupsId}")
 	public ResponseEntity<?> deleteGroup(@PathVariable Integer groupsId) {
 		groupService.deleteById(groupsId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
+	@PostMapping("/{groupsId}/users/{userId}")
+	public ResponseEntity<?> joinGroup(@PathVariable("groupsId") Integer groupsId,
+		@PathVariable("userId") Integer userId, @RequestBody JoinGroupRequestDTO joinGroupRequestDTO) {
+		groupService.addMemberToGroupWithPasswordCheck(groupsId, userId, joinGroupRequestDTO);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
+	@DeleteMapping("/{groupsId}/users/{userId}")
+	public ResponseEntity<?> quitGroup(@PathVariable("groupsId") Integer groupsId,
+		@PathVariable("userId") Integer userId) {
+		groupService.removeMemberFromGroup(groupsId, userId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }

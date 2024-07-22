@@ -8,8 +8,10 @@ import { RouterView } from "vue-router";
   <RouterLink :to="{ name: 'gameRoom' }"> gameRoom</RouterLink> |
   <RouterLink :to="{ name: 'signUp' }"> signup</RouterLink> |
   <RouterLink :to="{ name: 'mainPage' }"> mainPage</RouterLink> |
+  <RouterLink :to="{ name: 'groups' }">groupjoin</RouterLink>|
+  <RouterLink :to="{ name: 'groupId' }">groupId</RouterLink>|
   <v-app class="bg-amber-lighten-3 d-flex align-center justify-center">
-    <RouterView></RouterView>
+  <RouterView></RouterView>
     
   </v-app>
 </template>

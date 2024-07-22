@@ -6,20 +6,12 @@ const store = useGroupStore();
 </script>
 
 <template>
-  <div>
-    <h1>내가 속한 그룹</h1>
-    
-    <v-row align="center" justify="center" dense>
-      <GroupListItem />
-      <!-- 데이터가 없어 v-for문을 돌렸을 경우 예시가 보이지 않아 임의로 작성 후에 추가로 코드 수정 필요 groups store 코드에서 데이터 받아오는 코드도 수정 필요
-        -->
-      <!-- <GroupListItem
-            v-for="group in store.groups"
-            :key="group.id"
-            :group="group"
-            /> -->
-    </v-row>
-  </div>
+  <v-expansion-panels class="pa-4" variant="popout">
+    <v-expansion-panel v-for="(group, i) in store.groups" :key="i" hide-actions>
+      <!-- 아직 변수 값을 몰라 임의로 작성하였습니다. 데이터는 store에 임의로 작성하여 구성했습니다. -->
+      <GroupListItem :group="group" />
+    </v-expansion-panel>
+  </v-expansion-panels>
 </template>
 
 <style scoped></style>
