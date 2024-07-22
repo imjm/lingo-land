@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.NoSuchElementException;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
@@ -53,7 +55,7 @@ public class ReissueController {
 
         String loginId = jwtUtil.getLoginId(refresh);
 
-        Member member = memberRepository.findByLoginId(loginId);
+        Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않은 유저입니다"));
         if(!refresh.equals(member.getRefreshToken())) {
             return new ResponseEntity<>("refresh token invalid", HttpStatus.BAD_REQUEST);
         }
