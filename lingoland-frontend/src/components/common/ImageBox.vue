@@ -6,8 +6,6 @@
  source: String, 이미지 소스
 */
 const props = defineProps({
-    height: Number,
-    width: Number,
     source: String,
 });
 </script>
@@ -15,8 +13,8 @@ const props = defineProps({
 <template>
     <div>
         <v-img
-            :width="width"
-            :height="height"
+            width="300"
+            height="300"
             aspect-ratio="1/1"
             cover
             :src="source"
