@@ -4,23 +4,28 @@
  height: Number, 높이
  width: Number, 폭
  source: String, 이미지 소스
+ 
 */
+import { defineProps } from "vue";
+
 const props = defineProps({
-    source: String,
+  source: String,
 });
+
+console.log(props.source);
 </script>
 
 <template>
-    <div>
-        <v-img
-            width="300"
-            height="300"
-            aspect-ratio="1/1"
-            cover
-            :src="source"
-            class="rounded-circle"
-        ></v-img>
-    </div>
+  <div>
+    <v-img
+      :src="source"
+      width="300"
+      height="300"
+      aspect-ratio="1/1"
+      cover
+      class="rounded-circle"
+    ></v-img>
+  </div>
 </template>
 
 <style scoped></style>

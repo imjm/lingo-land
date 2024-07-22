@@ -75,6 +75,21 @@ class GroupMemberDiffblueTest {
 	}
 
 	/**
+	 * Method under test: {@link GroupMember#quit()}
+	 */
+	@Test
+	void testQuit() {
+		// Arrange
+		GroupMember groupMember = new GroupMember();
+
+		// Act
+		groupMember.quit();
+
+		// Assert
+		assertTrue(groupMember.isDeleted());
+	}
+
+	/**
 	 * Method under test: {@link GroupMember#GroupMember(GroupMemberId, String)}
 	 */
 	@Test
