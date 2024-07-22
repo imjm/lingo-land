@@ -8,14 +8,16 @@ const props = defineProps({
     id: String,
     label: String,
     item: Array,
+    width: Number,
 });
-
 </script>
 
 <template>
     <v-select
         clearable
-        :label="label"
+        variant="outlined"
+        :width="width"
+        color="black"
         :items="[
             'California',
             'Colorado',

@@ -50,6 +50,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         }
 
         if(refresh == null) {
+            // 쿠키에 refresh 토큰이 없음
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
@@ -57,18 +58,21 @@ public class CustomLogoutFilter extends GenericFilterBean {
         try {
             jwtUtil.isExpired(refresh);
         } catch (ExpiredJwtException e) {
+            // 토큰이 만료됨
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
         String category = jwtUtil.getCategory(refresh);
         if(!category.equals("refresh")) {
+            // refresh 토큰이 아님
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
         String loginId = jwtUtil.getLoginId(refresh);
         if(!memberService.checkExistRefreshToken(loginId)) {
+            // 토큰이 없음
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }

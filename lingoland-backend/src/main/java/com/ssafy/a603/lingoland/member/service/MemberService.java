@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -35,28 +36,24 @@ public class MemberService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
-        Member member = memberRepository.findByLoginId(loginId);
-
-        if (member != null) {
-            return new CustomUserDetails(member);
-        }
-        return null;
+        Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않은 유저입니다"));
+        return new CustomUserDetails(member);
     }
 
     @Transactional
     public void addRefreshToken(String loginId, String refresh) {
-        Member member = memberRepository.findByLoginId(loginId);
+        Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않은 유저입니다"));
         member.updateRefreshToken(refresh);
     }
 
     @Transactional
     public void deleteRefreshToken(String loginId) {
-        Member member = memberRepository.findByLoginId(loginId);
+        Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않은 유저입니다"));
         member.updateRefreshToken(null);
     }
 
     public Boolean checkExistRefreshToken(String loginId) {
-        Member member = memberRepository.findByLoginId(loginId);
-        return member != null;
+        Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않은 유저입니다"));
+        return member.getRefreshToken() != null;
     }
 }

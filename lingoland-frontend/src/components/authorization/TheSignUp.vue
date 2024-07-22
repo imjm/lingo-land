@@ -25,9 +25,6 @@ function signUp() {
             <v-row>
                 <v-col cols="6" class="d-flex align-center justify-center">
                     <ImageBox
-                        aspectRatio="1/1"
-                        :width="300"
-                        :height="300"
                         :source="imageSource"
                         setting="align-center justify-center rounded-circle"
                     />
