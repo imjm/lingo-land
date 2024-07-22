@@ -1,6 +1,7 @@
 import LoginView from "@/views/LoginView.vue";
 import GameRoomView from "@/views/GameRoomView.vue";
 import SignUpView from "@/views/SignUpView.vue";
+import MainPageView from "@/views/MainPageView.vue";
 import GroupJoinView from "@/views/GroupJoinView.vue";
 import GroupDetailView from "@/views/GroupDetailView.vue";
 import { createRouter, createWebHistory } from "vue-router";
@@ -13,6 +14,11 @@ const router = createRouter({
       path: "/login",
       name: "login",
       component: LoginView,
+    },
+    {
+      path: "/main-page",
+      name: "mainPage",
+      component: MainPageView,
     },
     {
       path: "/rooms",
