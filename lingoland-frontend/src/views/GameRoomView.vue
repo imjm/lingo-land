@@ -31,7 +31,7 @@ const writingGame = () => {
 </script>
 
 <template>
-  <v-main class="d-flex align-center justify-center">
+  <v-main class="d-flex justify-center">
     <v-container >
       <h1>GameRoomView</h1>
 
@@ -64,7 +64,7 @@ const writingGame = () => {
               <div>방 코드</div>
               <div>1234-5678</div>
             </div>
-            <v-btn id="qr-code" @click="makeQr"> QR 생성하기 </v-btn>
+            <v-btn id="link" @click="makeQr"> QR 생성하기 </v-btn>
           </div>
         </v-col>
       </v-row>
@@ -73,7 +73,7 @@ const writingGame = () => {
 </template>
 
 <style scoped>
-#qr-code {
+#link {
   width: 40%;
   height: 150px;
   font-size: x-large;
