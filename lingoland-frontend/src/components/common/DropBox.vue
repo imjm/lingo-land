@@ -1,4 +1,5 @@
 <script setup>
+import { defineProps } from "vue";
 /*
  id: 컴포넌트 id
  label: dropbox 라벨 이름

@@ -1,4 +1,5 @@
 <script setup>
+import { defineProps } from "vue";
 /*
  id: 컴포넌트 id
  type: input 컴포넌트 type 지정
