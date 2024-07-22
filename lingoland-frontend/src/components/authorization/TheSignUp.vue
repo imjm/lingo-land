@@ -24,10 +24,7 @@ function signUp() {
             <!-- 하나의 행을 만듬 -->
             <v-row>
                 <v-col cols="6" class="d-flex align-center justify-center">
-                    <ImageBox
-                        :source="imageSource"
-                        setting="align-center justify-center rounded-circle"
-                    />
+                    <ImageBox :source="imageSource" />
                 </v-col>
 
                 <v-col cols="6">
