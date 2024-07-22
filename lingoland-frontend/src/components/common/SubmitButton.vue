@@ -14,15 +14,13 @@ const props = defineProps({
 </script>
 
 <template>
-    <div>
-        <v-btn
-            :id="id"
-            @click="$emit('clickEvent')"
-            :width="width"
-            color="#4C4637"
-            >{{ data }}</v-btn
-        >
-    </div>
+    <v-btn
+        :id="id"
+        @click="$emit('clickEvent')"
+        :width="width"
+        color="#4C4637"
+        >{{ data }}</v-btn
+    >
 </template>
 
 <style scoped></style>

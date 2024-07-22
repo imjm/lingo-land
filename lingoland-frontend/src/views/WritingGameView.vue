@@ -5,16 +5,20 @@ import WritingList from "@/components/writingGame/WritingList.vue";
 
 <template>
     <v-layout>
-        <v-main class="background-image d-flex flex-column align-center justify-center">
-            <v-row>
-                <div class="text-h3 text-white">
-                    다음 글을 읽고 이어질 이야기를 작성하세요
-                </div>
-            </v-row>
+        <v-main
+            class="background-image d-flex flex-column align-center justify-center"
+        >
+            <div class="text-h3 text-white my-16 pt-5">
+                다음 글을 읽고 이어질 이야기를 작성하세요
+            </div>
 
-            <v-row class="d-flex align-center justify-space-evenly">
-                <WritingList />
-                <WritingInput />
+            <v-row class="d-flex justify-space-evenly">
+                <v-col class="d-flex ma-10 pa-10 align-start">
+                    <WritingList />
+                </v-col>
+                <v-col class="d-flex align-start ma-10 pa-5">
+                    <WritingInput />
+                </v-col>
             </v-row>
         </v-main>
     </v-layout>
