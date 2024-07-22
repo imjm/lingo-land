@@ -4,7 +4,7 @@ import GroupDetailView from "@/views/GroupDetailView.vue";
 import GroupJoinView from "@/views/GroupJoinView.vue";
 import LoginView from "@/views/LoginView.vue";
 import MainPageView from "@/views/MainPageView.vue";
-import MyPageView from "@/views/MyPageView.vue";
+import MyPageModifyView from "@/views/MyPageModifyView.vue";
 import SignUpView from "@/views/SignUpView.vue";
 import WritingGameResultView from "@/views/WritingGameResultView.vue";
 import WritingGameView from "@/views/WritingGameView.vue";
@@ -56,16 +56,9 @@ const router = createRouter({
             component: MainPageView,
         },
         {
-            path: "/my-page",
-            name: "myPage",
-            component: MyPageView,
-            children: [
-                {
-                    path: "modify",
-                    name: "myPageModify",
-                    component: MyPageModify,
-                },
-            ],
+            path: "/my-page-modify",
+            name: "myPageModify",
+            component: MyPageModifyView,
         },
     ],
 });
