@@ -1,40 +1,35 @@
 <script setup>
-import { useRankStore } from "@/stores/ranks";
+import { useMemberStore } from "@/stores/members";
 import { defineProps } from "vue";
-const store = useRankStore();
+const store = useMemberStore();
 const props = defineProps({
-  rank: {
+  member: {
     type: Object,
     required: true,
   },
 });
-const clickRank = () => {
-  store.clickRank(props.rank);
+const clickMember = () => {
+  store.clickMember(props.member);
 };
 </script>
 
 <template>
-  <v-col cols="12" md="6" @click="clickRank()">
-    <v-card class="mx-auto" subtitle="prepend and append" title="Avatars">
-      <template v-slot:prepend>
-        <v-avatar color="blue-darken-2">
-          <v-icon icon="mdi-alarm"></v-icon>
+  <v-expansion-panel-title>
+    <v-row align="center" class="spacer" no-gutters>
+      <v-col cols="4" md="1" sm="2">
+        <v-avatar size="36px">
+          <v-img v-if="member.avatar" alt="Avatar" :src="member.avatar"></v-img>
         </v-avatar>
-      </template>
-      <template v-slot:append>
-        <v-avatar size="24">
-          <v-img
-            alt="John"
-            src="https://cdn.vuetifyjs.com/images/john.png"
-          ></v-img>
-        </v-avatar>
-      </template>
-      <v-card-text
-        >Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-        eiusmod.</v-card-text
-      >
-    </v-card>
-  </v-col>
+      </v-col>
+      <v-col class="hidden-xs-only text-left ms-2" md="3" sm="5">
+        <strong v-html="member.name"></strong>
+      </v-col>
+
+      <v-col class="text-no-wrap text-left text-grey" sm="3">
+        <strong v-html="member.rank"></strong>
+      </v-col>
+    </v-row>
+  </v-expansion-panel-title>
 </template>
 
 <style scoped></style>
