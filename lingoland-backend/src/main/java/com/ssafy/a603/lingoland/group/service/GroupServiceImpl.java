@@ -17,6 +17,7 @@ import com.ssafy.a603.lingoland.group.repository.GroupMemberRepository;
 import com.ssafy.a603.lingoland.group.repository.GroupRepository;
 import com.ssafy.a603.lingoland.member.entity.Member;
 import com.ssafy.a603.lingoland.member.repository.MemberRepository;
+import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 import com.ssafy.a603.lingoland.util.ImgUtils;
 
 import lombok.RequiredArgsConstructor;
@@ -31,8 +32,8 @@ public class GroupServiceImpl implements GroupService {
 	private final ImgUtils imgUtils;
 
 	@Override
-	public Group create(CreateGroupDTO request, MultipartFile groupImage) {
-		Member member = memberRepository.findById(request.leaderId()).get();
+	public Group create(CreateGroupDTO request, MultipartFile groupImage, CustomUserDetails customUserDetails) {
+		Member member = getMemberFromUserDetails(customUserDetails);
 		Group group = Group.builder()
 			.name(request.name())
 			.password(request.password())
@@ -56,37 +57,46 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	public Group findById(int id) {
-		return groupRepository.findById(id).orElseThrow(() -> new NoSuchElementException("No such group"));
-
+		return groupRepository.findById(id).orElseThrow(
+			() -> new NoSuchElementException("No such group")
+		);
 	}
 
 	@Override
-	public void update(UpdateGroupDTO request, MultipartFile groupImage) {
-		Group group = groupRepository.findById(request.id())
-			.orElseThrow(() -> new NoSuchElementException("no such member"));
+	public void update(Integer groupId, UpdateGroupDTO request, MultipartFile groupImage,
+		CustomUserDetails customUserDetails) {
+		Member member = getMemberFromUserDetails(customUserDetails);
+		Group group = findById(request.id());
+
+		if (group.getLeader().getId() != member.getId()) {
+			throw new RuntimeException("권한 없음");
+		}
+
 		group.updateGroup(request);
 		imgUtils.deleteImage(group.getGroupImage(), GROUP_IMAGE_PATH);
 		imgUtils.saveImage(groupImage, GROUP_IMAGE_PATH);
 	}
 
 	@Override
-	public void deleteById(int id) {
-		// TODO : JWT 구현 이후 Security Context Holder에서 접속 유저 정보를 가져와 그룹장이면 허용하기
-		Group group = groupRepository.findById(id)
-			.orElseThrow(() -> new NoSuchElementException("no such member"));
+	public void deleteById(int id, CustomUserDetails customUserDetails) {
+		Member member = getMemberFromUserDetails(customUserDetails);
+		Group group = findById(id);
+		if (group.getLeader().getId() != member.getId()) {
+			throw new RuntimeException("권한 없음");
+		}
 		group.delete();
 	}
 
 	@Override
-	public void addMemberToGroupWithPasswordCheck(int groupsId, int memberId, JoinGroupRequestDTO joinGroupRequestDTO) {
-		Group group = findById(groupsId);
+	public void addMemberToGroupWithPasswordCheck(int groupId, JoinGroupRequestDTO joinGroupRequestDTO,
+		CustomUserDetails customUserDetails) {
+		Group group = findById(groupId);
 
 		if (group.getPassword().intValue() != joinGroupRequestDTO.password().intValue()) {
 			throw new RuntimeException("password not equals");
 		}
 
-		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new NoSuchElementException("no such member"));
+		Member member = getMemberFromUserDetails(customUserDetails);
 
 		addMemberToGroup(group, member, joinGroupRequestDTO.description());
 
@@ -94,15 +104,17 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	@Transactional
-	public void removeMemberFromGroup(int groupsId, int memberId) {
+	public void removeMemberFromGroup(int groupId, CustomUserDetails customUserDetails) {
+		Member member = getMemberFromUserDetails(customUserDetails);
+
 		GroupMemberId groupMemberId = GroupMemberId.builder()
-			.groupId(groupsId)
-			.memberId(memberId)
+			.groupId(groupId)
+			.memberId(member.getId())
 			.build();
 		GroupMember groupMember = groupMemberRepository.findById(groupMemberId)
 			.orElseThrow(() -> new NoSuchElementException("no such connection"));
 		groupMember.quit();
-		Group group = groupRepository.findById(groupsId).get();
+		Group group = findById(groupId);
 		group.quit();
 	}
 
@@ -128,5 +140,11 @@ public class GroupServiceImpl implements GroupService {
 	@Override
 	public Group save(Group group) {
 		return groupRepository.save(group);
+	}
+
+	private Member getMemberFromUserDetails(CustomUserDetails customUserDetails) {
+		String loginId = customUserDetails.getUsername();
+		return memberRepository.findByLoginId(loginId)
+			.orElseThrow(() -> new NoSuchElementException("no such member"));
 	}
 }
