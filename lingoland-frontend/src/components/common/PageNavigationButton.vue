@@ -5,7 +5,6 @@
  data: button 컴포넌트에 지정할 이름 
 */
 const props = defineProps({
-    id: String,
     type: String,
     data: String,
 });
@@ -13,7 +12,7 @@ const props = defineProps({
 
 <template>
     <div>
-        <v-btn :id="id">{{ data }}</v-btn>
+        <v-btn>{{ data }}</v-btn>
     </div>
 </template>
 
