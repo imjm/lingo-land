@@ -1,5 +1,6 @@
 package com.ssafy.a603.lingoland.member.service;
 
+import com.ssafy.a603.lingoland.member.dto.MemberInfoDto;
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 import com.ssafy.a603.lingoland.member.repository.MemberRepository;
 import com.ssafy.a603.lingoland.member.dto.SignUpRequest;
@@ -55,5 +56,14 @@ public class MemberService implements UserDetailsService {
     public Boolean checkExistRefreshToken(String loginId) {
         Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않은 유저입니다"));
         return member.getRefreshToken() != null;
+    }
+
+    public MemberInfoDto getMemberInfo(CustomUserDetails customUserDetails) {
+        Member member = memberRepository.findByLoginId(customUserDetails.getUsername()).orElseThrow(() -> new NoSuchElementException("존재하지 않은 유저입니다."));
+        return MemberInfoDto.builder()
+                .nickname(member.getNickname())
+                .profileImage(member.getProfile_image())
+                .experiencePoint(member.getExperiencePoint())
+                .build();
     }
 }

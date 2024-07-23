@@ -1,5 +1,6 @@
 package com.ssafy.a603.lingoland.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.a603.lingoland.member.security.CustomLogoutFilter;
 import com.ssafy.a603.lingoland.member.service.MemberService;
 import com.ssafy.a603.lingoland.member.security.JWTFilter;
@@ -28,6 +29,7 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final MemberService memberService;
+    private final ObjectMapper objectMapper;
 
 
     @Bean
@@ -43,10 +45,12 @@ public class SecurityConfig {
 
         http
                 .httpBasic(AbstractHttpConfigurer::disable);
+        http
+                .formLogin(AbstractHttpConfigurer::disable);
 
         http
                 .authorizeHttpRequests((authorizeRequests) -> authorizeRequests
-                        .requestMatchers("/", "/error", "/api/v1/sign-up", "/api/v1/login").permitAll()
+                        .requestMatchers("/", "/error", "/api/v1/users/sign-up", "/api/v1/login").permitAll()
                         .requestMatchers("/api/v1/reissue").permitAll()
                         .anyRequest().authenticated());
 
@@ -54,7 +58,7 @@ public class SecurityConfig {
                 .addFilterBefore(new JWTFilter(jwtUtil, memberService), LoginFilter.class);
 
         http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, memberService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, memberService, objectMapper), UsernamePasswordAuthenticationFilter.class);
 
         http
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil, memberService), LogoutFilter.class);
