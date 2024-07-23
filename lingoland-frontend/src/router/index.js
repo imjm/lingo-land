@@ -11,6 +11,7 @@ import GroupManageView from "@/views/GroupManageView.vue";
 import GroupCreate from "@/components/group/GroupCreate.vue";
 
 import { createRouter, createWebHistory } from "vue-router";
+import GroupModify from "@/components/group/GroupModify.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -62,18 +63,22 @@ const router = createRouter({
             component: MyPageModifyView,
         },
         {
-          path: "/group",
-          component: GroupManageView,
-          children: [
-            {
-                path: "create",
-                name: "groupCreate",
-                component: GroupCreate
-            }
-
-          ]
+            path: "/group",
+            component: GroupManageView,
+            children: [
+                {
+                    path: "create",
+                    name: "groupCreate",
+                    component: GroupCreate,
+                },
+                {
+                    path: "modify",
+                    name: "groupModify",
+                    component: GroupModify,
+                },
+            ],
         },
-    ]
+    ],
 });
 
 export default router;
