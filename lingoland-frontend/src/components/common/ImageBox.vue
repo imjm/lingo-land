@@ -1,4 +1,5 @@
 <script setup>
+import { defineProps } from "vue";
 /*
  aspectRatio: String, 이미지 가로세로 비율
  height: Number, 높이
@@ -6,13 +7,11 @@
  source: String, 이미지 소스
  
 */
-import { defineProps } from "vue";
 
 const props = defineProps({
   source: String,
 });
 
-console.log(props.source);
 </script>
 
 <template>
