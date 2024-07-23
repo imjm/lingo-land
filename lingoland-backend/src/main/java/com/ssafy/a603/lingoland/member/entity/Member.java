@@ -45,7 +45,7 @@ public class Member {
 	@Column(nullable = false)
 	private String password;
 
-	private String profile_image;
+	private String profileImage;
 
 	@Column(nullable = false)
 	private long experiencePoint;
@@ -67,12 +67,12 @@ public class Member {
 	@Column(nullable = false)
 	private long writingPlayedCount;
 
-    private String refreshToken;
+	private String refreshToken;
 
 	@OneToMany(mappedBy = "member")
 	private List<GroupMember> groupMembers = new ArrayList<>();
 
-    public void updateRefreshToken(String refresh) {
-        this.refreshToken = refresh;
-    }
+	public void updateRefreshToken(String refresh) {
+		this.refreshToken = refresh;
+	}
 }
