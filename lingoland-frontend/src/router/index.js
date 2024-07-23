@@ -1,4 +1,3 @@
-import MyPageModify from "@/components/user/MyPageModify.vue";
 import GameRoomView from "@/views/GameRoomView.vue";
 import GroupDetailView from "@/views/GroupDetailView.vue";
 import GroupJoinView from "@/views/GroupJoinView.vue";
@@ -8,6 +7,8 @@ import MyPageModifyView from "@/views/MyPageModifyView.vue";
 import SignUpView from "@/views/SignUpView.vue";
 import WritingGameResultView from "@/views/WritingGameResultView.vue";
 import WritingGameView from "@/views/WritingGameView.vue";
+import GroupManageView from "@/views/GroupManageView.vue";
+import GroupCreate from "@/components/group/GroupCreate.vue";
 
 import { createRouter, createWebHistory } from "vue-router";
 
@@ -60,7 +61,19 @@ const router = createRouter({
             name: "myPageModify",
             component: MyPageModifyView,
         },
-    ],
+        {
+          path: "/group",
+          component: GroupManageView,
+          children: [
+            {
+                path: "create",
+                name: "groupCreate",
+                component: GroupCreate
+            }
+
+          ]
+        },
+    ]
 });
 
 export default router;
