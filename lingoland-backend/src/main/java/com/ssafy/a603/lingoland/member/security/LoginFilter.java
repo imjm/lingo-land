@@ -1,5 +1,6 @@
 package com.ssafy.a603.lingoland.member.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.a603.lingoland.member.service.MemberService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -16,19 +17,38 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
-@RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
     private final MemberService memberService;
+    private final ObjectMapper objectMapper;
+
+    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, MemberService memberService, ObjectMapper objectMapper) {
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
+        this.memberService = memberService;
+        this.objectMapper = objectMapper;
+        setFilterProcessesUrl("/api/v1/login");
+    }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        if(!request.getMethod().equals("POST")) {
+            throw new RuntimeException("Authentication method not supported: " + request.getMethod());
+        }
 
-        String loginId = obtainLoginId(request);
-        String password = obtainPassword(request);
+        Map<String, String> loginData = null;
+        try {
+            loginData = objectMapper.readValue(request.getInputStream(), Map.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        String loginId = loginData.get("loginId");
+        String password = loginData.get("password");
 
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginId, password, null);
 
