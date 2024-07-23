@@ -25,7 +25,6 @@ public class MemberService implements UserDetailsService {
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
 
-<<<<<<< lingoland-backend/src/main/java/com/ssafy/a603/lingoland/member/service/MemberService.java
     @Transactional
     public Member saveNewMember(SignUpDto signUpRequest) {
         Member member = Member.builder()
