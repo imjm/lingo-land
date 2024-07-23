@@ -14,11 +14,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -58,16 +61,22 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
 
-        String loginId = authentication.getName();
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        String loginId = customUserDetails.getUsername();
 
-//        추후 role 고려
-//        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-//        Iterator<? extends GrantedAuthority> iterator = authentication.iterator();
-//        GrantedAuthority auth = iterator.next();
-//        String role = auth.getAuthority();
+        Collection<? extends GrantedAuthority> authorities = customUserDetails.getAuthorities();
+        Optional<? extends GrantedAuthority> authorityOptional = authorities.stream().findFirst();
 
-        String access = jwtUtil.createToken("access", loginId, 600000L);
-        String refresh = jwtUtil.createToken("refresh", loginId, 86400000L);
+        if(!authorityOptional.isPresent()) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "권한이 없는 유저입니다.");
+            return;
+        }
+
+        GrantedAuthority auth = authorityOptional.get();
+        String role = auth.getAuthority();
+
+        String access = jwtUtil.createToken("access", loginId, role, 600000L);
+        String refresh = jwtUtil.createToken("refresh", loginId, role, 86400000L);
 
         memberService.addRefreshToken(loginId, refresh);
 
@@ -79,12 +88,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-    }
-
-    @Nullable
-    private String obtainLoginId(HttpServletRequest request) {
-        String loginIdParameter = "loginId";
-        return request.getParameter(loginIdParameter);
     }
 
     private Cookie createCookie(String key, String value) {

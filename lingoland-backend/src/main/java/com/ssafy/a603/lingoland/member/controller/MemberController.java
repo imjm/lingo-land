@@ -1,11 +1,12 @@
 package com.ssafy.a603.lingoland.member.controller;
 
-import com.ssafy.a603.lingoland.member.dto.MemberInfoDto;
+import com.ssafy.a603.lingoland.member.dto.GetMemberInfoDto;
+import com.ssafy.a603.lingoland.member.dto.UpdateNicknameDto;
 import com.ssafy.a603.lingoland.member.security.CurrentUser;
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 import com.ssafy.a603.lingoland.member.service.MemberService;
 import com.ssafy.a603.lingoland.member.validator.SignUpValidator;
-import com.ssafy.a603.lingoland.member.dto.SignUpRequest;
+import com.ssafy.a603.lingoland.member.dto.SignUpDto;
 import com.ssafy.a603.lingoland.member.entity.Member;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class MemberController {
     private final SignUpValidator signUpValidator;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<?> signUp(@Valid @RequestBody SignUpRequest signUpRequest, BindingResult bindingResult) {
+    public ResponseEntity<?> signUp(@Valid @RequestBody SignUpDto signUpRequest, BindingResult bindingResult) {
         signUpValidator.validate(signUpRequest, bindingResult);
         if(bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getAllErrors()
@@ -41,8 +42,15 @@ public class MemberController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getMember(@CurrentUser CustomUserDetails customUserDetails) {
-        MemberInfoDto memberInfoDto = memberService.getMemberInfo(customUserDetails);
-        return ResponseEntity.status(HttpStatus.CREATED).body(memberInfoDto);
+    public ResponseEntity<?> getMemberInfo(@CurrentUser CustomUserDetails customUserDetails) {
+        GetMemberInfoDto getMemberInfoDto = memberService.getMemberInfo(customUserDetails);
+        return ResponseEntity.status(HttpStatus.OK).body(getMemberInfoDto);
+    }
+
+    @PutMapping
+    public ResponseEntity<?> updateNickname(@Valid @RequestBody UpdateNicknameDto updateNicknameDto,
+                                            @CurrentUser CustomUserDetails customUserDetails) {
+        memberService.updateNickname(updateNicknameDto, customUserDetails);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
