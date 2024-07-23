@@ -1,97 +1,111 @@
+import MyPage from "@/components/user/MyPage.vue";
 import GameRoomView from "@/views/GameRoomView.vue";
-import GroupDetailView from "@/views/GroupDetailView.vue";
-import GroupJoinView from "@/views/GroupJoinView.vue";
+import GroupListView from "@/views/GroupListView.vue";
+import GroupView from "@/views/GroupView.vue";
 import LoginView from "@/views/LoginView.vue";
 import MainPageView from "@/views/MainPageView.vue";
-import SignUpView from "@/views/SignUpView.vue";
-import WritingGameResultView from "@/views/WritingGameResultView.vue";
-import WritingGameView from "@/views/WritingGameView.vue";
-import GroupManageView from "@/views/GroupManageView.vue";
-import GroupCreate from "@/components/group/GroupCreate.vue";
-
-import { createRouter, createWebHistory } from "vue-router";
-import GroupModify from "@/components/group/GroupModify.vue";
 import MyPageView from "@/views/MyPageView.vue";
-import MyPageModify from "@/components/user/MyPageModify.vue";
-import MyPage from "@/components/user/MyPage.vue";
+import SignUpView from "@/views/SignUpView.vue";
+import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+    history: createWebHistory(import.meta.env.BASE_URL),
 
-  routes: [
-    {
-      path: "/login",
-      name: "login",
-      component: LoginView,
-    },
-    {
-      path: "/rooms",
-      name: "gameRoom",
-      component: GameRoomView,
-    },
-    {
-      path: "/signup",
-      name: "signUp",
-      component: SignUpView,
-    },
-    {
-      path: "/writingGame",
-      name: "writingGame",
-      component: WritingGameView,
-    },
-    {
-      path: "/writingGameResult",
-      name: "writingGameResult",
-      component: WritingGameResultView,
-    },
-    {
-      path: "/groups",
-      name: "groups",
-      component: GroupJoinView,
-    },
-    {
-      path: "/groupId",
-      name: "groupId",
-      component: GroupDetailView,
-    },
-    {
-      path: "/main-page",
-      name: "mainPage",
-      component: MainPageView,
-    },
-    {
-      path: "/my-page",
-      component: MyPageView,
-      children: [
+    routes: [
         {
-          path: "",
-          name: "myPage",
-          component: MyPage,
+            path: "/login",
+            name: "login",
+            component: LoginView,
         },
         {
-          path: "modify",
-          name: "myPageModify",
-          component: MyPageModify,
-        },
-      ],
-    },
-    {
-      path: "/group",
-      component: GroupManageView,
-      children: [
-        {
-          path: "create",
-          name: "groupCreate",
-          component: GroupCreate,
+            path: "/signup",
+            name: "signUp",
+            component: SignUpView,
         },
         {
-          path: "modify",
-          name: "groupModify",
-          component: GroupModify,
+            path: "/game-room",
+            component: GameRoomView,
+            children: [
+                {
+                    path: ":roomId",
+                    name: "gameRoom",
+                    component: () =>
+                        import("@/components/gameRoom/TheGameRoom.vue"),
+                },
+                {
+                    path: ":roomId/writing-game",
+                    name: "writingGame",
+                    component: () => import("@/views/WritingGameView.vue"),
+                },
+                {
+                    path: ":roomId/writing-game/result",
+                    name: "writingGameResult",
+                    component: () =>
+                        import("@/views/WritingGameResultView.vue"),
+                },
+            ],
         },
-      ],
-    },
-  ],
+        {
+            path: "/main-page",
+            name: "mainPage",
+            component: MainPageView,
+        },
+        {
+            path: "/my-page",
+            component: MyPageView,
+            children: [
+                {
+                    path: "",
+                    name: "myPage",
+                    component: MyPage,
+                },
+                {
+                    path: "modify",
+                    name: "myPageModify",
+                    component: () =>
+                        import("@/components/user/MyPageModify.vue"),
+                },
+                {
+                    path: "book",
+                    name: "bookList",
+                    component: () => import("@/views/TaleListView.vue"),
+                },
+                {
+                    path: "book/:bookId",
+                    name: "bookDetail",
+                    component: () => import("@/views/TalesDetailView.vue"),
+                },
+            ],
+        },
+        {
+            path: "/group",
+            component: GroupView,
+            children: [
+                {
+                    path: "list",
+                    name: "groupList",
+                    component: GroupListView,
+                },
+                {
+                    path: "list/:groupId",
+                    name: "groupDetail",
+                    component: () => import("@/views/GroupDetailView.vue"),
+                },
+                {
+                    path: "create",
+                    name: "groupCreate",
+                    component: () =>
+                        import("@/components/group/GroupCreate.vue"),
+                },
+                {
+                    path: "modify",
+                    name: "groupModify",
+                    component: () =>
+                        import("@/components/group/GroupModify.vue"),
+                },
+            ],
+        },
+    ],
 });
 
 export default router;
