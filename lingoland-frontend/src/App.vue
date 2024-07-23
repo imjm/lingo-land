@@ -15,6 +15,7 @@ import { RouterView } from "vue-router";
     <RouterLink :to="{ name: 'groupId' }">groupId</RouterLink> |
     <RouterLink :to="{ name: 'myPageModify' }">mypageModify</RouterLink> |
     <RouterLink :to="{ name: 'groupCreate' }">groupCreate</RouterLink> |
+    <RouterLink :to="{ name: 'groupModify' }">groupModify</RouterLink> |
 
     <v-app class="bg-amber-lighten-3">
         <RouterView></RouterView>

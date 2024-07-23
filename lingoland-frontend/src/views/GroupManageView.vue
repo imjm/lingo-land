@@ -3,7 +3,7 @@ import GroupCreate from '@/components/group/GroupCreate.vue';
 </script>
 
 <template>
-    <GroupCreate />    
+    <RouterView />
 </template>
 
 <style scoped>
