@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.a603.lingoland.group.dto.CreateGroupDTO;
 import com.ssafy.a603.lingoland.group.dto.JoinGroupRequestDTO;
+import com.ssafy.a603.lingoland.group.dto.MemberInGroupResponseDTO;
 import com.ssafy.a603.lingoland.group.dto.UpdateGroupDTO;
 import com.ssafy.a603.lingoland.group.entity.Group;
 import com.ssafy.a603.lingoland.group.entity.GroupMember;
@@ -100,6 +101,26 @@ public class GroupServiceImpl implements GroupService {
 
 		addMemberToGroup(group, member, joinGroupRequestDTO.description());
 
+	}
+
+	@Override
+	public List<MemberInGroupResponseDTO> findAllMembersByGroupId(int groupId, String keyword,
+		CustomUserDetails customUserDetails) {
+		Member member = getMemberFromUserDetails(customUserDetails);
+		//내가 속한 그룹이 맞는가?
+		if (!isGroupMember(member, groupId)) {
+			throw new RuntimeException("Not my group");
+		}
+
+		return groupRepository.findAllMembresInGroup(groupId, keyword);
+	}
+
+	private boolean isGroupMember(Member member, int groupId) {
+		for (GroupMember groupMember : member.getGroupMembers()) {
+			if (groupMember.getGroup().getId() == groupId)
+				return true;
+		}
+		return false;
 	}
 
 	@Override
