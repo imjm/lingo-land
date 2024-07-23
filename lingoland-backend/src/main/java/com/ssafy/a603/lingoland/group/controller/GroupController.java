@@ -80,7 +80,7 @@ public class GroupController {
 
 	@GetMapping("/{groupId}/users")
 	public ResponseEntity<?> findMembersInGroup(@PathVariable("groupId") Integer groupId,
-		@RequestParam(required = false) String keyword,
+		@RequestParam(required = false, name = "keyword") String keyword,
 		@CurrentUser CustomUserDetails customUserDetails) {
 		List<MemberInGroupResponseDTO> members = groupService.findAllMembersByGroupId(groupId, keyword,
 			customUserDetails);

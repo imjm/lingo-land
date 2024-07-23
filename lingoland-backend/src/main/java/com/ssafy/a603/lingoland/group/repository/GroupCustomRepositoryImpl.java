@@ -30,6 +30,7 @@ public class GroupCustomRepositoryImpl implements GroupCustomRepository {
 			.join(groupMember).on(member.id.eq(groupMember.id.memberId))
 			.join(group).on(groupMember.id.groupId.eq(group.id))
 			.where(
+				applySoftDelete(),
 				targetGroup(groupId),
 				containsNickname(keyword)
 			)
@@ -46,12 +47,16 @@ public class GroupCustomRepositoryImpl implements GroupCustomRepository {
 				break;
 			}
 		}
-		
+
 		if (leaderIndex != -1 && leaderIndex != 0) {
 			MemberInGroupResponseDTO leader = members.remove(leaderIndex);
 			members.add(0, leader);
 		}
 		return members;
+	}
+
+	private BooleanExpression applySoftDelete() {
+		return groupMember.isDeleted.eq(false);
 	}
 
 	private BooleanExpression targetGroup(int groupId) {
