@@ -8,20 +8,37 @@ import { defineProps } from "vue";
 const props = defineProps({
   type: String,
   data: String,
-  backgroundColor : String,
-
+  backgroundColor: String,
+  source: String,
 });
 </script>
 
 <template>
   <div>
-    <v-btn class="mb-5" :style="{ width: '90vw', height: '300px', backgroundColor: backgroundColor, fontSize : 'x-large'}">
-      {{ data }}
-      
+    <v-btn
+      class="mb-5"
+      :style="{
+        width: '90vw',
+        height: '300px',
+        backgroundColor: backgroundColor,
+        fontSize: 'x-large',
+      }"
+    >
+      <div class="d-flex flex-column">
+        <div>
+          {{ data }}
+        </div>
+        <div class="d-flex justify-center align-center" style="flex: 1">
+          <img
+            v-if="source"
+            :src="source"
+            style="max-width: 100%; max-height: 100%; object-fit: contain"
+            alt="Icon"
+          />
+        </div>
+      </div>
     </v-btn>
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
