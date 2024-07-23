@@ -26,7 +26,7 @@ import WritingList from "@/components/writingGame/WritingList.vue";
 
 <style scoped>
 .background-image {
-    background-image: url("src\\assets\\blackboard.png");
+    background-image: url("@/assets/blackboard.png");
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
