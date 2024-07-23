@@ -50,7 +50,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((authorizeRequests) -> authorizeRequests
-                        .requestMatchers("/", "/error", "/api/v1/sign-up", "/api/v1/login").permitAll()
+                        .requestMatchers("/", "/error", "/api/v1/users/sign-up", "/api/v1/login").permitAll()
                         .requestMatchers("/api/v1/reissue").permitAll()
                         .anyRequest().authenticated());
 
