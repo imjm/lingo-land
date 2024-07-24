@@ -1,6 +1,5 @@
 package com.ssafy.a603.lingoland.member.dto;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
@@ -10,7 +9,7 @@ import org.hibernate.validator.constraints.Length;
 
 @Getter @Setter
 @NoArgsConstructor
-public class SignUpRequest {
+public class SignUpDto {
 
     @Length(min = 3, max=20)
     @NotBlank

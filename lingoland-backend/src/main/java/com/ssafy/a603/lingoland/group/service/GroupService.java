@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.a603.lingoland.group.dto.CreateGroupDTO;
 import com.ssafy.a603.lingoland.group.dto.JoinGroupRequestDTO;
+import com.ssafy.a603.lingoland.group.dto.MemberInGroupResponseDTO;
 import com.ssafy.a603.lingoland.group.dto.UpdateGroupDTO;
 import com.ssafy.a603.lingoland.group.entity.Group;
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
@@ -23,6 +24,9 @@ public interface GroupService {
 	void deleteById(int id, CustomUserDetails customUserDetails);
 
 	void addMemberToGroupWithPasswordCheck(int groupId, JoinGroupRequestDTO joinGroupRequestDTO,
+		CustomUserDetails customUserDetails);
+
+	List<MemberInGroupResponseDTO> findAllMembersByGroupId(int groupId, String keyword,
 		CustomUserDetails customUserDetails);
 
 	void removeMemberFromGroup(int groupId, CustomUserDetails customUserDetails);

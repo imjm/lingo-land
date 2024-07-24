@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import WritingResultList from "./WritingResultList.vue";
+import freeImage from "@/assets/free.png";
 
 const drawer = ref(true);
 const rail = ref(true);
@@ -30,19 +31,19 @@ const rail = ref(true);
 
                 <v-list-item title="My Account" value="account">
                     <v-avatar rounded="0">
-                        <v-img src="src\\assets\\free.png" cover></v-img>
+                        <v-img :src="freeImage" cover></v-img>
                     </v-avatar>
                 </v-list-item>
 
                 <v-list-item title="My Account" value="account">
                     <v-avatar rounded="0">
-                        <v-img src="src\\assets\\free.png" cover></v-img>
+                        <v-img :src="freeImage" cover></v-img>
                     </v-avatar>
                 </v-list-item>
 
                 <v-list-item title="My Account" value="account">
                     <v-avatar rounded="0">
-                        <v-img src="src\\assets\\free.png" cover></v-img>
+                        <v-img :src="freeImage" cover></v-img>
                     </v-avatar>
                 </v-list-item>
             </v-list>
