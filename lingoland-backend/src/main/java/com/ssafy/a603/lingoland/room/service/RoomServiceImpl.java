@@ -38,7 +38,7 @@ public class RoomServiceImpl implements RoomService {
         return roomResponseDTO;
     }
 
-    public String getRoomKey(String code){
+    private String getRoomKey(String code){
         return "lingoland" + ":room" + ":" + code;
     }
 
