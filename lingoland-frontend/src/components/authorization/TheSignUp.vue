@@ -29,7 +29,7 @@ function signUp() {
 
                 <v-col cols="6">
                     <div class="ma-10">
-                        <GenericInput type="text" data="이름" id="userName" />
+                        <GenericInput type="text" data="닉네임" id="userName" />
 
                         <v-row class="d-flex align-center justify-center">
                             <v-col cols="10">

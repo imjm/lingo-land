@@ -11,13 +11,14 @@ const props = defineProps({
     type: String,
     data: String,
     variant: String,
+    hint: String
 });
 </script>
 
 <template>
     <div>
         {{ data }}
-        <v-text-field :type="type" :id="id" variant="outlined"></v-text-field>
+        <v-text-field :type="type" :id="id" variant="outlined" :placeholder="hint"></v-text-field>
     </div>
 </template>
 
