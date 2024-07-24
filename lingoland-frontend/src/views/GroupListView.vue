@@ -7,8 +7,26 @@ import SearchInput from "@/components/common/SearchInput.vue";
   <br />
   <main>
     <v-sheet rounded class="ma-10">
-      <h1 class="mx-10">그룹 목록</h1>
-      <SearchInput />
+      <v-row>
+        <h1 class="my-5 mx-10">그룹 목록</h1>
+        <v-col>
+          <v-autocomplete
+            :items="items"
+            append-inner-icon="mdi-microphone"
+            class="mx-auto"
+            density="comfortable"
+            menu-icon=""
+            placeholder="그룹 이름을 입력하세요."
+            prepend-inner-icon="mdi-magnify"
+            style="max-width: 350px"
+            theme="light"
+            variant="solo"
+            auto-select-first
+            item-props
+            rounded
+          ></v-autocomplete>
+        </v-col>
+      </v-row>
       <GroupList />
     </v-sheet>
   </main>
