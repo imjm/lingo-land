@@ -12,13 +12,6 @@ function modifyGroup() {
 </script>
 
 <template>
-    <!-- 
-        1개에 행
-        2개에 열
-        1번 열에는 회원가입할 보여줄 이미지 
-        2번 열에는 사용자의 정보를 넣어줄 card
-
-    -->
     <v-main class="d-flex align-center justify-center">
         <v-card width="1200">
             <!-- 하나의 행을 만듬 -->
