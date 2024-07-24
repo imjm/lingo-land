@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.a603.lingoland.group.dto.CreateGroupDTO;
 import com.ssafy.a603.lingoland.group.dto.JoinGroupRequestDTO;
+import com.ssafy.a603.lingoland.group.dto.MemberInGroupResponseDTO;
 import com.ssafy.a603.lingoland.group.dto.UpdateGroupDTO;
 import com.ssafy.a603.lingoland.group.entity.Group;
 import com.ssafy.a603.lingoland.group.service.GroupService;
@@ -40,9 +42,9 @@ public class GroupController {
 		return ResponseEntity.status(HttpStatus.CREATED).body("group made.");
 	}
 
-	@GetMapping("/{groupsId}")
-	public ResponseEntity<?> getGroupById(@PathVariable Integer groupsId) {
-		Group group = groupService.findById(groupsId);
+	@GetMapping("/{groupId}")
+	public ResponseEntity<?> getGroupById(@PathVariable Integer groupId) {
+		Group group = groupService.findById(groupId);
 		return ResponseEntity.status(HttpStatus.OK).body(group);
 	}
 
@@ -52,34 +54,43 @@ public class GroupController {
 		return ResponseEntity.status(HttpStatus.OK).body(groups);
 	}
 
-	@PutMapping(path = "/{groupsId}", produces = "application/json", consumes = "multipart/form-data")
-	public ResponseEntity<?> updateGroupInfo(@PathVariable Integer groupsId,
+	@PutMapping(path = "/{groupId}", produces = "application/json", consumes = "multipart/form-data")
+	public ResponseEntity<?> updateGroupInfo(@PathVariable Integer groupId,
 		@RequestPart(value = "updateGroup") UpdateGroupDTO updateGroupDTO,
 		@RequestPart(value = "groupImage", required = false) MultipartFile groupImage,
 		@CurrentUser CustomUserDetails customUserDetails) {
-		groupService.update(groupsId, updateGroupDTO, groupImage, customUserDetails);
+		groupService.update(groupId, updateGroupDTO, groupImage, customUserDetails);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
-	@DeleteMapping(path = "/{groupsId}")
-	public ResponseEntity<?> deleteGroup(@PathVariable Integer groupsId,
+	@DeleteMapping(path = "/{groupId}")
+	public ResponseEntity<?> deleteGroup(@PathVariable Integer groupId,
 		@CurrentUser CustomUserDetails customUserDetails) {
-		groupService.deleteById(groupsId, customUserDetails);
+		groupService.deleteById(groupId, customUserDetails);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
-	@PostMapping("/{groupsId}/users")
-	public ResponseEntity<?> joinGroup(@PathVariable("groupsId") Integer groupsId,
+	@PostMapping("/{groupId}/users")
+	public ResponseEntity<?> joinGroup(@PathVariable("groupId") Integer groupId,
 		@RequestBody JoinGroupRequestDTO joinGroupRequestDTO,
 		@CurrentUser CustomUserDetails customUserDetails) {
-		groupService.addMemberToGroupWithPasswordCheck(groupsId, joinGroupRequestDTO, customUserDetails);
+		groupService.addMemberToGroupWithPasswordCheck(groupId, joinGroupRequestDTO, customUserDetails);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
-	@DeleteMapping("/{groupsId}/users")
-	public ResponseEntity<?> quitGroup(@PathVariable("groupsId") Integer groupsId,
+	@GetMapping("/{groupId}/users")
+	public ResponseEntity<?> findMembersInGroup(@PathVariable("groupId") Integer groupId,
+		@RequestParam(required = false, name = "keyword") String keyword,
 		@CurrentUser CustomUserDetails customUserDetails) {
-		groupService.removeMemberFromGroup(groupsId, customUserDetails);
+		List<MemberInGroupResponseDTO> members = groupService.findAllMembersByGroupId(groupId, keyword,
+			customUserDetails);
+		return ResponseEntity.status(HttpStatus.OK).body(members);
+	}
+
+	@DeleteMapping("/{groupId}/users")
+	public ResponseEntity<?> quitGroup(@PathVariable("groupId") Integer groupId,
+		@CurrentUser CustomUserDetails customUserDetails) {
+		groupService.removeMemberFromGroup(groupId, customUserDetails);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }
