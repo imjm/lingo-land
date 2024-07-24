@@ -15,7 +15,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <v-btn :id="id" color="#FFF1C2" :height="height">{{ data }}</v-btn>
+    <v-btn :id="id" color="#FFF1C2" :height="height" @click="$emit('clickEvent')">{{ data }}</v-btn>
 </template>
 
 <style scoped></style>

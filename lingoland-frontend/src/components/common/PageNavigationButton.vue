@@ -23,6 +23,7 @@ const props = defineProps({
         backgroundColor: backgroundColor,
         fontSize: 'x-large',
       }"
+      @click="$emit('clickEvent')"
     >
       <div class="d-flex flex-column">
         <div>
