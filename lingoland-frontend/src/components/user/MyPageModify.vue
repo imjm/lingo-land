@@ -4,9 +4,13 @@ import GenericInput from "../common/GenericInput.vue";
 import ImageBox from "../common/ImageBox.vue";
 import SubmitButton from "../common/SubmitButton.vue";
 import GenericButton from "../common/GenericButton.vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 function modify() {
     console.log("현재 비밀번호가 맞는지 확인 후에 비밀번호 변경 페이지로 이동");
+    router.push({ name: "myPageModifyPassword" });
 }
 </script>
 
