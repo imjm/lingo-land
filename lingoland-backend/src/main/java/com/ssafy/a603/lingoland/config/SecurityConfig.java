@@ -20,6 +20,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -35,34 +40,41 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http
-                .csrf(AbstractHttpConfigurer::disable);
+        http.csrf(AbstractHttpConfigurer::disable);
 
-        http
-                .sessionManagement((session) -> {
+        http.sessionManagement((session) -> {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                 });
 
-        http
-                .httpBasic(AbstractHttpConfigurer::disable);
-        http
-                .formLogin(AbstractHttpConfigurer::disable);
+        http.httpBasic(AbstractHttpConfigurer::disable);
+        http.formLogin(AbstractHttpConfigurer::disable);
 
-        http
-                .authorizeHttpRequests((authorizeRequests) -> authorizeRequests
+        http.authorizeHttpRequests((authorizeRequests) -> authorizeRequests
                         .requestMatchers("/", "/error", "/api/v1/users/sign-up", "/api/v1/login").permitAll()
                         .requestMatchers("/api/v1/reissue").permitAll()
                         .anyRequest().authenticated());
 
-        http
-                .addFilterBefore(new JWTFilter(jwtUtil, memberService), LoginFilter.class);
+        http.addFilterBefore(new JWTFilter(jwtUtil, memberService), LoginFilter.class);
 
-        http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, memberService, objectMapper), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, memberService, objectMapper), UsernamePasswordAuthenticationFilter.class);
 
-        http
-                .addFilterBefore(new CustomLogoutFilter(jwtUtil, memberService), LogoutFilter.class);
+        http.addFilterBefore(new CustomLogoutFilter(jwtUtil, memberService), LogoutFilter.class);
+
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+
         return http.build();
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedOrigins(Arrays.asList("https://localhost:3000"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     @Bean
