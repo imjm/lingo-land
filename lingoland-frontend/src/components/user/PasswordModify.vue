@@ -2,6 +2,9 @@
 import GenericInput from "../common/GenericInput.vue";
 import SubmitButton from "../common/SubmitButton.vue";
 import CancelButton from "../common/CancelButton.vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 function modify() {
     console.log("새 비밀번호와 확인 비밀번호가 일치한지 확인 후 변경");
@@ -9,6 +12,7 @@ function modify() {
 
 function cancel() {
     console.log("비밀번호 변경 취소");
+    router.push({ name: "myPageModify" });
 }
 </script>
 
