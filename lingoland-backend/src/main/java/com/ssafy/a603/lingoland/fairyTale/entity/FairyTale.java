@@ -4,10 +4,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ssafy.a603.lingoland.fairyTale.util.ContentConverter;
+import org.hibernate.annotations.Type;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,8 +29,8 @@ public class FairyTale {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fairy_tale_seq")
 	@SequenceGenerator(name = "fairy_tale_seq", sequenceName = "fairy_tale_id_seq", allocationSize = 1)
 	private Integer id;
-
-	@Convert(converter = ContentConverter.class)
+	
+	@Type(JsonBinaryType.class)
 	@Column(columnDefinition = "jsonb")
 	private Content content;
 
@@ -41,31 +43,37 @@ public class FairyTale {
 	@OneToMany(mappedBy = "fairyTale")
 	private List<FairyTaleMember> fairyTaleMembers = new ArrayList<>();
 
+	@Builder
 	protected FairyTale(Content content, String summary) {
 		this.content = content;
 		this.summary = summary;
 	}
 
 	@Getter
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	public static class Content {
 		private String title;
 		private String cover;
 		private List<Story> stories;
 
 		@Builder
-		protected Content(String title, String cover, List<Story> stories) {
+		protected Content(@JsonProperty("title") String title,
+			@JsonProperty("cover") String cover,
+			@JsonProperty("stories") List<Story> stories) {
 			this.title = title;
 			this.cover = cover;
 			this.stories = stories;
 		}
 
 		@Getter
+		@NoArgsConstructor(access = AccessLevel.PROTECTED)
 		public static class Story {
 			private String illustration;
 			private String story;
 
 			@Builder
-			protected Story(String illustration, String story) {
+			protected Story(@JsonProperty("illustration") String illustration,
+				@JsonProperty("story") String story) {
 				this.illustration = illustration;
 				this.story = story;
 			}
