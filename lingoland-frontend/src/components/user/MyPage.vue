@@ -1,11 +1,26 @@
 <script setup>
 import GenericButton from "@/components/common/GenericButton.vue";
-import GenericInput from "@/components/common/GenericInput.vue";
 import PageNavigationButton from "@/components/common/PageNavigationButton.vue";
 import Profile from "@/components/common/Profile.vue";
-import RankList from "@/components/rank/RankList.vue";
 import GroupList from "../group/GroupList.vue";
 import SearchInput from "../common/SearchInput.vue";
+import IncorrectList from "@/components/incorrect/IncorrectList.vue";
+import { ref } from "vue";
+
+const incorrectList = ref([
+  "문제 1",
+  "문제 2",
+  "문제 3",
+  "문제 4",
+  "문제 5",
+  "문제 1",
+  "문제 2",
+  "문제 3",
+  "문제 4",
+  "문제 5",
+  // 데이터 받아오기
+]);
+const dialog = ref(false);
 </script>
 
 <template>
@@ -34,11 +49,11 @@ import SearchInput from "../common/SearchInput.vue";
             <GenericButton
               class="mr-3"
               data="그룹 가입하기"
-              :style="{ backgroundColor: '#4C4637', color : 'white'}"
+              :style="{ backgroundColor: '#4C4637', color: 'white' }"
             />
             <GenericButton
               data="그룹 만들기"
-              :style="{ backgroundColor: '#4C4637', color : 'white' }"
+              :style="{ backgroundColor: '#4C4637', color: 'white' }"
             />
           </v-row>
           <v-row>
@@ -47,7 +62,27 @@ import SearchInput from "../common/SearchInput.vue";
                 background-color="#BF5847"
                 data="오답노트"
                 source="src\assets\오답노트.png"
+                @click-event="
+                  () => {
+                    dialog = true;
+                  }
+                "
               />
+
+              <v-dialog v-model="dialog" width="50%" >
+                <IncorrectList :incorrects="incorrectList" />
+                <div class="d-flex justify-end bg-white">
+                  <GenericButton class="ma-3"
+                    @click-event="
+                      () => {
+                        dialog = false;
+                      }
+                    "
+                    data="닫기"
+                    :style="{ width: '40px', backgroundColor :'#4C4637', color :'white'}"
+                  />
+                </div>
+              </v-dialog>
             </v-col>
             <v-col cols="6">
               <PageNavigationButton

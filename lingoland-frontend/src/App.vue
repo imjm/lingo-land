@@ -18,6 +18,7 @@ import { RouterView } from "vue-router";
 
   <v-app class="bg-amber-lighten-3">
     <RouterView></RouterView>
+     
   </v-app>
 </template>
 

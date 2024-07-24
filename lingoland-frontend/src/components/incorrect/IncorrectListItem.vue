@@ -1,16 +1,17 @@
 <script setup>
 import { defineProps } from "vue";
+import GenericButton from "../common/GenericButton.vue";
 
 const props = defineProps({
-  member: Object,
+  incorrect: Object,
 });
 </script>
 
 <template>
-  <v-list-item-content >
+  <v-list-item-content>
     <v-container class="border-md">
       <v-row rows="2">
-        <div>{{member}}</div>
+        <div>{{ incorrect }}</div>
       </v-row>
       <v-row rows="10">
         <v-col cols="4">
@@ -21,8 +22,12 @@ const props = defineProps({
           />
         </v-col>
         <v-col cols="8">
-          <div>member.신분</div>
-          <div>member.자기소개</div>
+          <div>incorrect.question </div>
+          <div>incorrect.answer </div>
+          <div class="d-flex justify-end">
+
+            <GenericButton :style="{ backgroundColor : '#4C4637', color : 'white'}" data="학습완료"/>
+          </div>
         </v-col>
       </v-row>
     </v-container>
@@ -30,8 +35,7 @@ const props = defineProps({
 </template>
 
 <style scoped>
-.border-md{
-  background-color: #FFF1C2;
+.border-md {
+  background-color: #fff1c2;
 }
-
 </style>
