@@ -66,6 +66,12 @@ const router = createRouter({
                         import("@/components/user/MyPageModify.vue"),
                 },
                 {
+                    path: "modify/password",
+                    name: "myPageModifyPassword",
+                    component: () =>
+                        import("@/components/user/PasswordModify.vue"),
+                },
+                {
                     path: "book",
                     name: "bookList",
                     component: () => import("@/views/TaleListView.vue"),
