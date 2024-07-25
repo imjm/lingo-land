@@ -30,6 +30,7 @@ function validateIDFormat(loginId) {
     // ID 길이 3 - 20, 영어와 숫자만
     const idRegex = /^[a-zA-Z0-9]{3,20}$/;
 
+    // 형식이 일치함
     if (idRegex.test(loginId)) {
         IdFormat.value = false;
     } else {
@@ -42,6 +43,7 @@ function validateNickNameFormat(nickname) {
     // 닉네임 길이 3- 20 한글,영어,숫자/-/_
     const nicknameRegex = /^[ㄱ-ㅎ가-힣a-z0-9_-]{3,20}$/;
 
+    // 형식이 일치함
     if (nicknameRegex.test(nickname)) {
         nicknameFormat.value = false;
     } else {
@@ -52,6 +54,8 @@ function validateNickNameFormat(nickname) {
 // 비밀번호 포멧체크
 function validatePasswordFormat(password) {
     // 비밀번호 최대길이 25
+
+    // 형식이 일치함
     if (password.length <= 25) {
         passwordFormat.value = false;
     } else {
@@ -82,10 +86,10 @@ function checkIdDuplicate() {
 function signUp() {
     // 회원가입 실행
     if (
-        IdFormat.value &&
+        !IdFormat.value &&
         IdDuplicate.value &&
-        passwordFormat &&
-        nicknameFormat
+        !passwordFormat.value &&
+        !nicknameFormat.value
     ) {
         userStore.signUp(userInfo.value);
     } else {
