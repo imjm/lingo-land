@@ -1,3 +1,5 @@
+import GroupMemberDetail from "@/components/group/GroupMemberDetail.vue";
+import GroupMemberDetailByAdmin from "@/components/group/GroupMemberDetailByAdmin.vue";
 import MyPage from "@/components/user/MyPage.vue";
 import GameRoomView from "@/views/GameRoomView.vue";
 import GroupListView from "@/views/GroupListView.vue";
@@ -108,6 +110,17 @@ const router = createRouter({
                     name: "groupModify",
                     component: () =>
                         import("@/components/group/GroupModify.vue"),
+                },
+                {
+                    path: "member/:memberId",
+                    name: "groupMemberDetail",
+                    component: GroupMemberDetail,
+                },
+                {
+                    path: "member/:memberId",
+                    name: "groupMemberDetailByAdmin",
+                    component: GroupMemberDetailByAdmin,
+                    //그룹장만 입장 가능하게 해야 되맨!
                 },
             ],
         },
