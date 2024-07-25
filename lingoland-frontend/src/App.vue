@@ -25,9 +25,20 @@ import { RouterView } from "vue-router";
     >
     |
     <RouterLink :to="{ name: 'groupList' }">groupList</RouterLink> |
-    <RouterLink :to="{ name: 'groupDetail', params: { groupId: '1' } }">groupId</RouterLink> | |
-    <RouterLink :to="{ name: 'groupCreate' }">groupCreate</RouterLink> |
+    <RouterLink :to="{ name: 'groupDetail', params: { groupId: '1' } }"
+        >groupId</RouterLink
+    >
+    | <RouterLink :to="{ name: 'groupCreate' }">groupCreate</RouterLink> |
     <RouterLink :to="{ name: 'groupModify' }">groupModify</RouterLink> |
+    <RouterLink :to="{ name: 'groupMemberDetail', params: { memberId: '1' } }"
+        >groupMemberDetail</RouterLink
+    >
+    |
+    <RouterLink
+        :to="{ name: 'groupMemberDetailByAdmin', params: { memberId: '1' } }"
+        >groupMemberDetailByAdmin</RouterLink
+    >
+    |
 
     <v-app class="bg-amber-lighten-3">
         <RouterView></RouterView>
