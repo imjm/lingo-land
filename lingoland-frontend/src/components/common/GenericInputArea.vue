@@ -1,20 +1,23 @@
 <script setup>
-import { defineProps } from 'vue';
+import { defineModel, defineProps } from "vue";
 
-const props = defineProps({    
+const model = defineModel();
+
+const props = defineProps({
     data: String,
-    placeholder: String
+    placeholder: String,
 });
-
 </script>
 
 <template>
     <div>
         {{ data }}
-        <v-textarea variant="outlined" :placeholder="placeholder"></v-textarea>
+        <v-textarea
+            v-model="model"
+            variant="outlined"
+            :placeholder="placeholder"
+        ></v-textarea>
     </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
