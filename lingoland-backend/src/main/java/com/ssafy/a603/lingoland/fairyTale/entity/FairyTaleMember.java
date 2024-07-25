@@ -46,4 +46,14 @@ public class FairyTaleMember {
 		this.member = member;
 		this.isVisible = true;
 	}
+
+	public void invisible() {
+		this.isVisible = false;
+		this.invisibleAt = LocalDateTime.now();
+	}
+
+	public void visible() {
+		this.isVisible = true;
+		this.invisibleAt = null;
+	}
 }

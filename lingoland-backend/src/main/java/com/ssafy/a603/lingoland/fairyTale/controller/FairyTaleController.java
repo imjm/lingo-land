@@ -48,6 +48,7 @@ public class FairyTaleController {
 	@PutMapping("/{fairyTaleId}")
 	public ResponseEntity<?> invisible(@PathVariable("fairyTaleId") Integer fairyTaleId,
 		@CurrentUser CustomUserDetails customUserDetails) {
-		return null;
+		fairyTaleService.fairyTaleInvisible(fairyTaleId, customUserDetails);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }
