@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 import com.ssafy.a603.lingoland.fairyTale.entity.FairyTale;
 
 @Repository
-public interface FairyTaleRepository extends JpaRepository<FairyTale, Integer> {
+public interface FairyTaleRepository extends JpaRepository<FairyTale, Integer>, FairyTaleCustomRepository {
 }
