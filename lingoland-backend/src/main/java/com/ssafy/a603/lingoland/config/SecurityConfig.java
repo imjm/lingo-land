@@ -6,6 +6,7 @@ import com.ssafy.a603.lingoland.member.service.MemberService;
 import com.ssafy.a603.lingoland.member.security.JWTFilter;
 import com.ssafy.a603.lingoland.member.security.LoginFilter;
 import com.ssafy.a603.lingoland.member.security.JWTUtil;
+import com.ssafy.a603.lingoland.member.service.MemberServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +18,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
@@ -33,7 +35,7 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
-    private final MemberService memberService;
+    private final MemberServiceImpl memberService;
     private final ObjectMapper objectMapper;
 
 
@@ -50,7 +52,7 @@ public class SecurityConfig {
         http.formLogin(AbstractHttpConfigurer::disable);
 
         http.authorizeHttpRequests((authorizeRequests) -> authorizeRequests
-                        .requestMatchers("/", "/error", "/api/v1/users/sign-up", "/api/v1/login").permitAll()
+                        .requestMatchers("/", "/error", "/api/v1/users/sign-up", "/api/v1/login", "/api/v1/users/check/*").permitAll()
                         .requestMatchers("/api/v1/reissue").permitAll()
                         .anyRequest().authenticated());
 
