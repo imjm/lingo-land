@@ -55,6 +55,13 @@ public class FairyTaleServiceImpl implements FairyTaleService {
 		return fairyTaleRepository.findAllFairyTalesByMemberId(member.getId());
 	}
 
+	@Override
+	public FairyTale findFairyTaleById(Integer fairyTaleId) {
+		FairyTale fairyTale = fairyTaleRepository.findById(fairyTaleId)
+			.orElseThrow(() -> new NoSuchElementException("no such fairyTale"));
+		return fairyTale;
+	}
+
 	private Member getMemberFromUserDetails(CustomUserDetails customUserDetails) {
 		String loginId = customUserDetails.getUsername();
 		return memberRepository.findByLoginId(loginId)

@@ -11,4 +11,6 @@ public interface FairyTaleService {
 		List<String> writers);
 
 	public List<FairyTaleListResponseDTO> findFairyTaleListByLoginId(CustomUserDetails customUserDetails);
+
+	public FairyTale findFairyTaleById(Integer fairyTaleId);
 }

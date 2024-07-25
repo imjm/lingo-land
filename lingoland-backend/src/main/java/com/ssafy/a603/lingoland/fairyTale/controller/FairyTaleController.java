@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.a603.lingoland.fairyTale.dto.CreateFairyTaleRequestDTO;
 import com.ssafy.a603.lingoland.fairyTale.dto.FairyTaleListResponseDTO;
+import com.ssafy.a603.lingoland.fairyTale.entity.FairyTale;
 import com.ssafy.a603.lingoland.fairyTale.service.FairyTaleService;
 import com.ssafy.a603.lingoland.member.security.CurrentUser;
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
@@ -40,7 +41,8 @@ public class FairyTaleController {
 
 	@GetMapping("/{fairyTaleId}")
 	public ResponseEntity<?> findFairyTaleById(@PathVariable("fairyTaleId") Integer fairyTaleId) {
-		return null;
+		FairyTale fairyTale = fairyTaleService.findFairyTaleById(fairyTaleId);
+		return ResponseEntity.status(HttpStatus.OK).body(fairyTale);
 	}
 
 	@PutMapping("/{fairyTaleId}")

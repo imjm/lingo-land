@@ -7,6 +7,7 @@ import java.util.List;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
@@ -38,7 +39,7 @@ public class FairyTale {
 
 	@Column(name = "summary", length = 2000)
 	private String summary;
-	
+
 	@JdbcTypeCode(SqlTypes.JSON)
 	@Column(columnDefinition = "jsonb")
 	private List<Story> content;
@@ -47,6 +48,7 @@ public class FairyTale {
 	private LocalDateTime createdAt = LocalDateTime.now();
 
 	@OneToMany(mappedBy = "fairyTale")
+	@JsonIgnore
 	private List<FairyTaleMember> fairyTaleMembers = new ArrayList<>();
 
 	@Builder
@@ -70,5 +72,4 @@ public class FairyTale {
 			this.story = story;
 		}
 	}
-
 }
