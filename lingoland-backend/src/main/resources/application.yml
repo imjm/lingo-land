@@ -20,3 +20,7 @@ logging:
         type:
           descriptor:
             sql: trace
+
+openvidu:
+  url: http://localhost:4443
+  secret: ssafy
