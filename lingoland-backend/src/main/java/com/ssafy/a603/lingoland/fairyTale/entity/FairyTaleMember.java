@@ -6,6 +6,7 @@ import com.ssafy.a603.lingoland.member.entity.Member;
 
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
@@ -26,12 +27,12 @@ public class FairyTaleMember {
 	private LocalDateTime invisibleAt;
 
 	@MapsId("fairyTaleId")
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "fairy_tale_id")
 	private FairyTale fairyTale;
 
 	@MapsId("memberId")
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
 
