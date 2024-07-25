@@ -23,17 +23,19 @@ public class FairyTaleServiceImpl implements FairyTaleService {
 
 	@Override
 	@Transactional
-	public FairyTale createFairyTale(FairyTale.Content content, String summary, List<String> writers) {
+	public FairyTale createFairyTale(String title, String cover, String summary, List<FairyTale.Story> content,
+		List<String> writers) {
 		List<Member> members = writers.stream()
 			.map(memberLoginId -> memberRepository.findByLoginId(memberLoginId)
 				.orElseThrow(() -> new IllegalArgumentException("Invalid member ID: " + memberLoginId)))
 			.toList();
 
-		FairyTale fairyTale = FairyTale.builder()
-			.content(content)
+		FairyTale fairyTale = fairyTaleRepository.save(FairyTale.builder()
+			.title(title)
+			.cover(cover)
 			.summary(summary)
-			.build();
-		fairyTale = fairyTaleRepository.save(fairyTale);
+			.content(content)
+			.build());
 		for (Member member : members) {
 			FairyTaleMember fairyTaleMember = FairyTaleMember.builder()
 				.fairyTale(fairyTale)

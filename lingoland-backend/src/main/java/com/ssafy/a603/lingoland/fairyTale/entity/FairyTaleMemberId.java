@@ -1,5 +1,6 @@
 package com.ssafy.a603.lingoland.fairyTale.entity;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import jakarta.persistence.Embeddable;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FairyTaleMemberId {
+public class FairyTaleMemberId implements Serializable {
 	private Integer fairyTaleId;
 	private Integer memberId;
 

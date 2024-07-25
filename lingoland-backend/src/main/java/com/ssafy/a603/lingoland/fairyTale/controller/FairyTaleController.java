@@ -20,7 +20,7 @@ public class FairyTaleController {
 
 	@PostMapping
 	public ResponseEntity<?> createFairyTale(@RequestBody CreateFairyTaleRequestDTO dto) {
-		fairyTaleService.createFairyTale(dto.content(), dto.summary(), dto.writers());
+		fairyTaleService.createFairyTale(dto.title(), dto.cover(), dto.summary(), dto.content(), dto.writers());
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }

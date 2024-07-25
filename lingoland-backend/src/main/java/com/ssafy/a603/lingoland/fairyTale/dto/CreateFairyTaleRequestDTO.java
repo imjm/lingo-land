@@ -4,5 +4,6 @@ import java.util.List;
 
 import com.ssafy.a603.lingoland.fairyTale.entity.FairyTale;
 
-public record CreateFairyTaleRequestDTO(FairyTale.Content content, String summary, List<String> writers) {
+public record CreateFairyTaleRequestDTO(String title, String cover, String summary, List<FairyTale.Story> content,
+										List<String> writers) {
 }

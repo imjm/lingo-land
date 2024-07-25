@@ -30,12 +30,18 @@ public class FairyTale {
 	@SequenceGenerator(name = "fairy_tale_seq", sequenceName = "fairy_tale_id_seq", allocationSize = 1)
 	private Integer id;
 
-	@JdbcTypeCode(SqlTypes.JSON)
-	@Column(columnDefinition = "jsonb")
-	private Content content;
+	@Column(name = "title")
+	private String title;
+
+	@Column(name = "cover")
+	private String cover;
 
 	@Column(name = "summary", length = 2000)
 	private String summary;
+	
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(columnDefinition = "jsonb")
+	private List<Story> content;
 
 	@Column(name = "created_at")
 	private LocalDateTime createdAt = LocalDateTime.now();
@@ -44,39 +50,25 @@ public class FairyTale {
 	private List<FairyTaleMember> fairyTaleMembers = new ArrayList<>();
 
 	@Builder
-	protected FairyTale(Content content, String summary) {
-		this.content = content;
+	protected FairyTale(String title, String cover, String summary, List<Story> content) {
+		this.title = title;
+		this.cover = cover;
 		this.summary = summary;
+		this.content = content;
 	}
 
 	@Getter
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
-	public static class Content {
-		private String title;
-		private String cover;
-		private List<Story> stories;
+	public static class Story {
+		private String illustration;
+		private String story;
 
 		@Builder
-		protected Content(@JsonProperty("title") String title,
-			@JsonProperty("cover") String cover,
-			@JsonProperty("stories") List<Story> stories) {
-			this.title = title;
-			this.cover = cover;
-			this.stories = stories;
-		}
-
-		@Getter
-		@NoArgsConstructor(access = AccessLevel.PROTECTED)
-		public static class Story {
-			private String illustration;
-			private String story;
-
-			@Builder
-			protected Story(@JsonProperty("illustration") String illustration,
-				@JsonProperty("story") String story) {
-				this.illustration = illustration;
-				this.story = story;
-			}
+		protected Story(@JsonProperty("illustration") String illustration,
+			@JsonProperty("story") String story) {
+			this.illustration = illustration;
+			this.story = story;
 		}
 	}
+
 }

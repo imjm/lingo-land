@@ -5,5 +5,6 @@ import java.util.List;
 import com.ssafy.a603.lingoland.fairyTale.entity.FairyTale;
 
 public interface FairyTaleService {
-	public FairyTale createFairyTale(FairyTale.Content content, String summary, List<String> writers);
+	public FairyTale createFairyTale(String title, String cover, String summary, List<FairyTale.Story> content,
+		List<String> writers);
 }
