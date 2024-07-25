@@ -5,6 +5,7 @@ import com.ssafy.a603.lingoland.member.dto.UpdateNicknameDto;
 import com.ssafy.a603.lingoland.member.security.CurrentUser;
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 import com.ssafy.a603.lingoland.member.service.MemberService;
+import com.ssafy.a603.lingoland.member.service.MemberServiceImpl;
 import com.ssafy.a603.lingoland.member.validator.SignUpValidator;
 import com.ssafy.a603.lingoland.member.dto.SignUpDto;
 import com.ssafy.a603.lingoland.member.entity.Member;
@@ -39,6 +40,15 @@ public class MemberController {
         }
         Member member = memberService.saveNewMember(signUpRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(member);
+    }
+
+    @GetMapping("/check/{loginId}")
+    public ResponseEntity<?> checkIdDuplication(@PathVariable(value = "loginId") String loginId){
+        if(memberService.checkIdDuplication(loginId)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
     }
 
     @GetMapping

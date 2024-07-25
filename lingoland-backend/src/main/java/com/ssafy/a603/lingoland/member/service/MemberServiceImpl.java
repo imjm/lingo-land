@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class MemberService implements UserDetailsService {
+public class MemberServiceImpl implements UserDetailsService, MemberService {
 
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
@@ -81,4 +81,7 @@ public class MemberService implements UserDetailsService {
         return memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않은 유저입니다"));
     }
 
+    public boolean checkIdDuplication(String loginId) {
+        return memberRepository.existsByLoginId(loginId);
+    }
 }
