@@ -25,14 +25,14 @@ const incorrectList = ref([
 </script>
 
 <template>
-  <v-main class="d-flex justify-center">
-    <v-container>
-      <h1>MainPage View</h1>
+    <v-main class="d-flex justify-center">
+        <v-container>
+            <h1>MainPage View</h1>
 
-      <v-row>
-        <v-col cols="5">
-          <Profile source="src\\assets\\sampleImg.jpg" />
-        </v-col>
+            <v-row>
+                <v-col cols="5">
+                    <Profile source="src\\assets\\sampleImg.jpg" />
+                </v-col>
 
         <v-col cols="7">
           <v-row>
@@ -78,10 +78,10 @@ const incorrectList = ref([
 
 <style scoped>
 .room-code {
-  background-color: #d2f0ff;
-  width: 100%;
-  height: 300px;
-  border-radius: 4px;
-  font-size: x-large;
+    background-color: #d2f0ff;
+    width: 100%;
+    height: 300px;
+    border-radius: 4px;
+    font-size: x-large;
 }
 </style>

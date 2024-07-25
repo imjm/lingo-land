@@ -3,7 +3,7 @@ import TaleList from "@/components/tale/TaleList.vue";
 </script>
 
 <template>
-  <TaleList />
+    <TaleList />
 </template>
 
 <style scoped></style>
