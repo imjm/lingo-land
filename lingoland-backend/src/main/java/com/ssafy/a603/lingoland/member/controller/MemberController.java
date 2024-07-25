@@ -2,12 +2,15 @@ package com.ssafy.a603.lingoland.member.controller;
 
 import com.ssafy.a603.lingoland.member.dto.GetMemberInfoDto;
 import com.ssafy.a603.lingoland.member.dto.UpdateNicknameDto;
+import com.ssafy.a603.lingoland.member.dto.UpdatePasswordDto;
 import com.ssafy.a603.lingoland.member.security.CurrentUser;
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 import com.ssafy.a603.lingoland.member.service.MemberService;
+import com.ssafy.a603.lingoland.member.service.MemberServiceImpl;
 import com.ssafy.a603.lingoland.member.validator.SignUpValidator;
 import com.ssafy.a603.lingoland.member.dto.SignUpDto;
 import com.ssafy.a603.lingoland.member.entity.Member;
+import com.ssafy.a603.lingoland.member.validator.UpdatePasswordValidator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,6 +29,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final SignUpValidator signUpValidator;
+    private final UpdatePasswordValidator updatePasswordValidator;
 
     @PostMapping("/sign-up")
     public ResponseEntity<?> signUp(@Valid @RequestBody SignUpDto signUpRequest, BindingResult bindingResult) {
@@ -41,16 +45,41 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.CREATED).body(member);
     }
 
+    @GetMapping("/check/{loginId}")
+    public ResponseEntity<?> checkIdDuplication(@PathVariable(value = "loginId") String loginId){
+        if(memberService.checkIdDuplication(loginId)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+    }
+
     @GetMapping
     public ResponseEntity<?> getMemberInfo(@CurrentUser CustomUserDetails customUserDetails) {
         GetMemberInfoDto getMemberInfoDto = memberService.getMemberInfo(customUserDetails);
         return ResponseEntity.status(HttpStatus.OK).body(getMemberInfoDto);
     }
 
-    @PutMapping
+    @PutMapping("/nickname")
     public ResponseEntity<?> updateNickname(@Valid @RequestBody UpdateNicknameDto updateNicknameDto,
                                             @CurrentUser CustomUserDetails customUserDetails) {
         memberService.updateNickname(updateNicknameDto, customUserDetails);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PutMapping("/password")
+    public ResponseEntity<?> updatePassword(@Valid @RequestBody UpdatePasswordDto updatePasswordDto,
+                                            @CurrentUser CustomUserDetails customUserDetails,
+                                            BindingResult bindingResult) {
+        updatePasswordValidator.validate(updatePasswordDto, bindingResult, customUserDetails);
+        if(bindingResult.hasErrors()) {
+            List<String> errors = bindingResult.getAllErrors()
+                    .stream()
+                    .map(ObjectError::getCode)
+                    .collect(Collectors.toList());
+            return ResponseEntity.badRequest().body(errors);
+        }
+        memberService.updatePassword(updatePasswordDto, customUserDetails);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

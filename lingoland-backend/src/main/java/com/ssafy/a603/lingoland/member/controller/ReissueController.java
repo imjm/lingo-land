@@ -1,7 +1,7 @@
 package com.ssafy.a603.lingoland.member.controller;
 
 import com.ssafy.a603.lingoland.member.repository.MemberRepository;
-import com.ssafy.a603.lingoland.member.service.MemberService;
+import com.ssafy.a603.lingoland.member.service.MemberServiceImpl;
 import com.ssafy.a603.lingoland.member.entity.Member;
 import com.ssafy.a603.lingoland.member.security.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -23,7 +23,7 @@ import java.util.NoSuchElementException;
 public class ReissueController {
 
     private final JWTUtil jwtUtil;
-    private final MemberService memberService;
+    private final MemberServiceImpl memberService;
     private final MemberRepository memberRepository;
 
     @PostMapping("/reissue")
