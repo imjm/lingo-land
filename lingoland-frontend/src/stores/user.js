@@ -18,6 +18,7 @@ export const useUserStore = defineStore("userStore", () => {
      */
 
     function checkPassword(originPassword, checkPassword) {
+        // 비밀번호와 비밀번호 확인이 일치한지 확인
         if (originPassword === checkPassword) {
             return true;
         } else {
@@ -25,15 +26,30 @@ export const useUserStore = defineStore("userStore", () => {
         }
     }
 
+    // id 중복 체크
+    const checkDuplicate = async (loginId) => {
+        let return_value;
+        await axios
+            .get(`/users/check/${loginId}`, { withCredentials: true })
+            .then((response) => {
+                if (response.status === httpStatus.OK) {
+                    return_value = true;
+                }
+            })
+            .catch((error) => {
+                if (error.status === httpStatus.CONFLICT) {
+                    return_value = false;
+                }
+            });
+
+        return return_value;
+    };
+
+    // 회원가입
     const signUp = async (userInfo) => {
         await axios
             .post("/users/sign-up", userInfo, { withCredentials: true })
             .then((response) => {
-                console.log(
-                    response.status,
-                    httpStatus.CREATE,
-                    response.status === httpStatus.CREATE
-                );
                 if (response.status === httpStatus.CREATE) {
                     Swal.fire({
                         title: "회원가입 완료",
@@ -56,6 +72,7 @@ export const useUserStore = defineStore("userStore", () => {
 
     return {
         checkPassword,
+        checkDuplicate,
         signUp,
     };
 });
