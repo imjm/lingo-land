@@ -2,6 +2,7 @@ package com.ssafy.a603.lingoland.member.service;
 
 import com.ssafy.a603.lingoland.member.dto.GetMemberInfoDto;
 import com.ssafy.a603.lingoland.member.dto.UpdateNicknameDto;
+import com.ssafy.a603.lingoland.member.entity.Role;
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 import com.ssafy.a603.lingoland.member.repository.MemberRepository;
 import com.ssafy.a603.lingoland.member.dto.SignUpDto;
@@ -32,7 +33,8 @@ public class MemberService implements UserDetailsService {
                 .nickname(signUpRequest.getNickname())
                 .password(passwordEncoder.encode(signUpRequest.getPassword()))
                 .createdAt(LocalDateTime.now())
-                .rank("d")
+                .rank("temp")
+                .role(Role.ROLE_USER)
                 .build();
         return memberRepository.save(member);
     }
