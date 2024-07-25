@@ -37,7 +37,7 @@ const clickTale = () => {
                             color="brown"
                         ></v-btn>
 
-                        <DropBox />
+                        <DropBox :item="['전체공개','나만보기']"/>
                     </v-card-actions>
                 </div>
             </div>
