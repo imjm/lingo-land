@@ -2,6 +2,7 @@ package com.ssafy.a603.lingoland.member.service;
 
 import com.ssafy.a603.lingoland.member.dto.GetMemberInfoDto;
 import com.ssafy.a603.lingoland.member.dto.UpdateNicknameDto;
+import com.ssafy.a603.lingoland.member.dto.UpdatePasswordDto;
 import com.ssafy.a603.lingoland.member.entity.Role;
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 import com.ssafy.a603.lingoland.member.repository.MemberRepository;
@@ -75,6 +76,13 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
     public void updateNickname(UpdateNicknameDto updateNicknameDto, CustomUserDetails customUserDetails) {
         Member member = getMember(customUserDetails.getUsername());
         member.updateNickname(updateNicknameDto.nickname());
+    }
+
+    @Transactional
+    @Override
+    public void updatePassword(UpdatePasswordDto updatePasswordDto, CustomUserDetails customUserDetails) {
+        Member member = getMember(customUserDetails.getUsername());
+        member.updatePassword(passwordEncoder.encode(updatePasswordDto.password()));
     }
 
     private Member getMember(String loginId) {
