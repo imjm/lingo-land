@@ -1,11 +1,13 @@
 <script setup>
-import { defineModel, defineProps } from "vue";
+import { defineModel, defineProps, defineEmits } from "vue";
 /*
  id: 컴포넌트 id
  type: input 컴포넌트 type 지정
  data: input 컴포넌트 위에 지정할 이름
  variant: input field 모양을 지정
 */
+defineEmits(["blurEvent"]);
+
 const model = defineModel();
 
 const props = defineProps({
@@ -26,6 +28,7 @@ const props = defineProps({
             :id="id"
             variant="outlined"
             :placeholder="hint"
+            @blur="$emit('blurEvent')"
         ></v-text-field>
     </div>
 </template>
