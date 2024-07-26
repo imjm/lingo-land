@@ -1,16 +1,14 @@
 package com.ssafy.a603.lingoland.member.controller;
 
-import com.ssafy.a603.lingoland.member.dto.GetMemberInfoDto;
-import com.ssafy.a603.lingoland.member.dto.UpdateNicknameDto;
-import com.ssafy.a603.lingoland.member.dto.UpdatePasswordDto;
+import com.ssafy.a603.lingoland.member.dto.*;
 import com.ssafy.a603.lingoland.member.security.CurrentUser;
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 import com.ssafy.a603.lingoland.member.service.MemberService;
 import com.ssafy.a603.lingoland.member.service.MemberServiceImpl;
 import com.ssafy.a603.lingoland.member.validator.SignUpValidator;
-import com.ssafy.a603.lingoland.member.dto.SignUpDto;
 import com.ssafy.a603.lingoland.member.entity.Member;
 import com.ssafy.a603.lingoland.member.validator.UpdatePasswordValidator;
+import com.ssafy.a603.lingoland.member.validator.UpdateProfileImageValidator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,6 +28,7 @@ public class MemberController {
     private final MemberService memberService;
     private final SignUpValidator signUpValidator;
     private final UpdatePasswordValidator updatePasswordValidator;
+    private final UpdateProfileImageValidator updateProfileImageValidator;
 
     @PostMapping("/sign-up")
     public ResponseEntity<?> signUp(@Valid @RequestBody SignUpDto signUpRequest, BindingResult bindingResult) {
@@ -80,6 +79,22 @@ public class MemberController {
             return ResponseEntity.badRequest().body(errors);
         }
         memberService.updatePassword(updatePasswordDto, customUserDetails);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PutMapping("/profile-image")
+    public ResponseEntity<?> updateProfileImage(@RequestBody UpdateProfileImageDto updateProfileImageDto,
+                                                @CurrentUser CustomUserDetails customUserDetails,
+                                                BindingResult bindingResult) {
+        updateProfileImageValidator.validate(updateProfileImageDto, bindingResult);
+        if(bindingResult.hasErrors()) {
+            List<String> errors = bindingResult.getAllErrors()
+                    .stream()
+                    .map(ObjectError::getCode)
+                    .collect(Collectors.toList());
+            return ResponseEntity.badRequest().body(errors);
+        }
+        memberService.updateProfileImage(updateProfileImageDto, customUserDetails);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

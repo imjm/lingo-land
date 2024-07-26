@@ -24,3 +24,8 @@ logging:
 openvidu:
   url: http://localhost:4443
   secret: ssafy
+
+# 이미지 저장 시 요청 크기 조절
+server:
+  tomcat:
+    max-http-form-post-size: 5MB
