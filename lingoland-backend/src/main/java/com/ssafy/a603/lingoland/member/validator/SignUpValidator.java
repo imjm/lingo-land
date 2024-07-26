@@ -22,7 +22,11 @@ public class SignUpValidator implements Validator {
     public void validate(Object target, Errors errors) {
         SignUpDto request = (SignUpDto) target;
         if(memberRepository.existsByLoginId(request.getLoginId())) {
-            errors.rejectValue("checkedPassword", "비밀번");
+            errors.rejectValue("loginId", "이미 존재하는 아이디입니다.");
+            return;
+        }
+        if(!request.getCheckedPassword().equals(request.getPassword())) {
+            errors.rejectValue("checkedPassword", "비밀번호를 다시 확인해주세요.");
         }
     }
 }
