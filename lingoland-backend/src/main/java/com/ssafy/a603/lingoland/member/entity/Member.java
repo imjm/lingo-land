@@ -7,15 +7,7 @@ import java.util.List;
 import com.ssafy.a603.lingoland.fairyTale.entity.FairyTaleMember;
 import com.ssafy.a603.lingoland.group.entity.GroupMember;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -48,6 +40,7 @@ public class Member {
 	@Column(nullable = false)
 	private String password;
 
+	@Lob
 	private String profileImage;
 
 	@Column(nullable = false)
@@ -91,5 +84,9 @@ public class Member {
 
 	public void updatePassword(String password) {
 		this.password = password;
+	}
+
+	public void updateProfileImage(String profileImage) {
+		this.profileImage = profileImage;
 	}
 }

@@ -1,12 +1,9 @@
 package com.ssafy.a603.lingoland.member.service;
 
-import com.ssafy.a603.lingoland.member.dto.GetMemberInfoDto;
-import com.ssafy.a603.lingoland.member.dto.UpdateNicknameDto;
-import com.ssafy.a603.lingoland.member.dto.UpdatePasswordDto;
+import com.ssafy.a603.lingoland.member.dto.*;
 import com.ssafy.a603.lingoland.member.entity.Role;
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 import com.ssafy.a603.lingoland.member.repository.MemberRepository;
-import com.ssafy.a603.lingoland.member.dto.SignUpDto;
 import com.ssafy.a603.lingoland.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -83,6 +80,13 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
     public void updatePassword(UpdatePasswordDto updatePasswordDto, CustomUserDetails customUserDetails) {
         Member member = getMember(customUserDetails.getUsername());
         member.updatePassword(passwordEncoder.encode(updatePasswordDto.password()));
+    }
+
+    @Transactional
+    @Override
+    public void updateProfileImage(UpdateProfileImageDto updateProfileImageDto, CustomUserDetails customUserDetails) {
+        Member member = getMember(customUserDetails.getUsername());
+        member.updateProfileImage(updateProfileImageDto.profileImage());
     }
 
     private Member getMember(String loginId) {
