@@ -66,59 +66,6 @@ class GroupControllerDiffblueTest {
 
 	/**
 	 * Method under test:
-	 * {@link GroupController#createGroup(CreateGroupDTO, MultipartFile)}
-	 */
-	@Test
-	void testCreateGroup() throws IOException {
-		try (MockedStatic<Files> mockFiles = mockStatic(Files.class)) {
-			//   Diffblue Cover was unable to create a Spring-specific test for this Spring method.
-
-			// Arrange
-			mockFiles.when(() -> Files.newOutputStream(Mockito.<Path>any(), isA(OpenOption[].class)))
-				.thenReturn(new ByteArrayOutputStream(1));
-			GroupRepository groupRepository = mock(GroupRepository.class);
-			Group.GroupBuilder groupImageResult = Group.builder()
-				.description("The characteristics of someone or something")
-				.groupImage("Group Image");
-			Group buildResult = groupImageResult.leader(new Member()).name("Name").password(1).build();
-			when(groupRepository.save(Mockito.<Group>any())).thenReturn(buildResult);
-			MemberRepository memberRepository = mock(MemberRepository.class);
-			Optional<Member> ofResult = Optional.of(new Member());
-			when(memberRepository.findById(Mockito.<Integer>any())).thenReturn(ofResult);
-			GroupMemberRepository groupMemberRepository = mock(GroupMemberRepository.class);
-			GroupMember.GroupMemberBuilder descriptionResult = GroupMember.builder()
-				.description("The characteristics of someone or something");
-			GroupMemberId id = GroupMemberId.builder().groupId(1).memberId(1).build();
-			GroupMember buildResult2 = descriptionResult.id(id).build();
-			when(groupMemberRepository.save(Mockito.<GroupMember>any())).thenReturn(buildResult2);
-			GroupController groupController = new GroupController(
-				new GroupServiceImpl(groupRepository, memberRepository, groupMemberRepository, new ImgUtils()));
-			CreateGroupDTO createGroupDTO = new CreateGroupDTO("Name", 1, "The characteristics of someone or something",
-				1);
-
-			// Act
-			ResponseEntity<?> actualCreateGroupResult = groupController.createGroup(createGroupDTO,
-				new MockMultipartFile("Name", new ByteArrayInputStream("AXAXAXAX".getBytes("UTF-8"))));
-
-			// Assert
-			mockFiles.verify(() -> Files.newOutputStream(Mockito.<Path>any(), isA(OpenOption[].class)));
-			verify(memberRepository).findById(eq(1));
-			verify(groupRepository).save(isA(Group.class));
-			verify(groupMemberRepository).save(isA(GroupMember.class));
-			HttpStatusCode statusCode = actualCreateGroupResult.getStatusCode();
-			assertTrue(statusCode instanceof HttpStatus);
-			assertEquals("group made.", actualCreateGroupResult.getBody());
-			assertEquals(201, actualCreateGroupResult.getStatusCodeValue());
-			assertEquals(HttpStatus.CREATED, statusCode);
-			assertTrue(actualCreateGroupResult.hasBody());
-			HttpHeaders headers = actualCreateGroupResult.getHeaders();
-			assertTrue(headers.isEmpty());
-			assertEquals(headers, groupController.getGroups().getHeaders());
-		}
-	}
-
-	/**
-	 * Method under test:
 	 * {@link GroupController#createGroup(CreateGroupDTO, MultipartFile, CustomUserDetails)}
 	 */
 	@Test
@@ -414,53 +361,6 @@ class GroupControllerDiffblueTest {
 
 	/**
 	 * Method under test:
-	 * {@link GroupController#updateGroupInfo(Integer, UpdateGroupDTO, MultipartFile)}
-	 */
-	@Test
-	void testUpdateGroupInfo() throws IOException {
-		try (MockedStatic<Files> mockFiles = mockStatic(Files.class)) {
-			//   Diffblue Cover was unable to create a Spring-specific test for this Spring method.
-
-			// Arrange
-			mockFiles.when(() -> Files.newOutputStream(Mockito.<Path>any(), isA(OpenOption[].class)))
-				.thenReturn(new ByteArrayOutputStream(1));
-			mockFiles.when(() -> Files.delete(Mockito.<Path>any())).thenAnswer(invocation -> null);
-			GroupRepository groupRepository = mock(GroupRepository.class);
-			Group.GroupBuilder groupImageResult = Group.builder()
-				.description("The characteristics of someone or something")
-				.groupImage("Group Image");
-			Group buildResult = groupImageResult.leader(new Member()).name("Name").password(1).build();
-			Optional<Group> ofResult = Optional.of(buildResult);
-			when(groupRepository.findById(Mockito.<Integer>any())).thenReturn(ofResult);
-			MemberRepository memberRepository = mock(MemberRepository.class);
-			GroupMemberRepository groupMemberRepository = mock(GroupMemberRepository.class);
-			GroupController groupController = new GroupController(
-				new GroupServiceImpl(groupRepository, memberRepository, groupMemberRepository, new ImgUtils()));
-			UpdateGroupDTO updateGroupDTO = new UpdateGroupDTO(1, "Name", 1,
-				"The characteristics of someone or something");
-
-			// Act
-			ResponseEntity<?> actualUpdateGroupInfoResult = groupController.updateGroupInfo(1, updateGroupDTO,
-				new MockMultipartFile("Name", new ByteArrayInputStream("AXAXAXAX".getBytes("UTF-8"))));
-
-			// Assert
-			mockFiles.verify(() -> Files.delete(Mockito.<Path>any()));
-			mockFiles.verify(() -> Files.newOutputStream(Mockito.<Path>any(), isA(OpenOption[].class)));
-			verify(groupRepository).findById(eq(1));
-			HttpStatusCode statusCode = actualUpdateGroupInfoResult.getStatusCode();
-			assertTrue(statusCode instanceof HttpStatus);
-			assertNull(actualUpdateGroupInfoResult.getBody());
-			assertEquals(204, actualUpdateGroupInfoResult.getStatusCodeValue());
-			assertEquals(HttpStatus.NO_CONTENT, statusCode);
-			assertFalse(actualUpdateGroupInfoResult.hasBody());
-			HttpHeaders headers = actualUpdateGroupInfoResult.getHeaders();
-			assertTrue(headers.isEmpty());
-			assertEquals(headers, groupController.getGroups().getHeaders());
-		}
-	}
-
-	/**
-	 * Method under test:
 	 * {@link GroupController#updateGroupInfo(Integer, UpdateGroupDTO, MultipartFile, CustomUserDetails)}
 	 */
 	@Test
@@ -523,43 +423,6 @@ class GroupControllerDiffblueTest {
 	}
 
 	/**
-	 * Method under test: {@link GroupController#deleteGroup(Integer)}
-	 */
-	@Test
-	void testDeleteGroup() throws Exception {
-		// Arrange
-		doNothing().when(groupService).deleteById(anyInt());
-		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/api/v1/groups/{groupsId}", 1);
-
-		// Act
-		ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(groupController)
-			.build()
-			.perform(requestBuilder);
-
-		// Assert
-		actualPerformResult.andExpect(MockMvcResultMatchers.status().isNoContent());
-	}
-
-	/**
-	 * Method under test: {@link GroupController#deleteGroup(Integer)}
-	 */
-	@Test
-	void testDeleteGroup2() throws Exception {
-		// Arrange
-		doNothing().when(groupService).deleteById(anyInt());
-		MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/api/v1/groups/{groupsId}", 1);
-		requestBuilder.contentType("https://example.org/example");
-
-		// Act
-		ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(groupController)
-			.build()
-			.perform(requestBuilder);
-
-		// Assert
-		actualPerformResult.andExpect(MockMvcResultMatchers.status().isNoContent());
-	}
-
-	/**
 	 * Method under test: {@link GroupController#getGroups()}
 	 */
 	@Test
@@ -577,29 +440,4 @@ class GroupControllerDiffblueTest {
 			.andExpect(MockMvcResultMatchers.content().string("[]"));
 	}
 
-	/**
-	 * Method under test:
-	 * {@link GroupController#joinGroup(Integer, Integer, JoinGroupRequestDTO)}
-	 */
-	@Test
-	void testJoinGroup() throws Exception {
-		// Arrange
-		doNothing().when(groupService)
-			.addMemberToGroupWithPasswordCheck(anyInt(), anyInt(), Mockito.<JoinGroupRequestDTO>any());
-		MockHttpServletRequestBuilder contentTypeResult = MockMvcRequestBuilders
-			.post("/api/v1/groups/{groupsId}/users/{userId}", 1, 1)
-			.contentType(MediaType.APPLICATION_JSON);
-
-		ObjectMapper objectMapper = new ObjectMapper();
-		MockHttpServletRequestBuilder requestBuilder = contentTypeResult.content(
-			objectMapper.writeValueAsString(new JoinGroupRequestDTO("The characteristics of someone or something", 1)));
-
-		// Act
-		ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(groupController)
-			.build()
-			.perform(requestBuilder);
-
-		// Assert
-		actualPerformResult.andExpect(MockMvcResultMatchers.status().isNoContent());
-	}
 }
