@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ssafy.a603.lingoland.fairyTale.dto.FairyTaleListResponseDTO;
 import com.ssafy.a603.lingoland.fairyTale.entity.FairyTale;
 import com.ssafy.a603.lingoland.fairyTale.entity.FairyTaleMember;
+import com.ssafy.a603.lingoland.fairyTale.entity.FairyTaleMemberId;
 import com.ssafy.a603.lingoland.fairyTale.repository.FairyTaleMemberRepository;
 import com.ssafy.a603.lingoland.fairyTale.repository.FairyTaleRepository;
 import com.ssafy.a603.lingoland.member.entity.Member;
@@ -53,6 +54,27 @@ public class FairyTaleServiceImpl implements FairyTaleService {
 	public List<FairyTaleListResponseDTO> findFairyTaleListByLoginId(CustomUserDetails customUserDetails) {
 		Member member = getMemberFromUserDetails(customUserDetails);
 		return fairyTaleRepository.findAllFairyTalesByMemberId(member.getId());
+	}
+
+	@Override
+	public FairyTale findFairyTaleById(Integer fairyTaleId) {
+		FairyTale fairyTale = fairyTaleRepository.findById(fairyTaleId)
+			.orElseThrow(() -> new NoSuchElementException("no such fairyTale"));
+		return fairyTale;
+	}
+
+	@Override
+	@Transactional
+	public void fairyTaleInvisible(Integer fairyTaleId, CustomUserDetails customUserDetails) {
+		Member member = getMemberFromUserDetails(customUserDetails);
+
+		FairyTaleMemberId fairyTaleMemberId = FairyTaleMemberId.builder()
+			.fairyTaleId(fairyTaleId)
+			.memberId(member.getId())
+			.build();
+		FairyTaleMember fairyTaleMember = fairyTaleMemberRepository.findById(fairyTaleMemberId)
+			.orElseThrow(() -> new NoSuchElementException("no such fairyTale"));
+		fairyTaleMember.invisible();
 	}
 
 	private Member getMemberFromUserDetails(CustomUserDetails customUserDetails) {
