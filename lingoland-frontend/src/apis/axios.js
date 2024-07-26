@@ -48,7 +48,7 @@ instance.interceptors.response.use(
 
                 // 새 액세스 토큰이 응답되면,
                 const refreshResponse = await instance
-                    .get("/auth/refresh", {
+                    .post("/reissue", {
                         withCredentials: true,
                     })
                     .then((response) => {
