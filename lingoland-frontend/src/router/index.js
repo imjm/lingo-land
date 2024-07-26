@@ -4,6 +4,7 @@ import MyPage from "@/components/user/MyPage.vue";
 import GameRoomView from "@/views/GameRoomView.vue";
 import GroupListView from "@/views/GroupListView.vue";
 import GroupView from "@/views/GroupView.vue";
+import LoadingPageView from "@/views/LoadingPageView.vue";
 import LoginView from "@/views/LoginView.vue";
 import MainPageView from "@/views/MainPageView.vue";
 import MyPageView from "@/views/MyPageView.vue";
@@ -123,6 +124,11 @@ const router = createRouter({
                     //그룹장만 입장 가능하게 해야 되맨!
                 },
             ],
+        },
+        {
+            path: "/loading",
+            name: "loadingPage",
+            component: LoadingPageView,
         },
     ],
 });

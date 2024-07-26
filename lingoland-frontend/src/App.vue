@@ -39,6 +39,10 @@ import { RouterView } from "vue-router";
         >groupMemberDetailByAdmin</RouterLink
     >
     |
+    <RouterLink :to="{ name: 'loadingPage' }"
+        >loadingpage</RouterLink
+    >
+    |
 
     <v-app class="bg-amber-lighten-3">
         <RouterView></RouterView>
