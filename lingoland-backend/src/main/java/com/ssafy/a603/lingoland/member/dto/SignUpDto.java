@@ -24,4 +24,8 @@ public class SignUpDto {
     @Length(max=25)
     @NotBlank
     private String password;
+
+    @Length(max=25)
+    @NotBlank
+    private String checkedPassword;
 }
