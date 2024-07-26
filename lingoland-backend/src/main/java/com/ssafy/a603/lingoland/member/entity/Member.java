@@ -13,6 +13,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
 
 @Entity
 @Getter
@@ -40,7 +41,7 @@ public class Member {
 	@Column(nullable = false)
 	private String password;
 
-	@Lob
+	@Lob @Basic(fetch = FetchType.EAGER)
 	private String profileImage;
 
 	@Column(nullable = false)
