@@ -30,7 +30,7 @@ const incorrectList = ref([
     <v-main class="d-flex mt-10 justify-center">
         <v-container >
             <v-row>
-                <v-col cols="5">
+                <v-col cols="5" class="d-flex align-center justify-center">
                     <Profile source="src\\assets\\sampleImg.jpg" />
                 </v-col>
 
