@@ -47,13 +47,13 @@ public class ReissueController {
             return new ResponseEntity<>("refresh token expired", HttpStatus.BAD_REQUEST);
         }
 
-        String category = jwtUtil.getCategory(refresh);
+        String category = jwtUtil.getCategoryFromToken(refresh);
 
         if(!category.equals("refresh")) {
             return new ResponseEntity<>("refresh token invalid", HttpStatus.BAD_REQUEST);
         }
 
-        String loginId = jwtUtil.getLoginId(refresh);
+        String loginId = jwtUtil.getLoginIdFromToken(refresh);
         Integer memberPk = jwtUtil.getMemberPkFromToken(refresh);
 
         Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않은 유저입니다"));
@@ -61,7 +61,7 @@ public class ReissueController {
             return new ResponseEntity<>("refresh token invalid", HttpStatus.BAD_REQUEST);
         }
 
-        String role = jwtUtil.getRole(refresh);
+        String role = jwtUtil.getRoleFromToken(refresh);
 
         String newAccess = jwtUtil.createToken("access", loginId, memberPk, role, 600000L);
         String newRefresh = jwtUtil.createToken("refresh", loginId, memberPk, role, 86400000L);
