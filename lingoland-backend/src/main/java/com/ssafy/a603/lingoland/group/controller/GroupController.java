@@ -1,9 +1,12 @@
 package com.ssafy.a603.lingoland.group.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,11 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.a603.lingoland.group.dto.CreateGroupDTO;
+import com.ssafy.a603.lingoland.group.dto.CreateGroupResponseDto;
 import com.ssafy.a603.lingoland.group.dto.JoinGroupRequestDTO;
 import com.ssafy.a603.lingoland.group.dto.MemberInGroupResponseDTO;
 import com.ssafy.a603.lingoland.group.dto.UpdateGroupDTO;
 import com.ssafy.a603.lingoland.group.entity.Group;
 import com.ssafy.a603.lingoland.group.service.GroupService;
+import com.ssafy.a603.lingoland.group.validator.CreateGroupValidator;
+import com.ssafy.a603.lingoland.group.validator.GroupPasswordValidator;
 import com.ssafy.a603.lingoland.member.security.CurrentUser;
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 
@@ -33,13 +39,25 @@ import lombok.RequiredArgsConstructor;
 public class GroupController {
 
 	private final GroupService groupService;
+	private final CreateGroupValidator createGroupValidator;
+	private final GroupPasswordValidator groupPasswordValidator;
 
-	@PostMapping(produces = "application/json", consumes = "multipart/form-data")
-	public ResponseEntity<?> createGroup(@RequestPart(value = "createGroup") CreateGroupDTO createGroupDTO,
-		@RequestPart(value = "groupImage", required = false) MultipartFile groupImage,
-		@CurrentUser CustomUserDetails customUserDetails) {
-		groupService.create(createGroupDTO, groupImage, customUserDetails);
-		return ResponseEntity.status(HttpStatus.CREATED).body("group made.");
+	@PostMapping
+	public ResponseEntity<?> createGroup(@RequestBody CreateGroupDTO createGroupDTO,
+		@CurrentUser CustomUserDetails customUserDetails, BindingResult bindingResult) {
+		createGroupValidator.validate(createGroupDTO, bindingResult);
+		groupPasswordValidator.validate(createGroupDTO, bindingResult);
+		if (bindingResult.hasErrors()) {
+			List<String> errors = bindingResult.getAllErrors()
+				.stream()
+				.map(ObjectError::getCode)
+				.collect(Collectors.toList());
+			return ResponseEntity.badRequest().body(errors);
+		}
+		Group group = groupService.create(createGroupDTO, customUserDetails);
+		return ResponseEntity.status(HttpStatus.CREATED).body(CreateGroupResponseDto.builder()
+			.groupId(group.getId())
+			.build());
 	}
 
 	@GetMapping("/check/{groupName}")

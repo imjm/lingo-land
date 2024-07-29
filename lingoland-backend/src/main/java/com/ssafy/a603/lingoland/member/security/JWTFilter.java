@@ -52,7 +52,7 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        String category = jwtUtil.getCategory(accessToken);
+        String category = jwtUtil.getCategoryFromToken(accessToken);
 
         if(!category.equals("access")) {
 
@@ -63,7 +63,8 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        String loginId = jwtUtil.getLoginId(accessToken);
+        String loginId = jwtUtil.getLoginIdFromToken(accessToken);
+        Integer memberId = jwtUtil.getMemberIdFromToken(accessToken);
 
         UserDetails userDetails = memberService.loadUserByUsername(loginId);
 
@@ -73,6 +74,7 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         Member member = Member.builder()
+                .id(memberId)
                 .loginId(loginId)
                 .build();
 

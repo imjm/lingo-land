@@ -62,14 +62,14 @@ public class CustomLogoutFilter extends GenericFilterBean {
             return;
         }
 
-        String category = jwtUtil.getCategory(refresh);
+        String category = jwtUtil.getCategoryFromToken(refresh);
         if(!category.equals("refresh")) {
             // refresh 토큰이 아님
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
-        String loginId = jwtUtil.getLoginId(refresh);
+        String loginId = jwtUtil.getLoginIdFromToken(refresh);
         if(!memberService.checkExistRefreshToken(loginId)) {
             // 토큰이 없음
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
