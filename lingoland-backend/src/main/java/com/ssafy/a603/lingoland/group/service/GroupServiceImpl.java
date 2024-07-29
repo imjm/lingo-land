@@ -33,6 +33,7 @@ public class GroupServiceImpl implements GroupService {
 	private final ImgUtils imgUtils;
 
 	@Override
+	@Transactional
 	public Group create(CreateGroupDTO request, MultipartFile groupImage, CustomUserDetails customUserDetails) {
 		Member member = getMemberFromUserDetails(customUserDetails);
 		Group group = Group.builder()
@@ -52,11 +53,18 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
+	public Boolean checkNameDuplication(String groupName) {
+		return groupRepository.existsByName(groupName);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
 	public List<Group> findAll() {
 		return groupRepository.findAll();
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Group findById(int id) {
 		return groupRepository.findById(id).orElseThrow(
 			() -> new NoSuchElementException("No such group")
@@ -64,6 +72,7 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
+	@Transactional
 	public void update(Integer groupId, UpdateGroupDTO request, MultipartFile groupImage,
 		CustomUserDetails customUserDetails) {
 		Member member = getMemberFromUserDetails(customUserDetails);
@@ -79,6 +88,7 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteById(int id, CustomUserDetails customUserDetails) {
 		Member member = getMemberFromUserDetails(customUserDetails);
 		Group group = findById(id);
@@ -89,6 +99,7 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
+	@Transactional
 	public void addMemberToGroupWithPasswordCheck(int groupId, JoinGroupRequestDTO joinGroupRequestDTO,
 		CustomUserDetails customUserDetails) {
 		Group group = findById(groupId);
@@ -104,6 +115,7 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<MemberInGroupResponseDTO> findAllMembersByGroupId(int groupId, String keyword,
 		CustomUserDetails customUserDetails) {
 		Member member = getMemberFromUserDetails(customUserDetails);
@@ -152,8 +164,7 @@ public class GroupServiceImpl implements GroupService {
 		groupMember.addGroup(group);
 		groupMember.addMember(member);
 
-		group.join(groupMember);
-		member.getGroupMembers().add(groupMember);
+		group.join();
 
 		groupMemberRepository.save(groupMember);
 	}
