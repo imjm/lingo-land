@@ -64,7 +64,7 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         String loginId = jwtUtil.getLoginIdFromToken(accessToken);
-        Integer memberPk = jwtUtil.getMemberIdFromToken(accessToken);
+        Integer memberId = jwtUtil.getMemberIdFromToken(accessToken);
 
         UserDetails userDetails = memberService.loadUserByUsername(loginId);
 
@@ -74,7 +74,7 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         Member member = Member.builder()
-                .id(memberPk)
+                .id(memberId)
                 .loginId(loginId)
                 .build();
 

@@ -42,11 +42,11 @@ public class JWTUtil {
         return decryptPayload(token).getExpiration().before(new Date());
     }
 
-    public String createToken(String category, String loginId, Integer memberPk, String role, Long expiredMs) {
+    public String createToken(String category, String loginId, Integer memberId, String role, Long expiredMs) {
         return Jwts.builder()
                 .header().add("typ", "JWT")
                 .and()
-                .claim("payload", encryptPayload(category, loginId, memberPk, role, expiredMs))
+                .claim("payload", encryptPayload(category, loginId, memberId, role, expiredMs))
                 .signWith(secretKey)
                 .compact();
     }
