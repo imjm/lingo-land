@@ -25,6 +25,10 @@ public class CustomUserDetails implements UserDetails {
         return collection;
     }
 
+    public Integer getMemberPk() {
+        return member.getId();
+    }
+
     @Override
     public String getPassword() {
         return member.getPassword();
