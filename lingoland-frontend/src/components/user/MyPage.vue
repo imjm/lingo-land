@@ -21,14 +21,11 @@ const incorrectList = ref([
     "문제 10",
     // 데이터 받아오기
 ]);
-
-
-
 </script>
 
 <template>
     <v-main class="d-flex mt-10 justify-center">
-        <v-container >
+        <v-container>
             <v-row>
                 <v-col cols="5" class="d-flex align-center justify-center">
                     <Profile source="src\\assets\\sampleImg.jpg" />
@@ -40,9 +37,21 @@ const incorrectList = ref([
                             rounded
                             class="ma-3"
                             :style="{ backgroundColor: '#CCCBFF' }"
+                            width="100%"
+                            height="50dvh"
                         >
-                            <h1 class="mx-10">그룹 목록</h1>
-                            <SearchInput />
+                            <v-row class="d-flex align-center justify-center">
+                                <v-col cols="4">
+                                    <h2 class="mx-10">내가 속한 그룹 목록</h2>
+                                </v-col>
+                                <v-col cols="8">
+                                    <div class="mr-10 mt-4">
+                                        <SearchInput
+                                            hint="그룹 이름을 입력하세요"
+                                        />
+                                    </div>
+                                </v-col>
+                            </v-row>
                             <GroupList />
                         </v-sheet>
                     </v-row>
@@ -54,7 +63,7 @@ const incorrectList = ref([
                                 backgroundColor: '#4C4637',
                                 color: 'white',
                             }"
-                            @click-event="$router.push({name: 'groupList'})"
+                            @click-event="$router.push({ name: 'groupList' })"
                         />
                         <GenericButton
                             data="그룹 만들기"
@@ -62,7 +71,7 @@ const incorrectList = ref([
                                 backgroundColor: '#4C4637',
                                 color: 'white',
                             }"
-                            @click-event="$router.push({name: 'groupCreate'})"
+                            @click-event="$router.push({ name: 'groupCreate' })"
                         />
                     </v-row>
                     <v-row>
