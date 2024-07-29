@@ -56,7 +56,7 @@ export const useUserStore = defineStore("userStore", () => {
                         icon: "success",
                         confirmButtonText: "완료",
                     }).then(() => {
-                        router.push({ name: "login" });
+                        router.replace({ name: "login" });
                     });
                 } else {
                     Swal.fire({
@@ -78,7 +78,7 @@ export const useUserStore = defineStore("userStore", () => {
                 if (response.status === httpStatus.OK) {
                     axios.defaults.headers.common["Authorization"] =
                         response.headers.authorization;
-                    router.push({ name: "mainPage" });
+                    router.replace({ name: "mainPage" });
                 }
             })
             .catch((error) => {
