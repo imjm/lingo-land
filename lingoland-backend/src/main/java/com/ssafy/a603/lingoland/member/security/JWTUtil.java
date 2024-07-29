@@ -25,8 +25,8 @@ public class JWTUtil {
         return decryptPayload(token).get("loginId", String.class);
     }
 
-    public Integer getMemberPkFromToken(String token) {
-        return decryptPayload(token).get("memberPk", Integer.class);
+    public Integer getMemberIdFromToken(String token) {
+        return decryptPayload(token).get("memberId", Integer.class);
     }
 
     public String getCategoryFromToken(String token) {
@@ -51,11 +51,11 @@ public class JWTUtil {
                 .compact();
     }
 
-    private String encryptPayload(String category, String loginId, Integer memberPk, String role, Long expiredMs) {
+    private String encryptPayload(String category, String loginId, Integer memberId, String role, Long expiredMs) {
         return Jwts.builder()
                 .claim("category", category)
                 .claim("loginId", loginId)
-                .claim("memberPk", memberPk)
+                .claim("memberId", memberId)
                 .claim("role", role)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredMs))

@@ -64,7 +64,7 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         String loginId = jwtUtil.getLoginIdFromToken(accessToken);
-        Integer memberPk = jwtUtil.getMemberPkFromToken(accessToken);
+        Integer memberPk = jwtUtil.getMemberIdFromToken(accessToken);
 
         UserDetails userDetails = memberService.loadUserByUsername(loginId);
 

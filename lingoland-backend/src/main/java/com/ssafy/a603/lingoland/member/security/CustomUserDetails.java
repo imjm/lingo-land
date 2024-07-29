@@ -25,7 +25,7 @@ public class CustomUserDetails implements UserDetails {
         return collection;
     }
 
-    public Integer getMemberPk() {
+    public Integer getMemberId() {
         return member.getId();
     }
 
