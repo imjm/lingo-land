@@ -1,4 +1,3 @@
-
 <script setup>
 import { useGroupStore } from "@/stores/groups";
 import GenericButton from "../common/GenericButton.vue";
@@ -6,36 +5,34 @@ import GenericInput from "../common/GenericInput.vue";
 import GenericInputArea from "../common/GenericInputArea.vue";
 import ImageBox from "../common/ImageBox.vue";
 import SubmitButton from "../common/SubmitButton.vue";
-import imageSource from "@/assets/sampleImg.jpg"
+import imageSource from "@/assets/sampleImg.jpg";
 import { ref } from "vue";
+import swal from "sweetalert2";
 
 window.Swal = swal;
 
 const groupStore = useGroupStore();
 
-
-
 const groupInfo = ref({
-    name,
-    password,
-    checkedPassword,
-    description,
-    leaderId, //userId받아오기
-})
+    name : "",
+    password : "",
+    checkedPassword : "",
+    description : "",
+    // leaderId : "", //userId받아오기
+});
 
-const nicknameFormat = ref(false);
+
+const groupNameFormat = ref(false);
 const passwordFormat = ref(false);
-const nameDuplicate = ref(false)
+const nameDuplicate = ref(false);
 const passwordCheck = ref(false);
 
 function createGroup() {
-
     if (
-        !nicknameFormat.value &&
-        nameDuplicate.value &&
+        !groupNameFormat.value &&
+        !nameDuplicate.value &&
         !passwordFormat.value &&
         !passwordCheck.value
-
     ) {
         groupStore.createGroup(groupInfo);
     } else {
@@ -44,23 +41,18 @@ function createGroup() {
             icon: "error",
         });
     }
-
-
-
-   
 }
 
 function checkDuplicate() {
-    groupStore.checkDuplicate(groupInfo.name.value).then((response) => {
+    groupStore.checkDuplicate(groupInfo.value.name).then((response) => {
         if (response) {
-            nameDuplicate.value = true;
             Swal.fire({
                 title: "중복확인 완료",
                 icon: "success",
                 confirmButtonText: "완료",
             });
         } else {
-            nameDuplicate.value = false;
+            nameDuplicate.value = true;
             Swal.fire({
                 title: "중복된 그룹 이름이 있어요",
                 icon: "error",
@@ -69,16 +61,13 @@ function checkDuplicate() {
     });
 }
 
-function checkPassword(checkPassword, originPassword = groupInfo.password,) {
-    
+function checkPassword(checkPassword, originPassword = groupInfo.value.password) {
     if (originPassword === checkPassword) {
-      passwordCheck.value=false;
+        passwordCheck.value = false;
     } else {
-      passwordCheck.value=true;
+        passwordCheck.value = true;
     }
-  
 }
-
 
 // 비밀번호 포멧체크
 function validatePasswordFormat(password) {
@@ -92,22 +81,18 @@ function validatePasswordFormat(password) {
     }
 }
 
-// 닉네임 포맷 체크
-function validateNickNameFormat(nickname) {
-    // 닉네임 길이 3- 20 한글,영어,숫자/-/_
+// 그룹명 포맷 체크
+function validateNickNameFormat(groupName) {
+    // 그룹명 길이 3- 20 한글,영어,숫자/-/_
     const nicknameRegex = /^[ㄱ-ㅎ가-힣a-z0-9_-]{3,20}$/;
 
     // 형식이 일치함
-    if (nicknameRegex.test(nickname)) {
-        nicknameFormat.value = false;
+    if (nicknameRegex.test(groupName)) {
+        groupNameFormat.value = false;
     } else {
-        nicknameFormat.value = true;
+        groupNameFormat.value = true;
     }
 }
-
-
-
-
 </script>
 
 <template>
@@ -116,43 +101,82 @@ function validateNickNameFormat(nickname) {
             <!-- 하나의 행을 만듬 -->
             <v-row>
                 <v-col cols="6" class="d-flex align-center justify-center">
-                    <ImageBox :source="imageSource" setting="align-center justify-center rounded-circle" />
+                    <ImageBox
+                        :source="imageSource"
+                        setting="align-center justify-center rounded-circle"
+                    />
                 </v-col>
 
                 <v-col cols="6">
                     <div class="ma-10">
                         <v-row class="d-flex align-center justify-center">
                             <v-col cols="10">
-                                <GenericInput type="text" data="그룹명" id="userId" v-model="groupInfo.name" @blur-event="
-                                    validateNickNameFormat(groupInfo.name)
-                                    " />
+                                <GenericInput
+                                    type="text"
+                                    data="그룹명"
+                                    id="name"
+                                    v-model="groupInfo.name"
+                                    @blur-event="
+                                        validateNickNameFormat(groupInfo.name)
+                                    "
+                                />
                             </v-col>
                             <v-col cols="2" class="px-0">
-                                <GenericButton data="중복확인" id="checkDuplicate" height="56"
-                                    @click-event="checkDuplicate" />
+                                <GenericButton
+                                data="중복확인"
+                                id="checkDuplicate"
+                                height="56"
+                                @click-event="checkDuplicate"
+                                />
                             </v-col>
                         </v-row>
-
-                        <GenericInputArea data="그룹 소개" v-model="groupInfo.description" placeholder="그룹 소개를 입력하세요" />
-
-                        <div v-if="IdFormat" class="text-red mb-3">
-                            3~20자의 영문 소문자, 숫자와 특수기호(_),(-)만 사용
+                        <div v-if="groupNameFormat" class="text-red mb-3">
+                            3~20자의 한글, 영문 소문자, 숫자와 특수기호(_),(-)만 사용
                             가능해요.
                         </div>
 
-                        <GenericInput type="password" data="비밀번호" id="userPassword" v-model="groupInfo.password"
+                        <GenericInputArea
+                            data="그룹 소개"
+                            v-model="groupInfo.description"
+                            placeholder="그룹 소개를 입력하세요"
+                        />
+
+
+                        <GenericInput
+                            type="password"
+                            data="비밀번호"
+                            id="password"
+                            v-model="groupInfo.password"
                             @blur-event="
-                                validatePasswordFormat(userInfo.password)
-                                " />
+                                validatePasswordFormat(groupInfo.password)
+                            "
+                        />
+
                         <div v-if="passwordFormat" class="text-red mb-3">
                             최대 25자만 사용가능해요.
                         </div>
-                        <GenericInput type="password" data="비밀번호확인" id="userPasswordCheck"
-                            v-model="groupInfo.checkedPassword" @blur-event="
-                                checkPassword(groupInfo.checkedPassword)
-                                " />
 
-                        <SubmitButton id="signUp" data="그룹 생성" width="100%" @click-event="createGroup" />
+                        <GenericInput
+                            type="password"
+                            data="비밀번호확인"
+                            id="groupPasswordCheck"
+                            v-model="groupInfo.checkedPassword"
+                            @blur-event="
+                                    checkPassword(groupInfo.checkedPassword)
+                                "
+                            
+                        />
+
+                        <div v-if="passwordCheck" class="text-red mb-3">
+                            비밀번호가 같지 않아요
+                        </div>
+
+                        <SubmitButton
+                            id="createGroup"
+                            data="그룹 생성"
+                            width="100%"
+                            @click-event="createGroup"
+                        />
                     </div>
                 </v-col>
             </v-row>

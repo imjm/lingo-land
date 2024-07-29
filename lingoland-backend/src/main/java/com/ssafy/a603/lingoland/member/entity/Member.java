@@ -52,7 +52,7 @@ public class Member extends BaseEntity {
 	@Column(nullable = false)
 	private String password;
 
-	@Lob @Basic(fetch = FetchType.EAGER)
+//	@Lob @Basic(fetch = FetchType.EAGER)
 	private String profileImage;
 
 	@Column(nullable = false)
