@@ -41,7 +41,7 @@ public class Member {
 	@Column(nullable = false)
 	private String password;
 
-	@Lob @Basic(fetch = FetchType.EAGER)
+	@Column(columnDefinition = "TEXT")
 	private String profileImage;
 
 	@Column(nullable = false)
