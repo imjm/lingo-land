@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ssafy.a603.lingoland.fairyTale.entity.FairyTaleMember;
+import com.ssafy.a603.lingoland.global.entity.BaseEntity;
 import com.ssafy.a603.lingoland.group.entity.GroupMember;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,7 +26,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "id", callSuper = false)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -33,7 +35,7 @@ import lombok.NoArgsConstructor;
 	sequenceName = "member_id_seq",
 	allocationSize = 1
 )
-public class Member {
+public class Member extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "MEMBER_SEQ_GENERATOR")
@@ -56,8 +58,8 @@ public class Member {
 	@Column(nullable = false)
 	private String rank;
 
-	@Column(nullable = false)
-	private LocalDateTime createdAt;
+	// @Column(nullable = false)
+	// private LocalDateTime createdAt;
 
 	private LocalDateTime deletedAt;
 
@@ -75,10 +77,10 @@ public class Member {
 	@Enumerated(EnumType.STRING)
 	private Role role;
 
-	@OneToMany(mappedBy = "member")
+	@OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
 	private List<GroupMember> groupMembers = new ArrayList<>();
 
-	@OneToMany(mappedBy = "member")
+	@OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
 	private List<FairyTaleMember> fairyTaleMembers = new ArrayList<>();
 
 	public void updateRefreshToken(String refresh) {
