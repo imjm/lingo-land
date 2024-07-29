@@ -12,7 +12,7 @@ import com.ssafy.a603.lingoland.global.listener.AuditorAwareImpl;
 public class JpaAuditingConfig {
 
 	@Bean
-	AuditorAware auditorAware() {
+	AuditorAware<String> auditorAware() {
 		return new AuditorAwareImpl();
 	}
 }

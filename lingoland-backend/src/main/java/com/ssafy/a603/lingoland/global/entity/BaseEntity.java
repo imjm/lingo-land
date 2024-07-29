@@ -15,8 +15,8 @@ import lombok.Getter;
 public abstract class BaseEntity extends BaseTimeEntity {
 	@CreatedBy
 	@Column(updatable = false)
-	private Integer createdBy;
+	private String createdBy;
 
 	@LastModifiedBy
-	private Integer modifiedBy;
+	private String modifiedBy;
 }
