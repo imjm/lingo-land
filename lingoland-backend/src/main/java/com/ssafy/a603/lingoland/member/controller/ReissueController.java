@@ -54,7 +54,7 @@ public class ReissueController {
         }
 
         String loginId = jwtUtil.getLoginIdFromToken(refresh);
-        Integer memberPk = jwtUtil.getMemberPkFromToken(refresh);
+        Integer memberId = jwtUtil.getMemberIdFromToken(refresh);
 
         Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않은 유저입니다"));
         if(!refresh.equals(member.getRefreshToken())) {
@@ -63,8 +63,8 @@ public class ReissueController {
 
         String role = jwtUtil.getRoleFromToken(refresh);
 
-        String newAccess = jwtUtil.createToken("access", loginId, memberPk, role, 600000L);
-        String newRefresh = jwtUtil.createToken("refresh", loginId, memberPk, role, 86400000L);
+        String newAccess = jwtUtil.createToken("access", loginId, memberId, role, 600000L);
+        String newRefresh = jwtUtil.createToken("refresh", loginId, memberId, role, 86400000L);
 
         memberService.addRefreshToken(loginId, newRefresh);
 
