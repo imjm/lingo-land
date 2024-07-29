@@ -35,11 +35,6 @@ public class GroupServiceImpl implements GroupService {
 	@Override
 	@Transactional
 	public Group create(CreateGroupDTO request, CustomUserDetails customUserDetails) {
-
-		if (checkNameDuplication(request.name())) {
-			throw new RuntimeException("Duplicate group name");
-		}
-
 		Member member = getMemberFromUserDetails(customUserDetails);
 		Group group = Group.builder()
 			.name(request.name())
