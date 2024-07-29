@@ -53,6 +53,11 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
+	public Boolean checkNameDuplication(String groupName) {
+		return groupRepository.existsByName(groupName);
+	}
+
+	@Override
 	@Transactional(readOnly = true)
 	public List<Group> findAll() {
 		return groupRepository.findAll();

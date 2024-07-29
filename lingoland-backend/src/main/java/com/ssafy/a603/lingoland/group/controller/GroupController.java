@@ -42,6 +42,15 @@ public class GroupController {
 		return ResponseEntity.status(HttpStatus.CREATED).body("group made.");
 	}
 
+	@GetMapping("/check/{groupName}")
+	public ResponseEntity<?> checkIdDuplication(@PathVariable(value = "groupName") String groupName) {
+		if (groupService.checkNameDuplication(groupName)) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		} else {
+			return ResponseEntity.status(HttpStatus.OK).build();
+		}
+	}
+
 	@GetMapping("/{groupId}")
 	public ResponseEntity<?> getGroupById(@PathVariable Integer groupId) {
 		Group group = groupService.findById(groupId);
