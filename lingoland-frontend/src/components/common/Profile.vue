@@ -8,7 +8,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <v-card width="90%" height="100%">
+    <v-card width="90%" height="100%" class="d-flex align-center">
         <v-row class="d-flex flex-column ma-6">
             <v-col class="d-flex align-center justify-center">
                 <ImageBox :source="source" />
