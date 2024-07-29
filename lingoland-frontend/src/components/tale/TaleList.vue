@@ -1,8 +1,11 @@
 <script setup>
+import { onMounted } from "vue";
 import TaleListItem from "./TaleListItem.vue";
 import { useTaleStore } from "@/stores/tales";
 
 const store = useTaleStore();
+
+
 </script>
 
 <template>
