@@ -75,6 +75,7 @@ public class Member extends BaseEntity {
 	@Column(nullable = false)
 	private long writingPlayedCount;
 
+	@Column(columnDefinition = "TEXT")
 	private String refreshToken;
 
 	@Enumerated(EnumType.STRING)
