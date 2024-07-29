@@ -14,6 +14,8 @@ import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 public interface GroupService {
 	Group create(CreateGroupDTO request, MultipartFile groupImage, CustomUserDetails customUserDetails);
 
+	Boolean checkNameDuplication(String groupName);
+
 	List<Group> findAll();
 
 	Group findById(int id);

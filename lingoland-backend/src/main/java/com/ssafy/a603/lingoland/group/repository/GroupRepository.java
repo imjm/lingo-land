@@ -7,4 +7,5 @@ import com.ssafy.a603.lingoland.group.entity.Group;
 
 @Repository
 public interface GroupRepository extends JpaRepository<Group, Integer>, GroupCustomRepository {
+	boolean existsByName(String name);
 }
