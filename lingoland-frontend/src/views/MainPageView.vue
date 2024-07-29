@@ -56,9 +56,11 @@ function clickProfile() {
                         </v-col>
 
                         <v-col cols="6">
+                            <v-sheet class="mt-3">
                             <div>
                                 <RankList />
                             </div>
+                        </v-sheet>
                         </v-col>
                     </v-row>
                 </v-col>
