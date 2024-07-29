@@ -34,7 +34,12 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	@Transactional
-	public Group create(CreateGroupDTO request, MultipartFile groupImage, CustomUserDetails customUserDetails) {
+	public Group create(CreateGroupDTO request, CustomUserDetails customUserDetails) {
+
+		if (checkNameDuplication(request.name())) {
+			throw new RuntimeException("Duplicate group name");
+		}
+
 		Member member = getMemberFromUserDetails(customUserDetails);
 		Group group = Group.builder()
 			.name(request.name())
@@ -43,8 +48,7 @@ public class GroupServiceImpl implements GroupService {
 			.leader(member)
 			.build();
 
-		String savePath = imgUtils.saveImage(groupImage, GROUP_IMAGE_PATH);
-		group.setGroupImagePath(savePath);
+		group.setGroupImagePath(imgUtils.getDefaultGroupImagePath());
 		Group createdGroup = groupRepository.save(group);
 
 		addMemberToGroup(group, member, "그룹장 입니다.");
