@@ -70,9 +70,26 @@ export const useUserStore = defineStore("userStore", () => {
             });
     };
 
+    // 로그인
+    const login = async (userInfo) => {
+        await axios
+            .post("/login", userInfo, { withCredentials: true })
+            .then((response) => {
+                if (response.status === httpStatus.OK) {
+                    axios.defaults.headers.common["Authorization"] =
+                        response.headers.authorization;
+                    router.push({ name: "mainPage" });
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
     return {
         checkPassword,
         checkDuplicate,
         signUp,
+        login,
     };
 });

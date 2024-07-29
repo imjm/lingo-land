@@ -1,6 +1,14 @@
 package com.ssafy.a603.lingoland.member.service;
 
+
 import java.util.NoSuchElementException;
+
+import com.ssafy.a603.lingoland.member.dto.*;
+import com.ssafy.a603.lingoland.member.entity.Role;
+import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
+import com.ssafy.a603.lingoland.member.repository.MemberRepository;
+import com.ssafy.a603.lingoland.member.entity.Member;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -89,6 +97,13 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
 	private Member getMember(String loginId) {
 		return memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않은 유저입니다"));
 	}
+
+    @Transactional
+    @Override
+    public void updateProfileImage(UpdateProfileImageDto updateProfileImageDto, CustomUserDetails customUserDetails) {
+        Member member = getMember(customUserDetails.getUsername());
+        member.updateProfileImage(updateProfileImageDto.profileImage());
+    }
 
 	public boolean checkIdDuplication(String loginId) {
 		return memberRepository.existsByLoginId(loginId);

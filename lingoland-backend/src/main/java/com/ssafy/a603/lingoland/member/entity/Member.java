@@ -18,11 +18,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
 
 @Entity
 @Getter
@@ -50,6 +52,7 @@ public class Member extends BaseEntity {
 	@Column(nullable = false)
 	private String password;
 
+	@Lob @Basic(fetch = FetchType.EAGER)
 	private String profileImage;
 
 	@Column(nullable = false)
@@ -93,5 +96,9 @@ public class Member extends BaseEntity {
 
 	public void updatePassword(String password) {
 		this.password = password;
+	}
+
+	public void updateProfileImage(String profileImage) {
+		this.profileImage = profileImage;
 	}
 }

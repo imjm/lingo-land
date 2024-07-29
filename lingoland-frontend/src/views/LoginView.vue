@@ -1,17 +1,9 @@
 <script setup>
-import Login from "@/components/login/Login.vue";
-import GameSlide from "@/components/login/GameSlide.vue";
+import TheLogin from "@/components/authorization/TheLogin.vue";
 </script>
 
 <template>
-    <v-main class="d-flex align-center justify-center">
-        <v-card width="1200" height="600">
-            <div class="d-flex justify-space-between">
-                <Login></Login>
-                <GameSlide></GameSlide>
-            </div>
-        </v-card>
-    </v-main>
+    <TheLogin />
 </template>
 
 <style scoped></style>
