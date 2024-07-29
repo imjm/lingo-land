@@ -1,6 +1,5 @@
 package com.ssafy.a603.lingoland.fairyTale.entity;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +8,7 @@ import org.hibernate.type.SqlTypes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ssafy.a603.lingoland.global.entity.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FairyTale {
+public class FairyTale extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fairy_tale_seq")
 	@SequenceGenerator(name = "fairy_tale_seq", sequenceName = "fairy_tale_id_seq", allocationSize = 1)
@@ -44,8 +44,8 @@ public class FairyTale {
 	@Column(columnDefinition = "jsonb")
 	private List<Story> content;
 
-	@Column(name = "created_at")
-	private LocalDateTime createdAt = LocalDateTime.now();
+	// @Column(name = "created_at")
+	// private LocalDateTime createdAt = LocalDateTime.now();
 
 	@OneToMany(mappedBy = "fairyTale")
 	@JsonIgnore
