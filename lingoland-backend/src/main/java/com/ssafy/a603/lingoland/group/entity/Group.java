@@ -51,16 +51,12 @@ public class Group extends BaseEntity {
 	@Column(name = "group_image", length = 256)
 	private String groupImage;
 
-	// @Column(name = "created_at")
-	// private LocalDateTime createdAt = LocalDateTime.now();
-
 	@Column(name = "deleted_at")
 	private LocalDateTime deletedAt;
 
 	@Column(name = "is_deleted", nullable = false, columnDefinition = "boolean default false")
 	private boolean isDeleted = false;
-
-	// 그룹장 Member 에 대한 정보가 없는데 어떤 방식을 생각하고 있는지 궁금합니다.
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "leader_id")
 	private Member leader;
@@ -97,22 +93,10 @@ public class Group extends BaseEntity {
 	}
 
 	public void join() {
-		log.info("group id: {}, current count = {}", this.id, this.memberCount);
 		this.memberCount++;
 	}
 
 	public void quit() {
 		this.memberCount--;
 	}
-
-	//    id serial NOT NULL,
-	//    name character varying(20) NOT NULL,
-	//    password integer NOT NULL,
-	//    description character varying(200) DEFAULT NULL,
-	//    member_count integer NOT NULL DEFAULT 0,
-	//    group_image character varying(256) DEFAULT NULL,
-	//    created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	//    deleted_at timestamp without time zone DEFAULT NULL,
-	//    is_deleted boolean NOT NULL DEFAULT FALSE,
-	//    PRIMARY KEY (id)
 }

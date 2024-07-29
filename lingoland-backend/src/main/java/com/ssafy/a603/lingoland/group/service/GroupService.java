@@ -12,7 +12,7 @@ import com.ssafy.a603.lingoland.group.entity.Group;
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 
 public interface GroupService {
-	Group create(CreateGroupDTO request, MultipartFile groupImage, CustomUserDetails customUserDetails);
+	Group create(CreateGroupDTO request, CustomUserDetails customUserDetails);
 
 	Boolean checkNameDuplication(String groupName);
 
