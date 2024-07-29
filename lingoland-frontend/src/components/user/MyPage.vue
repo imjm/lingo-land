@@ -5,8 +5,11 @@ import Profile from "@/components/common/Profile.vue";
 import incorrectDialog from "@/components/incorrect/IncorrectDialog.vue";
 import SearchInput from "../common/SearchInput.vue";
 import GroupList from "../group/GroupList.vue";
+import { useGroupStore } from "@/stores/groups";
 
 import { ref } from "vue";
+
+const groupStore = useGroupStore();
 
 const incorrectList = ref([
     "문제 1",
@@ -21,6 +24,10 @@ const incorrectList = ref([
     "문제 10",
     // 데이터 받아오기
 ]);
+
+function getGroupList() {
+    groupStore.getGroups();
+}
 </script>
 
 <template>
@@ -84,6 +91,7 @@ const incorrectList = ref([
                                 background-color="#537960"
                                 data="ㅇㅇㅇ의 동화"
                                 source="src\assets\내동화.png"
+                                @click-event="getGroupList"
                             />
                         </v-col>
                     </v-row>
