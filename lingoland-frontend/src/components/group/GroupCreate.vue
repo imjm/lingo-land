@@ -12,7 +12,6 @@ import swal from "sweetalert2";
 window.Swal = swal;
 
 const groupStore = useGroupStore();
-
 const groupInfo = ref({
     name : "",
     password : "",
