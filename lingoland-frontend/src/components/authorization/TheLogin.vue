@@ -96,7 +96,7 @@ function login() {
                 </v-card>
             </v-col>
             <v-col cols="6">
-                <v-card>
+                <v-card class="mt-9">
                     <GameSlide />
                 </v-card>
             </v-col>
