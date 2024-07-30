@@ -1,5 +1,4 @@
 <script setup>
-import imageSource from "@/assets/sampleImg.jpg";
 import { useGroupStore } from "@/stores/groups";
 import swal from "sweetalert2";
 import { ref } from "vue";
@@ -9,8 +8,6 @@ import GenericInputArea from "../common/GenericInputArea.vue";
 import ImageBox from "../common/ImageBox.vue";
 import SubmitButton from "../common/SubmitButton.vue";
 import imageSource from "@/assets/sampleImg.jpg";
-import { ref } from "vue";
-import swal from "sweetalert2";
 
 window.Swal = swal;
 

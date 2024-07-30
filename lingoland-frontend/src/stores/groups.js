@@ -148,5 +148,5 @@ export const useGroupStore = defineStore("group", () => {
         selectedGroup.value = group;
     };
 
-    return { groups, clickGroup, getGroups, selectedGroup };
+    return { modifyGroup, createGroup, checkDuplicate, groups, clickGroup, getGroups, selectedGroup };
 });
