@@ -83,6 +83,12 @@ function login() {
                                     width="100%"
                                     @click-event="login"
                                 />
+
+                                <div class="my-5">
+                                    <RouterLink :to="{ name: 'signUp' }"
+                                        >회원가입</RouterLink
+                                    >
+                                </div>
                             </div>
                         </v-col>
                     </v-row>

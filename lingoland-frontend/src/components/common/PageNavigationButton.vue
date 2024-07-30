@@ -6,40 +6,44 @@ import { defineProps } from "vue";
  data: button 컴포넌트에 지정할 이름 
 */
 const props = defineProps({
-  type: String,
-  data: String,
-  backgroundColor: String,
-  source: String,
+    type: String,
+    data: String,
+    backgroundColor: String,
+    source: String,
 });
 </script>
 
 <template>
-  <div>
-    <v-btn
-      class="mb-5"
-      :style="{
-        width: '90vw',
-        height: '300px',
-        backgroundColor: backgroundColor,
-        fontSize: 'x-large',
-      }"
-      @click="$emit('clickEvent')"
-    >
-      <div class="d-flex flex-column">
-        <div>
-          {{ data }}
-        </div>
-        <div class="d-flex justify-center align-center" style="flex: 1">
-          <img
-            v-if="source"
-            :src="source"
-            style="max-width: 100%; max-height: 100%; object-fit: contain"
-            alt="Icon"
-          />
-        </div>
-      </div>
-    </v-btn>
-  </div>
+    <div>
+        <v-btn
+            class="mb-5"
+            :style="{
+                width: '90vw',
+                height: '300px',
+                backgroundColor: backgroundColor,
+                fontSize: 'x-large',
+            }"
+            @click="$emit('clickEvent')"
+        >
+            <div class="d-flex flex-column">
+                <div class="text-h4 font-weight-black">
+                    {{ data }}
+                </div>
+                <div class="d-flex justify-center align-center" style="flex: 1">
+                    <img
+                        v-if="source"
+                        :src="source"
+                        style="
+                            max-width: 100%;
+                            max-height: 100%;
+                            object-fit: contain;
+                        "
+                        alt="Icon"
+                    />
+                </div>
+            </div>
+        </v-btn>
+    </div>
 </template>
 
 <style scoped></style>
