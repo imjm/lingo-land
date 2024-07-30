@@ -92,7 +92,6 @@ export const useUserStore = defineStore("userStore", () => {
             .get("/users", { withCredentials: true })
             .then((response) => {
                 if (response.status === httpStatus.OK) {
-                    console.log(response.data);
                     return Promise.resolve(response.data);
                 }
             })
