@@ -8,6 +8,7 @@ import IncorrectList from "@/components/incorrect/IncorrectList.vue";
 import incorrectDialog from "@/components/incorrect/IncorrectDialog.vue";
 
 import { ref } from "vue";
+import { useTaleStore } from "@/stores/tales";
 
 const incorrectList = ref([
   "문제 1",
@@ -22,13 +23,20 @@ const incorrectList = ref([
   "문제 10",
   // 데이터 받아오기
 ]);
+
+const taleStore = useTaleStore()
+
+function clickTales() {
+    taleStore.myTalesList();
+}
+
 </script>
 
 <template>
     <v-main class="d-flex justify-center">
         <v-container>
-            <h1>MainPage View</h1>
-
+            <h1>MyPage View</h1>
+            
             <v-row>
                 <v-col cols="5">
                     <Profile source="src\\assets\\sampleImg.jpg" />
@@ -67,6 +75,7 @@ const incorrectList = ref([
                 background-color="#537960"
                 data="ㅇㅇㅇ의 동화"
                 source="src\assets\내동화.png"
+                @click-event="clickTales"
               />
             </v-col>
           </v-row>

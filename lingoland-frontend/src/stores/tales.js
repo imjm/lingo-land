@@ -17,9 +17,12 @@ export const useTaleStore = defineStore("tale", () => {
         //내 tales list 불러오기
         axios.get('/fairy-tales/members').then((response) => {
             tales.value=response.data
+        }) .then(()=> {
+            router.push({name : "bookList"})
         })
+        
     }
-    
+
     //다른 사람 프로필로 클릭했을 때
     const otherTalesList = function(userId) {
         //다른사람
@@ -31,7 +34,10 @@ export const useTaleStore = defineStore("tale", () => {
     //동화 1개 내용전부 부르기
     const oneTaleById = function(bookId) {
         axios.get(`/fairy-tales/${bookId}`).then((response) => {
-            tale.value=response.data
+            tale.value=response.datae
+            console.log('동화받아왔음')       
+            console.log(response.data)
+        }).then(()=> {
             router.push({ name: "bookDetail", params: { bookId: bookId } });
         })
     }
