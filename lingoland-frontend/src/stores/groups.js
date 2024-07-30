@@ -27,6 +27,7 @@ export const useGroupStore = defineStore("group", () => {
       .then((response) => {
         if (response.status === httpStatus.OK) {
           return_value = true;
+
         }
       })
       .catch((error) => {
@@ -71,7 +72,17 @@ export const useGroupStore = defineStore("group", () => {
 
 
 
-
+// group 불러오기
+const getGroup = async () => {
+  await axios
+      .get("/groups", { withCredentials: true })
+      .then((response) => {
+          console.log(response) 
+      })
+      .catch((error) => {
+          console.log(error);
+      });
+};
 
 
 
@@ -82,7 +93,6 @@ export const useGroupStore = defineStore("group", () => {
 
   // const groups = ref([]);
   const selectedGroup = ref(null);
-
   const groups = [
     {
       name: "2024년 3학년 1반",
@@ -110,6 +120,6 @@ export const useGroupStore = defineStore("group", () => {
     selectedGroup.value = group;
   };
 
-  return { groups, clickGroup, selectedGroup };
+  return { groups, clickGroup, selectedGroup,getGroup };
 });
 
