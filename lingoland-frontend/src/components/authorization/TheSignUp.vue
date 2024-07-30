@@ -105,88 +105,93 @@ function signUp() {
 
 <template>
     <v-main class="d-flex align-center justify-center">
-        <v-card width="1200">
-            <!-- 하나의 행을 만듬 -->
-            <v-row>
-                <v-col cols="6" class="d-flex align-center justify-center">
-                    <ImageBox :source="imageSource" />
-                </v-col>
+        <div>
+            <SubmitButton
+                data="회원가입"
+            />
+            <v-card width="1200">
+                <!-- 하나의 행을 만듬 -->
+                <v-row>
+                    <v-col cols="6" class="d-flex align-center justify-center">
+                        <ImageBox :source="imageSource" />
+                    </v-col>
 
-                <v-col cols="6">
-                    <div class="ma-10">
-                        <GenericInput
-                            v-model="userInfo.nickname"
-                            type="text"
-                            data="닉네임"
-                            id="userName"
-                            @blur-event="
-                                validateNickNameFormat(userInfo.nickname)
-                            "
-                        />
-                        <div v-if="nicknameFormat" class="text-red mb-3">
-                            3~20자의 한글, 영문 소문자, 숫자와 특수기호(_),(-)만
-                            사용 가능해요.
+                    <v-col cols="6">
+                        <div class="ma-10">
+                            <GenericInput
+                                v-model="userInfo.nickname"
+                                type="text"
+                                data="닉네임"
+                                id="userName"
+                                @blur-event="
+                                    validateNickNameFormat(userInfo.nickname)
+                                "
+                            />
+                            <div v-if="nicknameFormat" class="text-red mb-3">
+                                3~20자의 한글, 영문 소문자, 숫자와
+                                특수기호(_),(-)만 사용 가능해요.
+                            </div>
+
+                            <v-row class="d-flex align-center justify-center">
+                                <v-col cols="10">
+                                    <GenericInput
+                                        v-model="userInfo.loginId"
+                                        type="text"
+                                        data="아이디"
+                                        id="loginId"
+                                        @blur-event="
+                                            validateIDFormat(userInfo.loginId)
+                                        "
+                                    />
+                                </v-col>
+                                <v-col cols="2" class="px-0">
+                                    <GenericButton
+                                        data="중복확인"
+                                        id="checkDuplicate"
+                                        height="56"
+                                        @click-event="checkIdDuplicate"
+                                    />
+                                </v-col>
+                            </v-row>
+
+                            <div v-if="IdFormat" class="text-red mb-3">
+                                3~20자의 영문 소문자, 숫자와 특수기호(_),(-)만
+                                사용 가능해요.
+                            </div>
+
+                            <GenericInput
+                                v-model="userInfo.password"
+                                type="password"
+                                data="비밀번호"
+                                id="password"
+                                @blur-event="
+                                    validatePasswordFormat(userInfo.password)
+                                "
+                            />
+
+                            <div v-if="passwordFormat" class="text-red mb-3">
+                                6~20자의 영문 소문자, 숫자와 특수기호(_),(-)만
+                                사용 가능해요.
+                            </div>
+
+                            <GenericInput
+                                v-model="userInfo.checkedPassword"
+                                type="password"
+                                data="비밀번호확인"
+                                id="checkedPassword"
+                            />
+
+                            <SubmitButton
+                                id="signUp"
+                                data="회원가입"
+                                width="100%"
+                                @click-event="signUp"
+                            />
                         </div>
-
-                        <v-row class="d-flex align-center justify-center">
-                            <v-col cols="10">
-                                <GenericInput
-                                    v-model="userInfo.loginId"
-                                    type="text"
-                                    data="아이디"
-                                    id="loginId"
-                                    @blur-event="
-                                        validateIDFormat(userInfo.loginId)
-                                    "
-                                />
-                            </v-col>
-                            <v-col cols="2" class="px-0">
-                                <GenericButton
-                                    data="중복확인"
-                                    id="checkDuplicate"
-                                    height="56"
-                                    @click-event="checkIdDuplicate"
-                                />
-                            </v-col>
-                        </v-row>
-
-                        <div v-if="IdFormat" class="text-red mb-3">
-                            3~20자의 영문 소문자, 숫자와 특수기호(_),(-)만 사용
-                            가능해요.
-                        </div>
-
-                        <GenericInput
-                            v-model="userInfo.password"
-                            type="password"
-                            data="비밀번호"
-                            id="password"
-                            @blur-event="
-                                validatePasswordFormat(userInfo.password)
-                            "
-                        />
-
-                        <div v-if="passwordFormat" class="text-red mb-3">
-                            6~20자의 영문 소문자, 숫자와 특수기호(_),(-)만 사용
-                            가능해요.
-                        </div>
-
-                        <GenericInput
-                            v-model="userInfo.checkedPassword"
-                            type="password"
-                            data="비밀번호확인"
-                            id="checkedPassword"
-                        />
-
-                        <SubmitButton
-                            id="signUp"
-                            data="회원가입"
-                            width="100%"
-                            @click-event="signUp"
-                        />
-                    </div>
-                </v-col>
-            </v-row>
-        </v-card>
+                    </v-col>
+                </v-row>
+            </v-card>
+        </div>
     </v-main>
 </template>
 
