@@ -86,10 +86,27 @@ export const useUserStore = defineStore("userStore", () => {
             });
     };
 
+    // 유저 프로필 조회
+    const getProfile = async () => {
+        const userProfile = await axios
+            .get("/users", { withCredentials: true })
+            .then((response) => {
+                if (response.status === httpStatus.OK) {
+                    return Promise.resolve(response.data);
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+        return userProfile;
+    };
+
     return {
         checkPassword,
         checkDuplicate,
         signUp,
         login,
+        getProfile,
     };
 });

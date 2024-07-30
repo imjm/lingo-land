@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ssafy.a603.lingoland.fairyTale.entity.FairyTaleMember;
 import com.ssafy.a603.lingoland.global.entity.BaseEntity;
 import com.ssafy.a603.lingoland.group.entity.GroupMember;
@@ -18,13 +19,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Fetch;
 
 @Entity
 @Getter
@@ -82,9 +81,11 @@ public class Member extends BaseEntity {
 	private Role role;
 
 	@OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<GroupMember> groupMembers = new ArrayList<>();
 
 	@OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<FairyTaleMember> fairyTaleMembers = new ArrayList<>();
 
 	public void updateRefreshToken(String refresh) {

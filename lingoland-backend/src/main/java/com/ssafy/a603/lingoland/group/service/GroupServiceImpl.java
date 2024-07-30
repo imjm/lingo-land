@@ -2,12 +2,14 @@ package com.ssafy.a603.lingoland.group.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.a603.lingoland.group.dto.CreateGroupDTO;
+import com.ssafy.a603.lingoland.group.dto.GroupListResponseDTO;
 import com.ssafy.a603.lingoland.group.dto.JoinGroupRequestDTO;
 import com.ssafy.a603.lingoland.group.dto.MemberInGroupResponseDTO;
 import com.ssafy.a603.lingoland.group.dto.UpdateGroupDTO;
@@ -58,8 +60,14 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<Group> findAll() {
-		return groupRepository.findAll();
+	public List<GroupListResponseDTO> findAll() {
+		List<Group> groups = groupRepository.findAll();
+		return groups.stream().map(group -> GroupListResponseDTO.builder()
+				.id(group.getId())
+				.name(group.getName())
+				.description(group.getDescription())
+				.build())
+			.collect(Collectors.toUnmodifiableList());
 	}
 
 	@Override
