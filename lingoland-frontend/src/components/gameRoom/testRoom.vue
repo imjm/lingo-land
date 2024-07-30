@@ -2,6 +2,9 @@
 import { OpenVidu } from "openvidu-browser";
 import { onMounted } from "vue";
 import { useGameRoomStore } from "@/stores/gameRoom";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 
 const gameRoomStore = useGameRoomStore();
 
@@ -13,32 +16,26 @@ session.on("streamCreated", function (event) {
     session.subscribe(event.stream, "video-container");
 });
 
-function makeSession() {
-    const sessionPromise = gameRoomStore.getSession();
-
-    sessionPromise.then((sessionId) => {
-        gameRoomStore.getToken(sessionId).then((tokenId) => {
-            console.log(tokenId);
-
-            // 토큰을 얻어왔어
-            session
-                .connect(tokenId)
-                .then(() => {
-                    const publisher = OV.initPublisher("video-container");
-                    session.publish(publisher);
-                })
-                .catch((error) => {
-                    console.error(
-                        "There was an error connecting to the session:",
-                        error
-                    );
-                });
-        });
+function joinRoom(sessionId) {
+    gameRoomStore.getToken(sessionId).then((tokenId) => {
+        // 토큰을 얻어왔어
+        session
+            .connect(tokenId)
+            .then(() => {
+                const publisher = OV.initPublisher("video-container");
+                session.publish(publisher);
+            })
+            .catch((error) => {
+                console.error(
+                    "There was an error connecting to the session:",
+                    error
+                );
+            });
     });
 }
-
 onMounted(() => {
-    makeSession();
+    // console.log(route.params.roomId);
+    joinRoom(route.params.roomId);
 });
 </script>
 
