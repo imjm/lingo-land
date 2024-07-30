@@ -38,67 +38,65 @@ function getGroupList() {
                     <Profile source="src\\assets\\sampleImg.jpg" />
                 </v-col>
 
-                <v-col cols="7">
-                    <v-row>
-                        <v-sheet
-                            rounded
-                            class="ma-3"
-                            :style="{ backgroundColor: '#CCCBFF' }"
-                            width="100%"
-                            height="50dvh"
-                        >
-                            <v-row class="d-flex align-center justify-center">
-                                <v-col cols="4">
-                                    <h2 class="mx-10">내가 속한 그룹 목록</h2>
-                                </v-col>
-                                <v-col cols="8">
-                                    <div class="mr-10 mt-4">
-                                        <SearchInput
-                                            hint="그룹 이름을 입력하세요"
-                                        />
-                                    </div>
-                                </v-col>
-                            </v-row>
-                            <GroupList />
-                        </v-sheet>
-                    </v-row>
-                    <v-row class="mr-1 d-flex justify-end">
-                        <GenericButton
-                            class="mr-3"
-                            data="그룹 가입하기"
-                            :style="{
-                                backgroundColor: '#4C4637',
-                                color: 'white',
-                            }"
-                            @click-event="$router.push({ name: 'groupList' })"
-                        />
-                        <GenericButton
-                            data="그룹 만들기"
-                            :style="{
-                                backgroundColor: '#4C4637',
-                                color: 'white',
-                            }"
-                            @click-event="$router.push({ name: 'groupCreate' })"
-                        />
-                    </v-row>
-                    <v-row>
-                        <v-col cols="6">
-                            <incorrectDialog :incorrects="incorrectList" />
-                        </v-col>
-
-                        <v-col cols="6">
-                            <PageNavigationButton
-                                background-color="#537960"
-                                data="ㅇㅇㅇ의 동화"
-                                source="src\assets\내동화.png"
-                                @click-event="getGroupList"
-                            />
-                        </v-col>
-                    </v-row>
+        <v-col cols="7">
+          <v-row>
+            <v-sheet
+              rounded
+              class="ma-3"
+              :style="{ backgroundColor: '#CCCBFF' }"
+            >
+            <v-row class="mt-0 ml-0 d-flex">
+              <h1 class="mt-3 ml-4 mr-10">그룹 목록</h1>
+              <v-col class="mb-0 pa-0 mt-4 mr-0">
+                    <v-autocomplete
+                        :items="items"
+                        append-inner-icon="mdi-microphone"
+                        class="mx-auto"
+                        density="comfortable"
+                        menu-icon=""
+                        placeholder="그룹 이름을 입력하세요."
+                        prepend-inner-icon="mdi-magnify"
+                        style="max-width: 350px"
+                        theme="light"
+                        variant="solo"
+                        auto-select-first
+                        item-props
+                        rounded
+                    ></v-autocomplete>
                 </v-col>
-            </v-row>
-        </v-container>
-    </v-main>
+              </v-row>
+              <!-- <SearchInput /> -->
+              <GroupList />
+            </v-sheet>
+          </v-row>
+          <v-row class="mr-1 d-flex justify-end">
+            <GenericButton
+              class="mr-3"
+              data="그룹 가입하기"
+              :style="{ backgroundColor: '#4C4637', color: 'white' }"
+            />
+            <GenericButton
+              data="그룹 만들기"
+              :style="{ backgroundColor: '#4C4637', color: 'white' }"
+            />
+          </v-row>
+          <v-row>
+            <v-col cols="6">
+                <incorrectDialog :incorrects="incorrectList"/>
+     
+            </v-col>
+            <v-col cols="6">
+              <PageNavigationButton
+                background-color="#537960"
+                data="ㅇㅇㅇ의 동화"
+                source="src\assets\내동화.png"
+              />
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-main>
 </template>
 
 <style scoped>

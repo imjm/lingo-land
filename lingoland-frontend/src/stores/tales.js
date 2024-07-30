@@ -5,7 +5,17 @@ import { defineStore } from "pinia";
 export const useTaleStore = defineStore("tale", () => {
   // const members = ref([]);
   const selectedtale = ref(null);
-
+// tales 불러오기
+const getTale = async () => {
+  await axios
+      .get("/fairy-tales", { withCredentials: true })
+      .then((response) => {
+          console.log(response) 
+      })
+      .catch((error) => {
+          console.log(error);
+      });
+};
   const tales = [
     {
       image: "https://avatars0.githubusercontent.com/u/9064066?v=4&s=460",
@@ -35,5 +45,5 @@ export const useTaleStore = defineStore("tale", () => {
     selectedTale.value = tale;
   };
 
-  return { tales, clickTale, selectedtale };
+  return { tales, clickTale, selectedtale, getTale };
 });
