@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.a603.lingoland.group.dto.CreateGroupDTO;
 import com.ssafy.a603.lingoland.group.dto.CreateGroupResponseDto;
+import com.ssafy.a603.lingoland.group.dto.GroupListResponseDTO;
 import com.ssafy.a603.lingoland.group.dto.JoinGroupRequestDTO;
 import com.ssafy.a603.lingoland.group.dto.MemberInGroupResponseDTO;
 import com.ssafy.a603.lingoland.group.dto.UpdateGroupDTO;
@@ -77,7 +78,7 @@ public class GroupController {
 
 	@GetMapping
 	public ResponseEntity<?> getGroups() {
-		List<Group> groups = groupService.findAll();
+		List<GroupListResponseDTO> groups = groupService.findAll();
 		return ResponseEntity.status(HttpStatus.OK).body(groups);
 	}
 

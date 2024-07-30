@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ssafy.a603.lingoland.global.entity.BaseEntity;
 import com.ssafy.a603.lingoland.group.dto.UpdateGroupDTO;
 import com.ssafy.a603.lingoland.member.entity.Member;
@@ -56,12 +57,13 @@ public class Group extends BaseEntity {
 
 	@Column(name = "is_deleted", nullable = false, columnDefinition = "boolean default false")
 	private boolean isDeleted = false;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "leader_id")
 	private Member leader;
 
 	@OneToMany(mappedBy = "group", fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<GroupMember> groupMembers = new ArrayList<>();
 
 	@Builder
