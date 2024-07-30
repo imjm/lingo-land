@@ -19,6 +19,8 @@ public interface GroupService {
 
 	List<GroupListResponseDTO> findAll();
 
+	List<GroupListResponseDTO> findMyGroups(String keyword, CustomUserDetails customUserDetails);
+
 	Group findById(int id);
 
 	void update(Integer groupId, UpdateGroupDTO request, MultipartFile groupImage,

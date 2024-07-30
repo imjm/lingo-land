@@ -82,6 +82,13 @@ public class GroupController {
 		return ResponseEntity.status(HttpStatus.OK).body(groups);
 	}
 
+	@GetMapping("/users")
+	public ResponseEntity<?> getMyGroups(@RequestParam(required = false, name = "keyword") String keyword,
+		@CurrentUser CustomUserDetails customUserDetails) {
+		List<GroupListResponseDTO> groups = groupService.findMyGroups(keyword, customUserDetails);
+		return ResponseEntity.status(HttpStatus.OK).body(groups);
+	}
+
 	@PutMapping(path = "/{groupId}", produces = "application/json", consumes = "multipart/form-data")
 	public ResponseEntity<?> updateGroupInfo(@PathVariable Integer groupId,
 		@RequestPart(value = "updateGroup") UpdateGroupDTO updateGroupDTO,

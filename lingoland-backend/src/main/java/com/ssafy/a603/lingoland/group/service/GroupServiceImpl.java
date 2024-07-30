@@ -61,13 +61,19 @@ public class GroupServiceImpl implements GroupService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<GroupListResponseDTO> findAll() {
-		List<Group> groups = groupRepository.findAll();
+		List<Group> groups = groupRepository.findByIsDeletedFalse();
 		return groups.stream().map(group -> GroupListResponseDTO.builder()
 				.id(group.getId())
 				.name(group.getName())
 				.description(group.getDescription())
 				.build())
 			.collect(Collectors.toUnmodifiableList());
+	}
+
+	@Override
+	public List<GroupListResponseDTO> findMyGroups(String keyword, CustomUserDetails customUserDetails) {
+		Member member = getMemberFromUserDetails(customUserDetails);
+		return groupRepository.findMyGroups(member.getId(), keyword);
 	}
 
 	@Override
