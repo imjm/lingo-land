@@ -14,7 +14,6 @@ const props = defineProps({
     id: String,
     type: String,
     data: String,
-    variant: String,
     hint: String,
 });
 </script>
@@ -23,6 +22,7 @@ const props = defineProps({
     <div>
         {{ data }}
         <v-text-field
+            clearable
             v-model="model"
             :type="type"
             :id="id"

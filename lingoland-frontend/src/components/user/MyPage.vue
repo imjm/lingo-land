@@ -2,36 +2,39 @@
 import GenericButton from "@/components/common/GenericButton.vue";
 import PageNavigationButton from "@/components/common/PageNavigationButton.vue";
 import Profile from "@/components/common/Profile.vue";
-import GroupList from "../group/GroupList.vue";
-import SearchInput from "../common/SearchInput.vue";
-import IncorrectList from "@/components/incorrect/IncorrectList.vue";
 import incorrectDialog from "@/components/incorrect/IncorrectDialog.vue";
+import SearchInput from "../common/SearchInput.vue";
+import GroupList from "../group/GroupList.vue";
 import { useGroupStore } from "@/stores/groups";
+
 import { ref } from "vue";
 
 const groupStore = useGroupStore();
+
 const incorrectList = ref([
-  "문제 1",
-  "문제 2",
-  "문제 3",
-  "문제 4",
-  "문제 5",
-  "문제 6",
-  "문제 7",
-  "문제 8",
-  "문제 9",
-  "문제 10",
-  // 데이터 받아오기
+    "문제 1",
+    "문제 2",
+    "문제 3",
+    "문제 4",
+    "문제 5",
+    "문제 6",
+    "문제 7",
+    "문제 8",
+    "문제 9",
+    "문제 10",
+    // 데이터 받아오기
 ]);
+
+function getGroupList() {
+    groupStore.getGroups();
+}
 </script>
 
 <template>
-    <v-main class="d-flex justify-center">
+    <v-main class="d-flex mt-10 justify-center">
         <v-container>
-            <h1>MainPage View</h1>
-<v-btn @click="groupStore.getGroup">s</v-btn>
             <v-row>
-                <v-col cols="5">
+                <v-col cols="5" class="d-flex align-center justify-center">
                     <Profile source="src\\assets\\sampleImg.jpg" />
                 </v-col>
 

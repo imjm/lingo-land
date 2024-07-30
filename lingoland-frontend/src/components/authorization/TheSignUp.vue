@@ -55,8 +55,10 @@ function validateNickNameFormat(nickname) {
 function validatePasswordFormat(password) {
     // 비밀번호 최대길이 25
 
+    const passwordRegex = /^[ㄱ-ㅎ가-힣a-z0-9_-]{6,20}$/;
+
     // 형식이 일치함
-    if (password.length <= 25) {
+    if (passwordRegex.test(password)) {
         passwordFormat.value = false;
     } else {
         passwordFormat.value = true;
@@ -164,7 +166,8 @@ function signUp() {
                         />
 
                         <div v-if="passwordFormat" class="text-red mb-3">
-                            최대 25자만 사용가능해요.
+                            6~20자의 영문 소문자, 숫자와 특수기호(_),(-)만 사용
+                            가능해요.
                         </div>
 
                         <GenericInput
