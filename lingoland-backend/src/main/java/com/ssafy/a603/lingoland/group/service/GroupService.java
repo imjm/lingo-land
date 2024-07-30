@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.a603.lingoland.group.dto.CreateGroupDTO;
+import com.ssafy.a603.lingoland.group.dto.GroupListResponseDTO;
 import com.ssafy.a603.lingoland.group.dto.JoinGroupRequestDTO;
 import com.ssafy.a603.lingoland.group.dto.MemberInGroupResponseDTO;
 import com.ssafy.a603.lingoland.group.dto.UpdateGroupDTO;
@@ -16,7 +17,7 @@ public interface GroupService {
 
 	Boolean checkNameDuplication(String groupName);
 
-	List<Group> findAll();
+	List<GroupListResponseDTO> findAll();
 
 	Group findById(int id);
 

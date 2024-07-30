@@ -8,6 +8,7 @@ const store = useMemberStore();
 
 <template>
     <div>
+        <v-card color="rgba(172, 204, 124, 1)" class="pt-3" height="100%">
         <v-row>
             <v-col>
             <h1 class="ml-10">순위</h1>
@@ -28,6 +29,7 @@ const store = useMemberStore();
                 <RankListItem :member="member" />
             </v-expansion-panel>
         </v-expansion-panels>
+    </v-card>
     </div>
 </template>
 

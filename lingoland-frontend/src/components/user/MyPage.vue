@@ -7,6 +7,7 @@ import { useGroupStore } from "@/stores/groups";
 import GroupList from "../group/GroupList.vue";
 
 import { ref } from "vue";
+import { useTaleStore } from "@/stores/tales";
 
 const groupStore = useGroupStore();
 
@@ -24,9 +25,12 @@ const incorrectList = ref([
     // 데이터 받아오기
 ]);
 
-function getGroupList() {
-    groupStore.getGroups();
+const taleStore = useTaleStore()
+
+function clickTales() {
+    taleStore.myTalesList();
 }
+
 </script>
 
 <template>
