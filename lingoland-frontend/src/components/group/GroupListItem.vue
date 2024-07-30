@@ -31,7 +31,6 @@ const clickGroup = () => {
             </v-col>
         </v-row>
     </v-expansion-panel-title>
-  </template>
-  
-  <style scoped></style>
-  
+</template>
+
+<style scoped></style>
