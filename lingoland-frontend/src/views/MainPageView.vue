@@ -4,9 +4,6 @@ import GenericInput from "@/components/common/GenericInput.vue";
 import PageNavigationButton from "@/components/common/PageNavigationButton.vue";
 import Profile from "@/components/common/Profile.vue";
 import RankList from "@/components/rank/RankList.vue";
-import swal from "sweetalert2";
-
-window.Swal = swal;
 
 </script>
 
@@ -27,6 +24,11 @@ window.Swal = swal;
                             <PageNavigationButton
                                 background-color="#CCCBFF"
                                 data="방 만들기"
+                                @click-event="
+                                    $router.push({
+                                        name: 'testGameRoom',
+                                    })
+                                "
                             />
 
                             <div
