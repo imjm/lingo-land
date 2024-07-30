@@ -3,9 +3,8 @@ import GenericButton from "@/components/common/GenericButton.vue";
 import PageNavigationButton from "@/components/common/PageNavigationButton.vue";
 import Profile from "@/components/common/Profile.vue";
 import incorrectDialog from "@/components/incorrect/IncorrectDialog.vue";
-import SearchInput from "../common/SearchInput.vue";
-import GroupList from "../group/GroupList.vue";
 import { useGroupStore } from "@/stores/groups";
+import GroupList from "../group/GroupList.vue";
 
 import { ref } from "vue";
 import { useTaleStore } from "@/stores/tales";

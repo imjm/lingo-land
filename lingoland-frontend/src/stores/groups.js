@@ -1,7 +1,7 @@
 import { httpStatus } from "@/apis/http-status";
 import { defineStore } from "pinia";
 import swal from "sweetalert2";
-import { inject, ref } from "vue";
+import { inject } from "vue";
 
 import { useRouter } from "vue-router";
 
@@ -106,47 +106,26 @@ export const useGroupStore = defineStore("group", () => {
             });
     };
 
-    // const groups = ref([]);
-    const selectedGroup = ref(null);
-
-    const groups = [
-        {
-            name: "2024년 3학년 1반",
-            description: "세상에서 제일 머찐 3학년 1반 모여라~!",
-        },
-
-        {
-            name: "2023년 2학년 8반",
-            description: "행복한.하루.되세요~~~!!! @>------",
-        },
-        {
-            name: "2023년 2학년 7반",
-            description: "행복한.하루.되세요~~~!!! @>------",
-        },
-        {
-            name: "2023년 2학년 6반",
-            description: "행복한.하루.되세요~~~!!! @>------",
-        },
-    ];
-
     const getGroups = async () => {
-        await axios
+        const groupList = await axios
             .get("/groups", { withCredentials: true })
             .then((response) => {
                 if (response.status === httpStatus.OK) {
-                    console.log(response);
+                    return Promise.resolve(response.data);
                 }
             })
             .catch((error) => {
                 if (error.status === httpStatus.CONFLICT) {
                 }
             });
+
+        return groupList;
     };
 
-    // 클릭 했을 경우 선택된 그룹창을 보여주기 위함
-    const clickGroup = (group) => {
-        selectedGroup.value = group;
+    return {
+        modifyGroup,
+        createGroup,
+        checkDuplicate,
+        getGroups,
     };
-
-    return { modifyGroup, createGroup, checkDuplicate, groups, clickGroup, getGroups, selectedGroup };
 });

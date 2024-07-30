@@ -2,15 +2,28 @@
 import GroupListItem from "./GroupListItem.vue";
 import { useGroupStore } from "@/stores/groups";
 import { storeToRefs } from "pinia";
+import { onMounted, ref } from "vue";
 
 const store = useGroupStore();
 
-const { groups } = storeToRefs(store);
+const groupList = ref();
+
+onMounted(() => {
+    const groupListPromise = store.getGroups();
+
+    groupListPromise.then((promiseValue) => {
+        groupList.value = promiseValue;
+    });
+});
 </script>
 
 <template>
     <v-expansion-panels class="d-flex pa-4 game-member-list" variant="popout">
-        <v-expansion-panel v-for="(group, i) in groups" :key="i" hide-actions>
+        <v-expansion-panel
+            v-for="(group, i) in groupList"
+            :key="i"
+            hide-actions
+        >
             <GroupListItem
                 :group="group"
                 @click-event="
