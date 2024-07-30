@@ -33,22 +33,5 @@ const clickGroup = () => {
     </v-expansion-panel-title>
   </template>
   
-  <script setup>
-  import { useGroupStore } from "@/stores/groups";
-  import { defineProps } from "vue";
-  
-  const store = useGroupStore();
-  const props = defineProps({
-    group: {
-      type: Object,
-      required: true,
-    },
-  });
-  
-  const clickGroup = () => {
-    store.clickGroup(props.group);
-  };
-  </script>
-  
   <style scoped></style>
   
