@@ -2,6 +2,7 @@
 
 <template>
     <v-carousel
+        class="pa-5"
         height="500"
         show-arrows="hover"
         cycle
