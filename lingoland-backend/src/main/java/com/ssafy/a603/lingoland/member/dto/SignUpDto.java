@@ -21,11 +21,13 @@ public class SignUpDto {
     @Pattern(regexp = "^[ㄱ-ㅎ가-힣a-z0-9_-]{3,20}$")
     private String nickname;
 
-    @Length(max=25)
+    @Length(min = 6, max=20)
     @NotBlank
+    @Pattern(regexp = "^[ㄱ-ㅎ가-힣a-z0-9_-]{6,20}$")
     private String password;
 
-    @Length(max=25)
+    @Length(min = 6, max=20)
     @NotBlank
+    @Pattern(regexp = "^[ㄱ-ㅎ가-힣a-z0-9_-]{6,20}$")
     private String checkedPassword;
 }

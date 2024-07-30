@@ -2,6 +2,7 @@ package com.ssafy.a603.lingoland.fairyTale.entity;
 
 import java.time.LocalDateTime;
 
+import com.ssafy.a603.lingoland.global.entity.BaseEntity;
 import com.ssafy.a603.lingoland.member.entity.Member;
 
 import jakarta.persistence.EmbeddedId;
@@ -18,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FairyTaleMember {
+public class FairyTaleMember extends BaseEntity {
 
 	@EmbeddedId
 	private FairyTaleMemberId id;

@@ -27,6 +27,7 @@ export const useGroupStore = defineStore("group", () => {
       .then((response) => {
         if (response.status === httpStatus.OK) {
           return_value = true;
+
         }
       })
       .catch((error) => {
@@ -63,15 +64,16 @@ export const useGroupStore = defineStore("group", () => {
       });
   };
 
-  // 서버에서 그룹 데이터를 가져오는 메서드
-  const getGroups = async () => {
-    await axios.get("/api/v1/groups").then((response) => {
-      if (response.status === httpStatus.OK) {
-        groups.value = response.data;
-      }
-    }).catch((error) => {
-      console.error("Failed to fetch groups:", error);
-    });
+  // group 불러오기
+  const getGroup = async () => {
+    await axios
+        .get("/groups", { withCredentials: true })
+        .then((response) => {
+            console.log(response) 
+        })
+        .catch((error) => {
+            console.log(error);
+        });
   };
 
   // 클릭 했을 경우 선택된 그룹창을 보여주기 위함
