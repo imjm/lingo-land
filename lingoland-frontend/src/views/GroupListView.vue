@@ -6,10 +6,11 @@ import SearchInput from "@/components/common/SearchInput.vue";
 <template>
     <br />
     <main>
-        <v-sheet rounded class="ma-10">
+        <div class="d-flex justify-center">
+        <v-sheet rounded class="ma-10" width="1000">
             <v-row>
-                <h1 class="my-5 mx-10">그룹 목록</h1>
-                <v-col>
+                <h1 class="mt-7 mx-10">그룹 목록</h1>
+                <v-col class="mt-7 mb-0 pa-0">
                     <v-autocomplete
                         :items="items"
                         append-inner-icon="mdi-microphone"
@@ -27,7 +28,8 @@ import SearchInput from "@/components/common/SearchInput.vue";
                     ></v-autocomplete>
                 </v-col>
             </v-row>
-            <GroupList />
+            <GroupList class="pa-0"/>
         </v-sheet>
+    </div>
     </main>
 </template>

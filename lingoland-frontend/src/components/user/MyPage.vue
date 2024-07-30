@@ -6,9 +6,10 @@ import GroupList from "../group/GroupList.vue";
 import SearchInput from "../common/SearchInput.vue";
 import IncorrectList from "@/components/incorrect/IncorrectList.vue";
 import incorrectDialog from "@/components/incorrect/IncorrectDialog.vue";
-
+import { useGroupStore } from "@/stores/groups";
 import { ref } from "vue";
 
+const groupStore = useGroupStore();
 const incorrectList = ref([
   "문제 1",
   "문제 2",
@@ -28,7 +29,7 @@ const incorrectList = ref([
     <v-main class="d-flex justify-center">
         <v-container>
             <h1>MainPage View</h1>
-
+<v-btn @click="groupStore.getGroup">s</v-btn>
             <v-row>
                 <v-col cols="5">
                     <Profile source="src\\assets\\sampleImg.jpg" />
@@ -41,8 +42,27 @@ const incorrectList = ref([
               class="ma-3"
               :style="{ backgroundColor: '#CCCBFF' }"
             >
-              <h1 class="mx-10">그룹 목록</h1>
-              <SearchInput />
+            <v-row class="mt-0 ml-0 d-flex">
+              <h1 class="mt-3 ml-4 mr-10">그룹 목록</h1>
+              <v-col class="mb-0 pa-0 mt-4 mr-0">
+                    <v-autocomplete
+                        :items="items"
+                        append-inner-icon="mdi-microphone"
+                        class="mx-auto"
+                        density="comfortable"
+                        menu-icon=""
+                        placeholder="그룹 이름을 입력하세요."
+                        prepend-inner-icon="mdi-magnify"
+                        style="max-width: 350px"
+                        theme="light"
+                        variant="solo"
+                        auto-select-first
+                        item-props
+                        rounded
+                    ></v-autocomplete>
+                </v-col>
+              </v-row>
+              <!-- <SearchInput /> -->
               <GroupList />
             </v-sheet>
           </v-row>
