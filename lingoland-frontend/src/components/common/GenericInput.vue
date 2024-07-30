@@ -15,7 +15,12 @@ const props = defineProps({
     type: String,
     data: String,
     variant: String,
+    value:String,
     hint: String,
+    readonly: {
+      type: Boolean,
+      default: false
+    }
 });
 </script>
 
@@ -26,9 +31,11 @@ const props = defineProps({
             v-model="model"
             :type="type"
             :id="id"
+            :value="value"
             variant="outlined"
             :placeholder="hint"
             @blur="$emit('blurEvent')"
+            :readonly="readonly"
         ></v-text-field>
     </div>
 </template>

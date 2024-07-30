@@ -15,11 +15,10 @@ const groupStore = useGroupStore();
 const groupInfo = ref({
     name : "",
     password : "",
-    checkedPassword : "",
     description : "",
-    // leaderId : "", //userId받아오기
 });
 
+const checkedPassword = ref("");
 
 const groupNameFormat = ref(false);
 const passwordFormat = ref(false);
@@ -32,8 +31,15 @@ function createGroup() {
         !nameDuplicate.value &&
         !passwordFormat.value &&
         !passwordCheck.value
+
+        
     ) {
-        groupStore.createGroup(groupInfo);
+
+        groupStore.createGroup(groupInfo.value);
+        console.log(groupNameFormat.value);
+        console.log(nameDuplicate.value);
+        console.log(passwordFormat.value);
+        console.log(passwordCheck.value);
     } else {
         Swal.fire({
             title: "그룹 생성 양식을 확인해주세요",
@@ -159,9 +165,9 @@ function validateNickNameFormat(groupName) {
                             type="password"
                             data="비밀번호확인"
                             id="groupPasswordCheck"
-                            v-model="groupInfo.checkedPassword"
+                            v-model="checkedPassword"
                             @blur-event="
-                                    checkPassword(groupInfo.checkedPassword)
+                                    checkPassword(checkedPassword)
                                 "
                             
                         />

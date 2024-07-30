@@ -50,10 +50,10 @@ export const useGroupStore = defineStore("group", () => {
                         icon: "success",
                         confirmButtonText: "완료",
                     }).then((response) => {
+                        console.log(response.data.groupId)
                         router.replace({
                             name: "groupDetail",
-                            // params: { groupId: response.data.groupId },
-                            params: { groupId: 1 },
+                            params: { groupId: response.data.groupId },
                         });
                     });
                 } else {

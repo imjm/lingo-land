@@ -25,8 +25,8 @@ function modifyGroup() {
 
                 <v-col cols="6">
                     <div class="ma-10">
-                        <GenericInput type="text" data="그룹명" id="userId" />
-
+                        <GenericInput type="text" data="그룹명" id="userId"  />
+                        <!-- :value="value" :readonly="true" -->
                         <GenericInputArea
                             data="그룹 소개"
                             placeholder="그룹 소개를 입력하세요"
