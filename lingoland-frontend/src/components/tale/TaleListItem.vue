@@ -11,6 +11,7 @@ const props = defineProps({
         required: true,
     },
 });
+//id title cover summary
 
 const taleStore = useTaleStore();
 
@@ -24,16 +25,16 @@ const clickTale = (bookId) => {
     <v-list-item-content>
         <v-col cols="12">
             <v-card variant="elevated">
-                <div class="d-flex flex-no-wrap justify-space-between">
+                <div class="d-flex flex-no-wrap ">
                     <v-avatar class="ma-3" rounded="0" size="125">
-                        <v-img :src="tale.image"></v-img>
+                        <v-img :src="tale.cover"></v-img>
                     </v-avatar>
                     <div>
                         <v-card-title class="text-h5">
                             {{ tale.title }}
                         </v-card-title>
 
-                        <v-card-text>{{ tale.description }}</v-card-text>
+                        <v-card-text>{{ tale.summary }}</v-card-text>
 
                         <v-card-actions>
                             <GenericButton
