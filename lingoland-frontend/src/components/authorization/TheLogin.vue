@@ -44,6 +44,7 @@ function login() {
     <v-main class="d-flex align-center justify-center ma-16">
         <v-row>
             <v-col cols="6">
+                <SubmitButton id="login" data="로그인" />
                 <v-card height="500">
                     <v-row>
                         <v-col>
@@ -83,13 +84,19 @@ function login() {
                                     width="100%"
                                     @click-event="login"
                                 />
+
+                                <div class="my-5">
+                                    <RouterLink :to="{ name: 'signUp' }"
+                                        >회원가입</RouterLink
+                                    >
+                                </div>
                             </div>
                         </v-col>
                     </v-row>
                 </v-card>
             </v-col>
             <v-col cols="6">
-                <v-card>
+                <v-card class="mt-9">
                     <GameSlide />
                 </v-card>
             </v-col>

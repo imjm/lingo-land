@@ -73,7 +73,7 @@ instance.interceptors.response.use(
             // Critical section 내부의 작업을 통해 모든 요청에 access token이 가는 것이 보장됨
             return instance(prevRequest);
         } else if (response.status === httpStatus.FORBIDDEN) {
-            router.push({ name: "login" });
+            router.replace({ name: "login" });
         }
 
         return Promise.reject(error);

@@ -8,8 +8,17 @@ const store = useMemberStore();
 
 <template>
     <div>
-        <h1>순위</h1>
-        <DropBox />
+        <v-card color="rgba(172, 204, 124, 1)" class="pt-3" height="100%">
+        <v-row>
+            <v-col>
+            <h1 class="ml-10">순위</h1>
+        </v-col>
+        <v-col class="d-flex justify-end">
+            <DropBox 
+            width = "50%"
+            class="pr-8"/>
+        </v-col>
+    </v-row>
         <v-expansion-panels class="pa-4" variant="popout">
             <v-expansion-panel
                 v-for="(member, i) in store.members"
@@ -20,6 +29,7 @@ const store = useMemberStore();
                 <RankListItem :member="member" />
             </v-expansion-panel>
         </v-expansion-panels>
+    </v-card>
     </div>
 </template>
 

@@ -14,16 +14,9 @@ const props = defineProps({
                 <div>{{ incorrect }}</div>
             </v-row>
             <v-row rows="10">
-                <v-col cols="4">
-                    <img
-                        src="/src/assets/sampleImg.jpg"
-                        class="rounded-circle mx-auto"
-                        style="height: 64px; width: 64px"
-                    />
-                </v-col>
-                <v-col cols="8">
-                    <div>incorrect.question</div>
-                    <div>incorrect.answer</div>
+                <v-col>
+                    <div class="text-h4">incorrect.question</div>
+                    <div class="text-h5">incorrect.answer</div>
                     <div class="d-flex justify-end">
                         <GenericButton
                             :style="{

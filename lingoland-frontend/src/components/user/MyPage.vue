@@ -2,78 +2,118 @@
 import GenericButton from "@/components/common/GenericButton.vue";
 import PageNavigationButton from "@/components/common/PageNavigationButton.vue";
 import Profile from "@/components/common/Profile.vue";
-import GroupList from "../group/GroupList.vue";
-import SearchInput from "../common/SearchInput.vue";
-import IncorrectList from "@/components/incorrect/IncorrectList.vue";
 import incorrectDialog from "@/components/incorrect/IncorrectDialog.vue";
+import { useGroupStore } from "@/stores/groups";
+import GroupList from "../group/GroupList.vue";
 
 import { ref } from "vue";
+import { useTaleStore } from "@/stores/tales";
+
+const groupStore = useGroupStore();
 
 const incorrectList = ref([
-  "문제 1",
-  "문제 2",
-  "문제 3",
-  "문제 4",
-  "문제 5",
-  "문제 6",
-  "문제 7",
-  "문제 8",
-  "문제 9",
-  "문제 10",
-  // 데이터 받아오기
+    "문제 1",
+    "문제 2",
+    "문제 3",
+    "문제 4",
+    "문제 5",
+    "문제 6",
+    "문제 7",
+    "문제 8",
+    "문제 9",
+    "문제 10",
+    // 데이터 받아오기
 ]);
+
+const taleStore = useTaleStore()
+
+function clickTales() {
+    taleStore.myTalesList();
+}
+
 </script>
 
 <template>
-    <v-main class="d-flex justify-center">
+    <v-main class="d-flex mt-10 justify-center">
         <v-container>
-            <h1>MainPage View</h1>
-
             <v-row>
-                <v-col cols="5">
+                <v-col cols="5" class="d-flex align-center justify-center">
                     <Profile source="src\\assets\\sampleImg.jpg" />
                 </v-col>
 
-        <v-col cols="7">
-          <v-row>
-            <v-sheet
-              rounded
-              class="ma-3"
-              :style="{ backgroundColor: '#CCCBFF' }"
-            >
-              <h1 class="mx-10">그룹 목록</h1>
-              <SearchInput />
-              <GroupList />
-            </v-sheet>
-          </v-row>
-          <v-row class="mr-1 d-flex justify-end">
-            <GenericButton
-              class="mr-3"
-              data="그룹 가입하기"
-              :style="{ backgroundColor: '#4C4637', color: 'white' }"
-            />
-            <GenericButton
-              data="그룹 만들기"
-              :style="{ backgroundColor: '#4C4637', color: 'white' }"
-            />
-          </v-row>
-          <v-row>
-            <v-col cols="6">
-                <incorrectDialog :incorrects="incorrectList"/>
-     
-            </v-col>
-            <v-col cols="6">
-              <PageNavigationButton
-                background-color="#537960"
-                data="ㅇㅇㅇ의 동화"
-                source="src\assets\내동화.png"
-              />
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-main>
+                <v-col cols="7">
+                    <v-row>
+                        <v-sheet
+                            rounded
+                            class="ma-3"
+                            :style="{ backgroundColor: '#CCCBFF' }"
+                            width="100%"
+                            height="50dvh"
+                        >
+                            <v-row class="d-flex align-center justify-center">
+                                <v-col cols="4">
+                                    <h2 class="mx-10">내가 속한 그룹 목록</h2>
+                                </v-col>
+                                <v-col cols="8">
+                                    <div class="mr-5 mt-4">
+                                        <v-autocomplete
+                                            :items="items"
+                                            append-inner-icon="mdi-microphone"
+                                            class="mx-auto"
+                                            density="comfortable"
+                                            menu-icon=""
+                                            placeholder="그룹 이름을 입력하세요."
+                                            prepend-inner-icon="mdi-magnify"
+                                            style="max-width: 300px"
+                                            theme="light"
+                                            variant="solo"
+                                            auto-select-first
+                                            item-props
+                                            rounded
+                                        ></v-autocomplete>
+                                    </div>
+                                </v-col>
+                            </v-row>
+                            <GroupList />
+                        </v-sheet>
+                    </v-row>
+                    <v-row class="mr-1 d-flex justify-end">
+                        <GenericButton
+                            class="mr-3"
+                            data="그룹 가입하기"
+                            :style="{
+                                backgroundColor: '#4C4637',
+                                color: 'white',
+                            }"
+                            @click-event="$router.push({ name: 'groupList' })"
+                        />
+                        <GenericButton
+                            data="그룹 만들기"
+                            :style="{
+                                backgroundColor: '#4C4637',
+                                color: 'white',
+                            }"
+                            @click-event="$router.push({ name: 'groupCreate' })"
+                        />
+                    </v-row>
+                    <v-row>
+                        <v-col cols="6">
+                            <incorrectDialog :incorrects="incorrectList" />
+                        </v-col>
+
+                        <v-col cols="6">
+                            <PageNavigationButton
+                                background-color="#537960"
+                                data="ㅇㅇㅇ의 동화"
+                                source="src\assets\내동화.png"
+                                @click-event="getGroupList"
+                            />
+                        </v-col>
+                    </v-row>
+                </v-col>
+            </v-row>
+        </v-container>
+    </v-main>
 </template>
 
 <style scoped>

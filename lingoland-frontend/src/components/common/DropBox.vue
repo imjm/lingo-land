@@ -17,16 +17,11 @@ const props = defineProps({
     <v-select
         clearable
         variant="outlined"
+        max-width ="300px"
         :width="width"
+        height="20px"
         color="black"
-        :items="[
-            'California',
-            'Colorado',
-            'Florida',
-            'Georgia',
-            'Texas',
-            'Wyoming',
-        ]"
+        :items="item"
     ></v-select>
 </template>
 

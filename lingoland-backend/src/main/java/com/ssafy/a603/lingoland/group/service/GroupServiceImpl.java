@@ -2,12 +2,14 @@ package com.ssafy.a603.lingoland.group.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.a603.lingoland.group.dto.CreateGroupDTO;
+import com.ssafy.a603.lingoland.group.dto.GroupListResponseDTO;
 import com.ssafy.a603.lingoland.group.dto.JoinGroupRequestDTO;
 import com.ssafy.a603.lingoland.group.dto.MemberInGroupResponseDTO;
 import com.ssafy.a603.lingoland.group.dto.UpdateGroupDTO;
@@ -33,7 +35,8 @@ public class GroupServiceImpl implements GroupService {
 	private final ImgUtils imgUtils;
 
 	@Override
-	public Group create(CreateGroupDTO request, MultipartFile groupImage, CustomUserDetails customUserDetails) {
+	@Transactional
+	public Group create(CreateGroupDTO request, CustomUserDetails customUserDetails) {
 		Member member = getMemberFromUserDetails(customUserDetails);
 		Group group = Group.builder()
 			.name(request.name())
@@ -42,8 +45,7 @@ public class GroupServiceImpl implements GroupService {
 			.leader(member)
 			.build();
 
-		String savePath = imgUtils.saveImage(groupImage, GROUP_IMAGE_PATH);
-		group.setGroupImagePath(savePath);
+		group.setGroupImagePath(imgUtils.getDefaultGroupImagePath());
 		Group createdGroup = groupRepository.save(group);
 
 		addMemberToGroup(group, member, "그룹장 입니다.");
@@ -52,11 +54,24 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
-	public List<Group> findAll() {
-		return groupRepository.findAll();
+	public Boolean checkNameDuplication(String groupName) {
+		return groupRepository.existsByName(groupName);
 	}
 
 	@Override
+	@Transactional(readOnly = true)
+	public List<GroupListResponseDTO> findAll() {
+		List<Group> groups = groupRepository.findAll();
+		return groups.stream().map(group -> GroupListResponseDTO.builder()
+				.id(group.getId())
+				.name(group.getName())
+				.description(group.getDescription())
+				.build())
+			.collect(Collectors.toUnmodifiableList());
+	}
+
+	@Override
+	@Transactional(readOnly = true)
 	public Group findById(int id) {
 		return groupRepository.findById(id).orElseThrow(
 			() -> new NoSuchElementException("No such group")
@@ -64,6 +79,7 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
+	@Transactional
 	public void update(Integer groupId, UpdateGroupDTO request, MultipartFile groupImage,
 		CustomUserDetails customUserDetails) {
 		Member member = getMemberFromUserDetails(customUserDetails);
@@ -79,6 +95,7 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteById(int id, CustomUserDetails customUserDetails) {
 		Member member = getMemberFromUserDetails(customUserDetails);
 		Group group = findById(id);
@@ -89,6 +106,7 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
+	@Transactional
 	public void addMemberToGroupWithPasswordCheck(int groupId, JoinGroupRequestDTO joinGroupRequestDTO,
 		CustomUserDetails customUserDetails) {
 		Group group = findById(groupId);
@@ -104,6 +122,7 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<MemberInGroupResponseDTO> findAllMembersByGroupId(int groupId, String keyword,
 		CustomUserDetails customUserDetails) {
 		Member member = getMemberFromUserDetails(customUserDetails);
@@ -152,8 +171,7 @@ public class GroupServiceImpl implements GroupService {
 		groupMember.addGroup(group);
 		groupMember.addMember(member);
 
-		group.join(groupMember);
-		member.getGroupMembers().add(groupMember);
+		group.join();
 
 		groupMemberRepository.save(groupMember);
 	}

@@ -61,6 +61,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         String loginId = customUserDetails.getUsername();
+        Integer memberId = customUserDetails.getMemberId();
 
         Collection<? extends GrantedAuthority> authorities = customUserDetails.getAuthorities();
         Optional<? extends GrantedAuthority> authorityOptional = authorities.stream().findFirst();
@@ -73,8 +74,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         GrantedAuthority auth = authorityOptional.get();
         String role = auth.getAuthority();
 
-        String access = jwtUtil.createToken("access", loginId, role, 600000L);
-        String refresh = jwtUtil.createToken("refresh", loginId, role, 86400000L);
+        String access = jwtUtil.createToken("access", loginId, memberId, role, 600000L);
+        String refresh = jwtUtil.createToken("refresh", loginId, memberId, role, 86400000L);
 
         memberService.addRefreshToken(loginId, refresh);
 
@@ -92,6 +93,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(24*60*60);
         cookie.setHttpOnly(true);
+        cookie.setPath("/");
         return cookie;
     }
 
