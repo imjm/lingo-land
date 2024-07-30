@@ -52,6 +52,7 @@ instance.interceptors.response.use(
                         withCredentials: true,
                     })
                     .then((response) => {
+                        console.log(response)
                         return Promise.resolve(response); // 결과를 리턴해서 refreshResponse에 넣어줌
                     });
 
