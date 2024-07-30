@@ -55,6 +55,7 @@ function createGroup() {
 function checkDuplicate() {
     groupStore.checkDuplicate(groupInfo.value.name).then((response) => {
         if (response) {
+            nameDuplicate.value = false;
             Swal.fire({
                 title: "중복확인 완료",
                 icon: "success",

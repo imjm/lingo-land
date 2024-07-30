@@ -45,16 +45,18 @@ export const useGroupStore = defineStore("group", () => {
             .post("/groups", groupInfo , { withCredentials: true })
             .then((response) => {
                 if (response.status === httpStatus.CREATE) {
+                    
                     Swal.fire({
                         title: "그룹 만들기 성공!",
                         icon: "success",
                         confirmButtonText: "완료",
-                    }).then((response) => {
-                        console.log(response.data.groupId)
+                    })
+                        console.log(response)
+                        console.log('나는 성공했는데 니네가 안보낸 거임')
                         router.replace({
                             name: "groupDetail",
                             params: { groupId: response.data.groupId },
-                        });
+                        
                     });
                 } else {
                     Swal.fire({
@@ -72,6 +74,39 @@ export const useGroupStore = defineStore("group", () => {
             });
     };
 
+    // 그룹 수정
+    const modifyGroup = async (groupInfo) => {
+        console.log(groupInfo);
+        await axios
+            .put("/groups", groupInfo , { withCredentials: true })
+            .then((response) => {
+                if (response.status === httpStatus.CREATE) {
+                    Swal.fire({
+                        title: "그룹 정보 수정 성공!",
+                        icon: "success",
+                        confirmButtonText: "완료",
+                    }).then((response) => {
+                        console.log(response.data.groupId)
+                        router.replace({
+                            name: "groupDetail",
+                            params: { groupId: response.data.groupId },
+                        });
+                    });
+                } else {
+                    Swal.fire({
+                        title: "그룹 정보 수정 실패",
+                        icon: "error",
+                    });
+                }
+            })
+            .catch((error) => {
+                Swal.fire({
+                    title: "그룹 정보 수정 실패",
+                    icon: "error",
+                });
+                console.log(error);
+            });
+    };
     
     // const groups = ref([]);
     const selectedGroup = ref(null);
@@ -103,5 +138,5 @@ export const useGroupStore = defineStore("group", () => {
         selectedGroup.value = group;
     };
 
-    return { groups, clickGroup, selectedGroup, checkDuplicate, createGroup };
+    return { modifyGroup, groups, clickGroup, selectedGroup, checkDuplicate, createGroup };
 });

@@ -1,4 +1,5 @@
 <script setup>
+import { useGroupStore } from "@/stores/groups";
 import GenericButton from "../common/GenericButton.vue";
 import GenericInput from "../common/GenericInput.vue";
 import GenericInputArea from "../common/GenericInputArea.vue";
@@ -6,8 +7,9 @@ import ImageBox from "../common/ImageBox.vue";
 import SubmitButton from "../common/SubmitButton.vue";
 import imageSource from "@/assets/sampleImg.jpg";
 
+const groupStore = useGroupStore()
 function modifyGroup() {
-    console.log("그룹 수정해");
+    groupStore.modifyGroup
 }
 </script>
 
