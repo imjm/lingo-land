@@ -41,6 +41,10 @@ function createGroup() {
         console.log(passwordFormat.value);
         console.log(passwordCheck.value);
     } else {
+        console.log(groupNameFormat.value);
+        console.log(nameDuplicate.value);
+        console.log(passwordFormat.value);
+        console.log(passwordCheck.value);
         Swal.fire({
             title: "그룹 생성 양식을 확인해주세요",
             icon: "error",
