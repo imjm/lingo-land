@@ -28,6 +28,7 @@ const props = defineProps({
     <div>
         {{ data }}
         <v-text-field
+            clearable
             v-model="model"
             :type="type"
             :id="id"

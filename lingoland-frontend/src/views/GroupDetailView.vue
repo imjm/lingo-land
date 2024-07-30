@@ -52,21 +52,19 @@ const shortcuts = [
     <main>
         <v-row>
             <v-col cols="2">
-                <v-row justify="center">
-                    <v-btn color="brown-darken-3">뒤로가기</v-btn>
-                </v-row>
+
             </v-col>
             <v-col cols="8">
                 <v-sheet class="g-10">
                     <v-row>
                         <v-col cols="5">
-                            <h1 class="mx-5">group.name</h1>
+                            <h1 class="mx-5 my-0">group.name</h1>
                         </v-col>
-                        <v-col>
+                        <v-col >
                             <v-autocomplete
                                 :items="items"
                                 append-inner-icon="mdi-microphone"
-                                class="mx-auto"
+                                class="mx-5 mt-1"
                                 density="comfortable"
                                 menu-icon=""
                                 placeholder="이름을 입력하세요."
@@ -82,9 +80,7 @@ const shortcuts = [
                     </v-row>
 
                     <GroupMemberList />
-                    <v-row justify="end" class="mx-10 my-3">
-                        <v-btn>그룹 수정</v-btn>
-                    </v-row>
+
                     <v-row height="10"></v-row>
                 </v-sheet>
             </v-col>

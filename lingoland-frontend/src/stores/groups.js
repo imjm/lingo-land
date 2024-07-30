@@ -42,21 +42,19 @@ export const useGroupStore = defineStore("group", () => {
     const createGroup = async (groupInfo) => {
         console.log(groupInfo);
         await axios
-            .post("/groups", groupInfo , { withCredentials: true })
+            .post("/groups", groupInfo, { withCredentials: true })
             .then((response) => {
                 if (response.status === httpStatus.CREATE) {
-                    
                     Swal.fire({
                         title: "그룹 만들기 성공!",
                         icon: "success",
                         confirmButtonText: "완료",
-                    })
-                        console.log(response)
-                        console.log('나는 성공했는데 니네가 안보낸 거임')
-                        router.replace({
-                            name: "groupDetail",
-                            params: { groupId: response.data.groupId },
-                        
+                    });
+                    console.log(response);
+                    console.log("나는 성공했는데 니네가 안보낸 거임");
+                    router.replace({
+                        name: "groupDetail",
+                        params: { groupId: response.data.groupId },
                     });
                 } else {
                     Swal.fire({
@@ -78,7 +76,7 @@ export const useGroupStore = defineStore("group", () => {
     const modifyGroup = async (groupInfo) => {
         console.log(groupInfo);
         await axios
-            .put("/groups", groupInfo , { withCredentials: true })
+            .put("/groups", groupInfo, { withCredentials: true })
             .then((response) => {
                 if (response.status === httpStatus.CREATE) {
                     Swal.fire({
@@ -86,7 +84,7 @@ export const useGroupStore = defineStore("group", () => {
                         icon: "success",
                         confirmButtonText: "완료",
                     }).then((response) => {
-                        console.log(response.data.groupId)
+                        console.log(response.data.groupId);
                         router.replace({
                             name: "groupDetail",
                             params: { groupId: response.data.groupId },
@@ -107,7 +105,7 @@ export const useGroupStore = defineStore("group", () => {
                 console.log(error);
             });
     };
-    
+
     // const groups = ref([]);
     const selectedGroup = ref(null);
 
@@ -130,13 +128,25 @@ export const useGroupStore = defineStore("group", () => {
             description: "행복한.하루.되세요~~~!!! @>------",
         },
     ];
-    const groupOrdering = () => {
-        /* data 받아오는 거 해야할 듯 정렬해서 받아오는 알고리즘? */
+
+    const getGroups = async () => {
+        await axios
+            .get("/groups", { withCredentials: true })
+            .then((response) => {
+                if (response.status === httpStatus.OK) {
+                    console.log(response);
+                }
+            })
+            .catch((error) => {
+                if (error.status === httpStatus.CONFLICT) {
+                }
+            });
     };
+
     // 클릭 했을 경우 선택된 그룹창을 보여주기 위함
     const clickGroup = (group) => {
         selectedGroup.value = group;
     };
 
-    return { modifyGroup, groups, clickGroup, selectedGroup, checkDuplicate, createGroup };
+    return { groups, clickGroup, getGroups, selectedGroup };
 });

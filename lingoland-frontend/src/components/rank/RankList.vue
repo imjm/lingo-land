@@ -8,8 +8,16 @@ const store = useMemberStore();
 
 <template>
     <div>
-        <h1>순위</h1>
-        <DropBox />
+        <v-row>
+            <v-col>
+            <h1 class="ml-10">순위</h1>
+        </v-col>
+        <v-col class="d-flex justify-end">
+            <DropBox 
+            width = "50%"
+            class="pr-8"/>
+        </v-col>
+    </v-row>
         <v-expansion-panels class="pa-4" variant="popout">
             <v-expansion-panel
                 v-for="(member, i) in store.members"

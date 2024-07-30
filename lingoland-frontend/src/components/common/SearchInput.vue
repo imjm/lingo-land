@@ -11,12 +11,13 @@ const props = defineProps({
     id: String,
     type: String,
     data: String,
+    hint: String
 });
 </script>
 
 <template>
     <div>
-        <v-text-field v-model="model" :type="type" :id="id"></v-text-field>
+        <v-text-field clearable v-model="model" :type="type" :id="id" :placeholder="hint"></v-text-field>
     </div>
 </template>
 

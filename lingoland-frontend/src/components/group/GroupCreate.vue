@@ -1,5 +1,8 @@
 <script setup>
+import imageSource from "@/assets/sampleImg.jpg";
 import { useGroupStore } from "@/stores/groups";
+import swal from "sweetalert2";
+import { ref } from "vue";
 import GenericButton from "../common/GenericButton.vue";
 import GenericInput from "../common/GenericInput.vue";
 import GenericInputArea from "../common/GenericInputArea.vue";
@@ -91,13 +94,13 @@ function validatePasswordFormat(password) {
     }
 }
 
-// 그룹명 포맷 체크
-function validateNickNameFormat(groupName) {
-    // 그룹명 길이 3- 20 한글,영어,숫자/-/_
-    const nicknameRegex = /^[ㄱ-ㅎ가-힣a-z0-9_-]{3,20}$/;
+// 닉네임 포맷 체크
+function validateGroupNameFormat(groupName) {
+    // 닉네임 길이 3- 20 한글,영어,숫자/-/_
+    const groupNameRegex = /^[ㄱ-ㅎ가-힣a-z0-9_-]{3,20}$/;
 
     // 형식이 일치함
-    if (nicknameRegex.test(groupName)) {
+    if (groupNameRegex.test(groupName)) {
         groupNameFormat.value = false;
     } else {
         groupNameFormat.value = true;
