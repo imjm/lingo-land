@@ -1,21 +1,28 @@
-<script setup>
-import GroupListItem from "./GroupListItem.vue";
-import { useGroupStore } from "@/stores/groups";
-
-const store = useGroupStore();
-</script>
-
 <template>
     <v-expansion-panels class="pa-4" variant="popout">
-        <v-expansion-panel
-            v-for="(group, i) in store.groups"
-            :key="i"
-            hide-actions
-        >
-            <!-- 아직 변수 값을 몰라 임의로 작성하였습니다. 데이터는 store에 임의로 작성하여 구성했습니다. -->
-            <GroupListItem :group="group" />
-        </v-expansion-panel>
+      <v-expansion-panel
+        v-for="(group, i) in store.groups"
+        :key="i"
+        hide-actions
+      >
+        <GroupListItem :group="group" />
+      </v-expansion-panel>
     </v-expansion-panels>
-</template>
-
-<style scoped></style>
+  </template>
+  
+  <script setup>
+  import GroupListItem from "./GroupListItem.vue";
+  import { useGroupStore } from "@/stores/groups";
+  import { onMounted } from 'vue';
+  
+  // Store 불러오기
+  const store = useGroupStore();
+  
+  // 컴포넌트가 마운트될 때 데이터 가져오기
+  onMounted(() => {
+    store.getGroups();
+  });
+  </script>
+  
+  <style scoped></style>
+  

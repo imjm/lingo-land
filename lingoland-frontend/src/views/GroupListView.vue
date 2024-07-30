@@ -1,6 +1,7 @@
 <script setup>
 import GroupList from "@/components/group/GroupList.vue";
 import SearchInput from "@/components/common/SearchInput.vue";
+
 </script>
 
 <template>
