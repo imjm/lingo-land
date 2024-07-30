@@ -7,9 +7,9 @@ import { defineProps } from "vue";
 */
 const props = defineProps({
     id: String,
-    label: String,
+    hint : String,
     item: Array,
-    width: Number,
+    // width: Number,
 });
 </script>
 
@@ -17,10 +17,10 @@ const props = defineProps({
     <v-select
         clearable
         variant="outlined"
-        max-width ="300px"
-        :width="width"
-        height="20px"
+        width="300px"
         color="black"
+        :placeholder="hint"
+        density="compact"
         :items="item"
     ></v-select>
 </template>

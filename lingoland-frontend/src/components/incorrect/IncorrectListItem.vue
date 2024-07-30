@@ -19,7 +19,7 @@ const props = defineProps({
                     <div class="text-h5">incorrect.answer</div>
                     <div class="d-flex justify-end">
                         <GenericButton
-                            :style="{
+                            :style="{   
                                 backgroundColor: '#4C4637',
                                 color: 'white',
                             }"
@@ -35,5 +35,7 @@ const props = defineProps({
 <style scoped>
 .border-md {
     background-color: #fff1c2;
+    border-radius : 8px;
+    margin : 8px 0px;
 }
 </style>

@@ -6,6 +6,7 @@ import GenericButton from "../common/GenericButton.vue";
 import GenericInput from "../common/GenericInput.vue";
 import ImageBox from "../common/ImageBox.vue";
 import SubmitButton from "../common/SubmitButton.vue";
+import NameTag from "../common/NameTag.vue";
 
 const imageSource = "src\\assets\\sampleImg.jpg";
 
@@ -106,7 +107,7 @@ function signUp() {
 <template>
     <v-main class="d-flex align-center justify-center">
         <div>
-            <SubmitButton
+            <NameTag 
                 data="회원가입"
             />
             <v-card width="1200">
