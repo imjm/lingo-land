@@ -1,15 +1,24 @@
 <script setup>
-import GroupListItem from "./GroupListItem.vue";
 import { useGroupStore } from "@/stores/groups";
-import { storeToRefs } from "pinia";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, defineProps } from "vue";
+import GroupListItem from "./GroupListItem.vue";
+
+const props = defineProps({
+    checkMyGroup: Boolean,
+});
 
 const store = useGroupStore();
 
 const groupList = ref();
 
 onMounted(() => {
-    const groupListPromise = store.getGroups();
+    let groupListPromise;
+
+    if (props.checkMyGroup) {
+        groupListPromise = store.getMyGroups();
+    } else {
+        groupListPromise = store.getGroups();
+    }
 
     groupListPromise.then((promiseValue) => {
         groupList.value = promiseValue;
@@ -29,7 +38,7 @@ onMounted(() => {
                 @click-event="
                     $router.push({
                         name: 'groupDetail',
-                        params: { groupId: '1' },
+                        params: { groupId: group.id },
                     })
                 "
             />
