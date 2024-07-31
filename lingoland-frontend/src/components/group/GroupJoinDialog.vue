@@ -2,8 +2,10 @@
 import GenericButton from "../common/GenericButton.vue";
 import GenericInput from "../common/GenericInput.vue";
 import GenericInputArea from "../common/GenericInputArea.vue";
+import ImageBox from "../common/ImageBox.vue";
+import NameTag from "../common/NameTag.vue";
 import SubmitButton from "../common/SubmitButton.vue";
-import { ref } from "vue";
+import defaultImage from "@/assets/sampleImg.jpg";
 
 const model = defineModel();
 
@@ -13,15 +15,21 @@ const props = defineProps({
 </script>
 
 <template>
-    <v-dialog v-model="model" width="850" height="600">
+    <v-dialog v-model="model.isOpen" width="850" height="600">
+        <NameTag data="그룹가입하기" />
         <v-sheet width="850" height="600" class="d-flex align-center pa-15">
             <v-row>
                 <v-col>
-                    <v-row>
-                        <img src="@/assets/sampleImg.jpg" alt="" width="100%" />
+                    <v-row class="d-flex align-center justify-center">
+                        <ImageBox :source="defaultImage" />
                     </v-row>
-                    <v-row>
-                        <h1>그룹이름</h1>
+
+                    <v-row class="d-flex align-center justify-center">
+                        <h1>{{ model.groupInfo.name }}</h1>
+                    </v-row>
+
+                    <v-row class="d-flex mt-10 align-center justify-center">
+                        <h3>{{ model.groupInfo.description }}</h3>
                     </v-row>
                 </v-col>
                 <v-col>
@@ -35,7 +43,7 @@ const props = defineProps({
                         width="100%"
                         @click-event="
                             () => {
-                                model = false;
+                                model.isOpen = false;
                             }
                         "
                     />
@@ -45,7 +53,7 @@ const props = defineProps({
                         width="100%"
                         @click-event="
                             () => {
-                                model = false;
+                                model.isOpen = false;
                             }
                         "
                     />
