@@ -122,6 +122,22 @@ export const useGroupStore = defineStore("group", () => {
         return groupList;
     };
 
+    const getGroup = async (groupId) => {
+        const group = await axios
+            .get(`/groups/${groupId}`, { withCredentials: true })
+            .then((response) => {
+                if (response.status === httpStatus.OK) {
+                    return Promise.resolve(response.data);
+                }
+            })
+            .catch((error) => {
+                if (error.status === httpStatus.CONFLICT) {
+                }
+            });
+
+        return group;
+    };
+
     const getMyGroups = async () => {
         const myGroupList = await axios
             .get("/groups/users", { withCredentials: true })
@@ -143,6 +159,7 @@ export const useGroupStore = defineStore("group", () => {
         createGroup,
         checkDuplicate,
         getGroups,
+        getGroup,
         getMyGroups,
     };
 });
