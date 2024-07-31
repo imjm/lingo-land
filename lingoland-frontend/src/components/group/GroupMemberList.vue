@@ -1,13 +1,14 @@
 <script setup>
 import GenericButton from "@/components/common/GenericButton.vue";
 import router from "@/router";
-import { useMemberStore } from "@/stores/members";
-import { ref } from "vue";
 import GroupMemberListItem from "./GroupMemberListItem.vue";
-const store = useMemberStore();
-const dialog = ref(false);
+
+const props = defineProps({
+    groupMemberList: Object,
+});
 
 function modify() {
+    // 그룹장인 경우만 수정되도록
     console.log("modify");
     router.push({ name: "groupModify" });
 }
@@ -16,11 +17,11 @@ function modify() {
 <template>
     <v-expansion-panels class="pa-4" variant="popout">
         <v-expansion-panel
-            v-for="(member, i) in store.members"
+            v-for="(groupMember, i) in groupMemberList"
             :key="i"
             hide-actions
         >
-            <GroupMemberListItem :member="member" />
+            <GroupMemberListItem :groupMember="groupMember" />
         </v-expansion-panel>
     </v-expansion-panels>
 
