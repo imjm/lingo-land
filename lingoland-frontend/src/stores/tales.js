@@ -17,6 +17,7 @@ export const useTaleStore = defineStore("tale", () => {
         //내 tales list 불러오기
         axios.get('/fairy-tales/members').then((response) => {
             tales.value=response.data
+            console.log(`length : ${response.data.length}`)
         }) .then(()=> {
             router.push({name : "bookList"})
         })
