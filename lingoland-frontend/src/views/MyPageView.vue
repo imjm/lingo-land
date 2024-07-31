@@ -1,7 +1,7 @@
 <script setup></script>
 
 <template>
-    <RouterView />
+    <RouterView class="mt-10" />
 </template>
 
 <style scoped></style>

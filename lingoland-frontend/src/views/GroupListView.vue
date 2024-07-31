@@ -5,10 +5,9 @@ import SearchInput from "@/components/common/SearchInput.vue";
 </script>
 
 <template>
-    <br />
-    <main>
+    <main class="mt-10">
         <div class="d-flex justify-center">
-        <v-sheet rounded class="ma-10" width="1000">
+        <v-sheet rounded  width="1000">
             <v-row>
                 <h1 class="mt-7 mx-10">그룹 목록</h1>
                 <v-col class="mt-7 mb-0 pa-0">

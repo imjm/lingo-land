@@ -11,10 +11,10 @@ window.Swal = swal;
 </script>
 
 <template>
-    <v-main class="d-flex align-center justify-center">
+    <v-main class="d-flex align-center justify-center mt-10">
         <v-container>
             <v-row>
-                <v-col cols="5" class="d-flex align-center justify-center">
+                <v-col cols="5" class="d-flex justify-center">
                     <Profile source="src\\assets\\sampleImg.jpg" />
                 </v-col>
 
