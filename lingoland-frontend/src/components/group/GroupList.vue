@@ -25,11 +25,8 @@ function clickFunction(groupInfo, groupId) {
             name: "groupDetail",
             params: { groupId: groupId },
         });
-
-        // 내가 속한 그룹이 아닌 경우 가입 dialog 출력
     } else {
-        // store.getGroupDetail(groupId)
-
+        // 내가 속한 그룹이 아닌 경우 가입 dialog 출력
         dialog.value.groupInfo = groupInfo;
         dialog.value.isOpen = true;
     }
