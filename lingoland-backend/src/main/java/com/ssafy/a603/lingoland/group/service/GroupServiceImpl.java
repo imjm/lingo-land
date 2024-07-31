@@ -1,15 +1,18 @@
 package com.ssafy.a603.lingoland.group.service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ssafy.a603.lingoland.global.error.entity.ErrorCode;
+import com.ssafy.a603.lingoland.global.error.exception.ForbiddenException;
+import com.ssafy.a603.lingoland.global.error.exception.IllegalParameterException;
+import com.ssafy.a603.lingoland.global.error.exception.InvalidInputException;
+import com.ssafy.a603.lingoland.global.error.exception.NotFoundException;
 import com.ssafy.a603.lingoland.group.dto.CreateGroupDTO;
-import com.ssafy.a603.lingoland.group.dto.GroupListResponseDTO;
+import com.ssafy.a603.lingoland.group.dto.GroupInfoResponseDTO;
 import com.ssafy.a603.lingoland.group.dto.JoinGroupRequestDTO;
 import com.ssafy.a603.lingoland.group.dto.MemberInGroupResponseDTO;
 import com.ssafy.a603.lingoland.group.dto.UpdateGroupDTO;
@@ -24,7 +27,9 @@ import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 import com.ssafy.a603.lingoland.util.ImgUtils;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GroupServiceImpl implements GroupService {
@@ -37,6 +42,7 @@ public class GroupServiceImpl implements GroupService {
 	@Override
 	@Transactional
 	public Group create(CreateGroupDTO request, CustomUserDetails customUserDetails) {
+		log.info("Creating group with name: {}", request.name());
 		Member member = getMemberFromUserDetails(customUserDetails);
 		Group group = Group.builder()
 			.name(request.name())
@@ -50,118 +56,139 @@ public class GroupServiceImpl implements GroupService {
 
 		addMemberToGroup(group, member, "그룹장 입니다.");
 
+		log.info("Group created with ID: {}", createdGroup.getId());
 		return createdGroup;
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Boolean checkNameDuplication(String groupName) {
+		log.info("Checking name duplication for group: {}", groupName);
 		return groupRepository.existsByName(groupName);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<GroupListResponseDTO> findAll() {
-		List<Group> groups = groupRepository.findByIsDeletedFalse();
-		return groups.stream().map(group -> GroupListResponseDTO.builder()
-				.id(group.getId())
-				.name(group.getName())
-				.description(group.getDescription())
-				.build())
-			.collect(Collectors.toUnmodifiableList());
-	}
-
-	@Override
-	public List<GroupListResponseDTO> findMyGroups(String keyword, CustomUserDetails customUserDetails) {
+	public List<GroupInfoResponseDTO> findMyGroups(String keyword, CustomUserDetails customUserDetails) {
+		log.info("Finding my groups with keyword: {}", keyword);
 		Member member = getMemberFromUserDetails(customUserDetails);
-		return groupRepository.findMyGroups(member.getId(), keyword);
+		return groupRepository.findGroupsByMemberId(member.getId(), keyword, true);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public Group findById(int id) {
-		return groupRepository.findById(id).orElseThrow(
-			() -> new NoSuchElementException("No such group")
-		);
+	public List<GroupInfoResponseDTO> findNotMyGroups(String keyword, CustomUserDetails customUserDetails) {
+		log.info("Finding groups not belonging to user with keyword: {}", keyword);
+		Member member = getMemberFromUserDetails(customUserDetails);
+		return groupRepository.findGroupsByMemberId(member.getId(), keyword, false);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public GroupInfoResponseDTO findById(int id) {
+		log.info("Finding group by ID: {}", id);
+		return groupRepository.findGroupInfoById(id);
 	}
 
 	@Override
 	@Transactional
 	public void update(Integer groupId, UpdateGroupDTO request, MultipartFile groupImage,
 		CustomUserDetails customUserDetails) {
+		log.info("Updating group with ID: {}", groupId);
 		Member member = getMemberFromUserDetails(customUserDetails);
-		Group group = findById(request.id());
+		Group group = groupRepository.findById(request.id()).orElseThrow(
+			() -> new IllegalParameterException(ErrorCode.GROUP_ILLEGAL_PARAMETER)
+		);
 
 		if (group.getLeader().getId() != member.getId()) {
-			throw new RuntimeException("권한 없음");
+			log.error("Member with ID: {} is not the leader of group ID: {}", member.getId(), groupId);
+			throw new ForbiddenException(ErrorCode.MEMBER_FORBIDDEN);
 		}
 
 		group.updateGroup(request);
 		imgUtils.deleteImage(group.getGroupImage(), GROUP_IMAGE_PATH);
 		imgUtils.saveImage(groupImage, GROUP_IMAGE_PATH);
+
+		log.info("Group with ID: {} updated successfully.", groupId);
 	}
 
 	@Override
 	@Transactional
-	public void deleteById(int id, CustomUserDetails customUserDetails) {
+	public void deleteById(int groupId, CustomUserDetails customUserDetails) {
+		log.info("Deleting group with ID: {}", groupId);
 		Member member = getMemberFromUserDetails(customUserDetails);
-		Group group = findById(id);
+		Group group = groupRepository.findById(groupId).orElseThrow(
+			() -> new IllegalParameterException(ErrorCode.GROUP_ILLEGAL_PARAMETER)
+		);
 		if (group.getLeader().getId() != member.getId()) {
-			throw new RuntimeException("권한 없음");
+			log.error("Member with ID: {} is not the leader of group ID: {}", member.getId(), groupId);
+			throw new ForbiddenException(ErrorCode.MEMBER_FORBIDDEN);
 		}
 		group.delete();
+		log.info("Group with ID: {} deleted successfully.", groupId);
 	}
 
 	@Override
 	@Transactional
 	public void addMemberToGroupWithPasswordCheck(int groupId, JoinGroupRequestDTO joinGroupRequestDTO,
 		CustomUserDetails customUserDetails) {
-		Group group = findById(groupId);
+		log.info("Adding member to group with ID: {}", groupId);
+		Group group = groupRepository.findById(groupId).orElseThrow(
+			() -> new IllegalParameterException(ErrorCode.GROUP_ILLEGAL_PARAMETER)
+		);
 
 		if (group.getPassword().intValue() != joinGroupRequestDTO.password().intValue()) {
-			throw new RuntimeException("password not equals");
+			log.error("Password mismatch for group ID: {}", groupId);
+			throw new InvalidInputException(ErrorCode.GROUP_PASSWORD_MISMATCH);
 		}
 
 		Member member = getMemberFromUserDetails(customUserDetails);
-
 		addMemberToGroup(group, member, joinGroupRequestDTO.description());
-
+		log.info("Member added to group ID: {}", groupId);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<MemberInGroupResponseDTO> findAllMembersByGroupId(int groupId, String keyword,
 		CustomUserDetails customUserDetails) {
+		log.info("Finding all members in group with ID: {}", groupId);
 		Member member = getMemberFromUserDetails(customUserDetails);
-		//내가 속한 그룹이 맞는가?
+
 		if (!isGroupMember(member, groupId)) {
-			throw new RuntimeException("Not my group");
+			log.error("Member with ID: {} is not part of group ID: {}", member.getId(), groupId);
+			throw new ForbiddenException(ErrorCode.MEMBER_FORBIDDEN);
 		}
 
-		return groupRepository.findAllMembresInGroup(groupId, keyword);
-	}
-
-	private boolean isGroupMember(Member member, int groupId) {
-		for (GroupMember groupMember : member.getGroupMembers()) {
-			if (groupMember.getGroup().getId() == groupId)
-				return true;
-		}
-		return false;
+		return groupRepository.findAllMembersInGroup(groupId, keyword);
 	}
 
 	@Override
 	@Transactional
 	public void removeMemberFromGroup(int groupId, CustomUserDetails customUserDetails) {
-		Member member = getMemberFromUserDetails(customUserDetails);
+		log.info("Removing member from group with ID: {}", groupId);
 
 		GroupMemberId groupMemberId = GroupMemberId.builder()
 			.groupId(groupId)
-			.memberId(member.getId())
+			.memberId(customUserDetails.getMemberId())
 			.build();
 		GroupMember groupMember = groupMemberRepository.findById(groupMemberId)
-			.orElseThrow(() -> new NoSuchElementException("no such connection"));
+			.orElseThrow(() -> {
+				log.error("Not found Member-Group relation");
+				return new NotFoundException(ErrorCode.NOT_FOUND);
+			});
 		groupMember.quit();
-		Group group = findById(groupId);
+		Group group = groupRepository.findById(groupId).orElseThrow(
+			() -> new IllegalParameterException(ErrorCode.GROUP_ILLEGAL_PARAMETER)
+		);
 		group.quit();
+
+		log.info("Member removed from group ID: {}", groupId);
+	}
+
+	@Override
+	@Transactional
+	public Group save(Group group) {
+		return groupRepository.save(group);
 	}
 
 	private void addMemberToGroup(Group group, Member member, String description) {
@@ -182,14 +209,20 @@ public class GroupServiceImpl implements GroupService {
 		groupMemberRepository.save(groupMember);
 	}
 
-	@Override
-	public Group save(Group group) {
-		return groupRepository.save(group);
+	private boolean isGroupMember(Member member, int groupId) {
+		for (GroupMember groupMember : member.getGroupMembers()) {
+			if (groupMember.getGroup().getId() == groupId)
+				return true;
+		}
+		return false;
 	}
 
 	private Member getMemberFromUserDetails(CustomUserDetails customUserDetails) {
-		String loginId = customUserDetails.getUsername();
-		return memberRepository.findByLoginId(loginId)
-			.orElseThrow(() -> new NoSuchElementException("no such member"));
+		return memberRepository.findById(customUserDetails.getMemberId())
+			.orElseThrow(() -> {
+				log.error("Not found member with ID {}", customUserDetails.getMemberId());
+				return new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
+			});
 	}
+
 }
