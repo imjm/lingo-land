@@ -1,7 +1,7 @@
 import { httpStatus } from "@/apis/http-status";
 import { defineStore } from "pinia";
 import swal from "sweetalert2";
-import { inject, ref } from "vue";
+import { inject } from "vue";
 import { useRouter } from "vue-router";
 
 export const useUserStore = defineStore("userStore", () => {
@@ -16,7 +16,6 @@ export const useUserStore = defineStore("userStore", () => {
     /**
      * actions
      */
-
     function checkPassword(originPassword, checkPassword) {
         // 비밀번호와 비밀번호 확인이 일치한지 확인
         if (originPassword === checkPassword) {
@@ -76,14 +75,29 @@ export const useUserStore = defineStore("userStore", () => {
             .post("/login", userInfo, { withCredentials: true })
             .then((response) => {
                 if (response.status === httpStatus.OK) {
+                    // axios 요청 header에 access token 추가
                     axios.defaults.headers.common["Authorization"] =
                         response.headers.authorization;
+
+                    // localStorage에 access token 추가
+                    sessionStorage.setItem(
+                        "accessToken",
+                        response.headers.authorization
+                    );
+
                     router.replace({ name: "mainPage" });
                 }
             })
             .catch((error) => {
                 console.log(error);
             });
+    };
+
+    const logout = async (userId) => {
+        await axios.delete("/logout", userId, { withCredentials: true });
+        localStorage.removeItem("accessToken");
+        delete axios.defaults.headers.common["Authorization"];
+        router.replace({ name: "login" });
     };
 
     // 유저 프로필 조회

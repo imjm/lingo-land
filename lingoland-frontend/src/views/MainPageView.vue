@@ -4,10 +4,35 @@ import GenericInput from "@/components/common/GenericInput.vue";
 import PageNavigationButton from "@/components/common/PageNavigationButton.vue";
 import Profile from "@/components/common/Profile.vue";
 import RankList from "@/components/rank/RankList.vue";
-import swal from "sweetalert2";
+import { useGameRoomStore } from "@/stores/gameRoom";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 
-window.Swal = swal;
+const gameRoomStore = useGameRoomStore();
+const router = useRouter();
 
+const roomCode = ref("");
+
+function makeRoom() {
+    const sessionPromise = gameRoomStore.getSession();
+
+    // 세션 아이디가 있는 프로미스
+    // testRoom으로 라우팅
+    sessionPromise.then((sessionId) => {
+        console.log(sessionId)
+        router.push({
+            name: "testGameRoom",
+            params: { roomId: sessionId },
+        });
+    });
+}
+
+function joinRoom() {
+    router.push({
+        name: "testGameRoom",
+        params: { roomId: roomCode.value },
+    });
+}
 </script>
 
 <template>
@@ -27,6 +52,7 @@ window.Swal = swal;
                             <PageNavigationButton
                                 background-color="#CCCBFF"
                                 data="방 만들기"
+                                @click-event="makeRoom"
                             />
 
                             <div
@@ -35,8 +61,14 @@ window.Swal = swal;
                                 <div class="ma-3 text-h4 font-weight-black">
                                     방 코드
                                 </div>
-                                <GenericInput :style="{ width: '90%' }" />
-                                <GenericButton data="입력" />
+                                <GenericInput
+                                    v-model="roomCode"
+                                    :style="{ width: '90%' }"
+                                />
+                                <GenericButton
+                                    @click-event="joinRoom"
+                                    data="입력"
+                                />
                             </div>
                         </v-col>
 
