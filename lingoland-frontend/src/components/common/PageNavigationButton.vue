@@ -21,7 +21,7 @@ const props = defineProps({
                 width: '90vw',
                 height: '300px',
                 backgroundColor: backgroundColor,
-                fontSize: 'x-large',
+                // fontSize: 'x-large',
             }"
             @click="$emit('clickEvent')"
         >

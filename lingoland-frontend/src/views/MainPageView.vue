@@ -36,10 +36,10 @@ function joinRoom() {
 </script>
 
 <template>
-    <v-main class="d-flex justify-center mt-10">
+    <v-main class="d-flex justify-center mt-10" height="100vh">
         <v-container>
             <v-row>
-                <v-col cols="5" class="d-flex justify-center">
+                <v-col cols="5" class="d-flex justify-center" height="100vh">
                     <Profile source="src\\assets\\sampleImg.jpg" />
                 </v-col>
 
@@ -47,13 +47,16 @@ function joinRoom() {
                     <v-row>
                         <v-col
                             cols="6"
-                            class="d-flex flex-column align-content-space-center"
-                        >
-                            <PageNavigationButton
+                            class="d-flex flex-column align-content-space-between"
+                        >   
+                            <div>
+
+                                <PageNavigationButton
                                 background-color="#CCCBFF"
                                 data="방 만들기"
                                 @click-event="makeRoom"
-                            />
+                                />
+                            </div>
 
                             <div
                                 class="room-code d-flex flex-column justify-center align-center"

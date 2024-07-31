@@ -34,10 +34,10 @@ function clickTales() {
 </script>
 
 <template>
-    <v-main class="d-flex justify-center">
+    <v-main class="d-flex justify-center" height="100vh">
         <v-container>
             <v-row>
-                <v-col cols="5" class="d-flex justify-center">
+                <v-col cols="5" class="d-flex justify-center" height="100vh">
                     <Profile source="src\\assets\\sampleImg.jpg" />
                 </v-col>
 

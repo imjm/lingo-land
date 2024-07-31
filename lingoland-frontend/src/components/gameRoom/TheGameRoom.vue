@@ -51,12 +51,12 @@ const writingGame = () => {
                             @click-event="runningGame"
                             :img="img1"
                             name="달리기"
-                            desc="문해력이 딸리든 뭐든!!!!!! 일단 달려 볼까!!!!!!!!"
+                            desc="문해력 문제를 맞추며 달려라!"
                         ></GameButton>
                         <GameButton
                             @click-event="writingGame"
                             :img="sampleImg"
-                            name="글쓰기"
+                            name="동화만들기"
                             desc="글을 잘 쓰든 말든!!!!!!!!"
                         ></GameButton>
                     </div>
@@ -69,7 +69,7 @@ const writingGame = () => {
                             <div>방 코드</div>
                             <div>1234-5678</div>
                         </div>
-                        <v-btn id="link" @click="makeQr"> QR 생성하기 </v-btn>
+                        <v-btn id="link" @click="makeQr"> URL 복사하기 </v-btn>
                     </div>
                 </v-col>
             </v-row>
@@ -82,6 +82,7 @@ const writingGame = () => {
     width: 40%;
     height: 150px;
     font-size: x-large;
+    font-weight : 600;
     background-color: #cccbff;
     border-radius: 1%;
 }
@@ -89,7 +90,6 @@ const writingGame = () => {
 #room-code {
     width: 40%;
     height: 150px;
-    font-size: large;
     background-color: #d2f0ff;
     border-radius: 1%;
 }
