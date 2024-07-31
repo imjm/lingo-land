@@ -32,4 +32,5 @@ const { tale } = taleStore;
         </v-carousel-item>
     </v-carousel>
 </template>
-<style scoped></style>
+<style scoped>
+</style>
