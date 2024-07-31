@@ -8,7 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.a603.lingoland.global.error.entity.ErrorCode;
 import com.ssafy.a603.lingoland.global.error.exception.ForbiddenException;
-import com.ssafy.a603.lingoland.global.error.exception.IllegalParameterException;
 import com.ssafy.a603.lingoland.global.error.exception.InvalidInputException;
 import com.ssafy.a603.lingoland.global.error.exception.NotFoundException;
 import com.ssafy.a603.lingoland.group.dto.CreateGroupDTO;
@@ -71,16 +70,14 @@ public class GroupServiceImpl implements GroupService {
 	@Transactional(readOnly = true)
 	public List<GroupInfoResponseDTO> findMyGroups(String keyword, CustomUserDetails customUserDetails) {
 		log.info("Finding my groups with keyword: {}", keyword);
-		Member member = getMemberFromUserDetails(customUserDetails);
-		return groupRepository.findGroupsByMemberId(member.getId(), keyword, true);
+		return groupRepository.findGroupsByMemberId(customUserDetails.getMemberId(), keyword, true);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<GroupInfoResponseDTO> findNotMyGroups(String keyword, CustomUserDetails customUserDetails) {
 		log.info("Finding groups not belonging to user with keyword: {}", keyword);
-		Member member = getMemberFromUserDetails(customUserDetails);
-		return groupRepository.findGroupsByMemberId(member.getId(), keyword, false);
+		return groupRepository.findGroupsByMemberId(customUserDetails.getMemberId(), keyword, false);
 	}
 
 	@Override
@@ -95,13 +92,21 @@ public class GroupServiceImpl implements GroupService {
 	public void update(Integer groupId, UpdateGroupDTO request, MultipartFile groupImage,
 		CustomUserDetails customUserDetails) {
 		log.info("Updating group with ID: {}", groupId);
-		Member member = getMemberFromUserDetails(customUserDetails);
 		Group group = groupRepository.findById(request.id()).orElseThrow(
-			() -> new IllegalParameterException(ErrorCode.GROUP_ILLEGAL_PARAMETER)
+			() -> {
+				log.error("Group cannot found with ID {}", request.id());
+				return new InvalidInputException(ErrorCode.GROUP_INVALID_INPUT);
+			}
 		);
 
-		if (group.getLeader().getId() != member.getId()) {
-			log.error("Member with ID: {} is not the leader of group ID: {}", member.getId(), groupId);
+		if (group.isDeleted()) {
+			log.error("Attempt to update a deleted group with ID: {}", groupId);
+			throw new InvalidInputException(ErrorCode.GROUP_INVALID_INPUT);
+		}
+
+		if (group.getLeader().getId() != customUserDetails.getMemberId()) {
+			log.error("Member with ID: {} is not the leader of group ID: {}", customUserDetails.getMemberId(),
+				groupId);
 			throw new ForbiddenException(ErrorCode.MEMBER_FORBIDDEN);
 		}
 
@@ -116,12 +121,11 @@ public class GroupServiceImpl implements GroupService {
 	@Transactional
 	public void deleteById(int groupId, CustomUserDetails customUserDetails) {
 		log.info("Deleting group with ID: {}", groupId);
-		Member member = getMemberFromUserDetails(customUserDetails);
 		Group group = groupRepository.findById(groupId).orElseThrow(
-			() -> new IllegalParameterException(ErrorCode.GROUP_ILLEGAL_PARAMETER)
+			() -> new InvalidInputException(ErrorCode.GROUP_INVALID_INPUT)
 		);
-		if (group.getLeader().getId() != member.getId()) {
-			log.error("Member with ID: {} is not the leader of group ID: {}", member.getId(), groupId);
+		if (group.getLeader().getId() != customUserDetails.getMemberId()) {
+			log.error("Member with ID: {} is not the leader of group ID: {}", customUserDetails.getMemberId(), groupId);
 			throw new ForbiddenException(ErrorCode.MEMBER_FORBIDDEN);
 		}
 		group.delete();
@@ -134,7 +138,7 @@ public class GroupServiceImpl implements GroupService {
 		CustomUserDetails customUserDetails) {
 		log.info("Adding member to group with ID: {}", groupId);
 		Group group = groupRepository.findById(groupId).orElseThrow(
-			() -> new IllegalParameterException(ErrorCode.GROUP_ILLEGAL_PARAMETER)
+			() -> new InvalidInputException(ErrorCode.GROUP_INVALID_INPUT)
 		);
 
 		if (group.getPassword().intValue() != joinGroupRequestDTO.password().intValue()) {
@@ -178,7 +182,7 @@ public class GroupServiceImpl implements GroupService {
 			});
 		groupMember.quit();
 		Group group = groupRepository.findById(groupId).orElseThrow(
-			() -> new IllegalParameterException(ErrorCode.GROUP_ILLEGAL_PARAMETER)
+			() -> new InvalidInputException(ErrorCode.GROUP_INVALID_INPUT)
 		);
 		group.quit();
 

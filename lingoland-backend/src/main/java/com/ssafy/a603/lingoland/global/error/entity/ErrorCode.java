@@ -9,11 +9,11 @@ public enum ErrorCode {
 	MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "M1", "존재하지 않는 사용자입니다."),
 	MEMBER_DUPLICATED_VALUE(HttpStatus.BAD_REQUEST, "M2", "이미 존재하는 사용자입니다."),
 	MEMBER_FORBIDDEN(HttpStatus.FORBIDDEN, "M3", "권한이 없는 사용자입니다."),
-	MEMBER_ILLEGAL_PARAMETER(HttpStatus.BAD_REQUEST, "M4", "올바르지 않은 입력값입니다."),
+	MEMBER_INVALID_INPUT(HttpStatus.BAD_REQUEST, "M4", "올바르지 않은 입력값입니다."),
 
 	GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "G1", "존재하지 않는 그룹입니다."),
 	GROUP_DUPLICATED_VALUE(HttpStatus.BAD_REQUEST, "G2", "이미 존재하는 그룹입니다."),
-	GROUP_ILLEGAL_PARAMETER(HttpStatus.BAD_REQUEST, "G3", "올바르지 않은 입력값입니다."),
+	GROUP_INVALID_INPUT(HttpStatus.BAD_REQUEST, "G3", "올바르지 않은 입력값입니다."),
 	GROUP_PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST, "G4", "비밀번호가 일치하지 않습니다."),
 
 	FAIRY_TALE_NOT_FOUND(HttpStatus.NOT_FOUND, "F1", "존재하지 않는 동화입니다."),
