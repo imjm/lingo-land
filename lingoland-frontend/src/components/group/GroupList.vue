@@ -13,9 +13,12 @@ const store = useGroupStore();
 const router = useRouter();
 
 const groupList = ref();
-const dialog = ref(false);
+const dialog = ref({
+    groupInfo: Object,
+    isOpen: false,
+});
 
-function clickFunction(groupId) {
+function clickFunction(groupInfo, groupId) {
     // 내가 속한 그룹인 경우 그룹 디테일로 이동
     if (props.checkMyGroup) {
         router.push({
@@ -25,7 +28,10 @@ function clickFunction(groupId) {
 
         // 내가 속한 그룹이 아닌 경우 가입 dialog 출력
     } else {
-        dialog.value = true;
+        // store.getGroupDetail(groupId)
+
+        dialog.value.groupInfo = groupInfo;
+        dialog.value.isOpen = true;
     }
 }
 
@@ -51,12 +57,13 @@ onMounted(() => {
             :key="i"
             hide-actions
         >
-            <GroupJoinDialog v-model="dialog" />
             <GroupListItem
                 :group="group"
-                @click-event="clickFunction(group.id)"
+                @click-event="clickFunction(group, group.id)"
             />
         </v-expansion-panel>
+
+        <GroupJoinDialog v-model="dialog" />
     </v-expansion-panels>
 </template>
 
