@@ -15,6 +15,7 @@ const props = defineProps({
                 <img :src="source" width="100%" />
             </v-col>
             <v-col class="ma-5">
+                <h1>제목 집에 가고 싶어요</h1>
                 <div>{{ text }}</div>
             </v-col>
         </v-row>

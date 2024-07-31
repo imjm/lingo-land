@@ -44,7 +44,7 @@ function login() {
 <template>
     <v-main class="d-flex align-center justify-center ma-16">
         <v-row>
-            <v-col cols="6">
+            <v-col cols="6" class="px-5">
                 <NameTag data="로그인" />
                 <v-card  height="500">
                     <v-row>
@@ -96,7 +96,7 @@ function login() {
                     </v-row>
                 </v-card>
             </v-col>
-            <v-col cols="6">
+            <v-col cols="6" class="px-5">
                 <v-card class="mt-15">
                     <GameSlide />
                 </v-card>
