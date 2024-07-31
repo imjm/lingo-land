@@ -3,6 +3,7 @@ import GenericInput from "../common/GenericInput.vue";
 import SubmitButton from "../common/SubmitButton.vue";
 import CancelButton from "../common/CancelButton.vue";
 import { useRouter } from "vue-router";
+import NameTag from "../common/NameTag.vue";
 
 const router = useRouter();
 
@@ -18,39 +19,43 @@ function cancel() {
 
 <template>
     <v-main class="d-flex align-center justify-center">
-        <v-card width="600" height="400">
-            <v-row>
-                <v-col class="ma-10 align-content-space-between">
-                    <GenericInput
-                        type="password"
-                        data="변경할 비밀번호 "
-                        id="newPassword"
-                        hint="새 비밀번호"
-                    />
+        <div>
+            <NameTag data="비밀번호 변경" :style="{ width: '220px' }" />
 
-                    <GenericInput
-                        type="password"
-                        data="변경할 비밀번호 확인"
-                        id="newPasswordCheck"
-                        hint="새 비밀번호 확인"
-                    />
+            <v-card width="600" height="400">
+                <v-row>
+                    <v-col class="ma-10 align-content-space-between">
+                        <GenericInput
+                            type="password"
+                            data="변경할 비밀번호 "
+                            id="newPassword"
+                            hint="새 비밀번호"
+                        />
 
-                    <SubmitButton
-                        id="modify"
-                        data="확인"
-                        width="100%"
-                        @click-event="modify"
-                    />
+                        <GenericInput
+                            type="password"
+                            data="변경할 비밀번호 확인"
+                            id="newPasswordCheck"
+                            hint="새 비밀번호 확인"
+                        />
 
-                    <CancelButton
-                        id="cancel"
-                        data="취소"
-                        width="100%"
-                        @click-event="cancel"
-                    />
-                </v-col>
-            </v-row>
-        </v-card>
+                        <SubmitButton
+                            id="modify"
+                            data="확인"
+                            width="100%"
+                            @click-event="modify"
+                        />
+
+                        <CancelButton
+                            id="cancel"
+                            data="취소"
+                            width="100%"
+                            @click-event="cancel"
+                        />
+                    </v-col>
+                </v-row>
+            </v-card>
+        </div>
     </v-main>
 </template>
 
