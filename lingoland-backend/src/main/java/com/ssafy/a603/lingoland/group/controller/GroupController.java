@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.a603.lingoland.group.dto.CreateGroupDTO;
 import com.ssafy.a603.lingoland.group.dto.CreateGroupResponseDto;
-import com.ssafy.a603.lingoland.group.dto.GroupListResponseDTO;
+import com.ssafy.a603.lingoland.group.dto.GroupInfoResponseDTO;
 import com.ssafy.a603.lingoland.group.dto.JoinGroupRequestDTO;
 import com.ssafy.a603.lingoland.group.dto.MemberInGroupResponseDTO;
 import com.ssafy.a603.lingoland.group.dto.UpdateGroupDTO;
@@ -61,8 +61,15 @@ public class GroupController {
 			.build());
 	}
 
+	@GetMapping
+	public ResponseEntity<?> groupListForJoin(@RequestParam(required = false, name = "keyword") String keyword,
+		@CurrentUser CustomUserDetails customUserDetails) {
+		List<GroupInfoResponseDTO> groupInfos = groupService.findNotMyGroups(keyword, customUserDetails);
+		return ResponseEntity.status(HttpStatus.OK).body(groupInfos);
+	}
+
 	@GetMapping("/check/{groupName}")
-	public ResponseEntity<?> checkIdDuplication(@PathVariable(value = "groupName") String groupName) {
+	public ResponseEntity<?> checkIdDuplication(@PathVariable("groupName") String groupName) {
 		if (groupService.checkNameDuplication(groupName)) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).build();
 		} else {
@@ -71,26 +78,20 @@ public class GroupController {
 	}
 
 	@GetMapping("/{groupId}")
-	public ResponseEntity<?> getGroupById(@PathVariable Integer groupId) {
-		Group group = groupService.findById(groupId);
-		return ResponseEntity.status(HttpStatus.OK).body(group);
-	}
-
-	@GetMapping
-	public ResponseEntity<?> getGroups() {
-		List<GroupListResponseDTO> groups = groupService.findAll();
-		return ResponseEntity.status(HttpStatus.OK).body(groups);
+	public ResponseEntity<?> getGroupById(@PathVariable("groupId") Integer groupId) {
+		GroupInfoResponseDTO groupInfo = groupService.findById(groupId);
+		return ResponseEntity.status(HttpStatus.OK).body(groupInfo);
 	}
 
 	@GetMapping("/users")
 	public ResponseEntity<?> getMyGroups(@RequestParam(required = false, name = "keyword") String keyword,
 		@CurrentUser CustomUserDetails customUserDetails) {
-		List<GroupListResponseDTO> groups = groupService.findMyGroups(keyword, customUserDetails);
-		return ResponseEntity.status(HttpStatus.OK).body(groups);
+		List<GroupInfoResponseDTO> groupInfos = groupService.findMyGroups(keyword, customUserDetails);
+		return ResponseEntity.status(HttpStatus.OK).body(groupInfos);
 	}
 
 	@PutMapping(path = "/{groupId}", produces = "application/json", consumes = "multipart/form-data")
-	public ResponseEntity<?> updateGroupInfo(@PathVariable Integer groupId,
+	public ResponseEntity<?> updateGroupInfo(@PathVariable("groupId") Integer groupId,
 		@RequestPart(value = "updateGroup") UpdateGroupDTO updateGroupDTO,
 		@RequestPart(value = "groupImage", required = false) MultipartFile groupImage,
 		@CurrentUser CustomUserDetails customUserDetails) {
@@ -99,7 +100,7 @@ public class GroupController {
 	}
 
 	@DeleteMapping(path = "/{groupId}")
-	public ResponseEntity<?> deleteGroup(@PathVariable Integer groupId,
+	public ResponseEntity<?> deleteGroup(@PathVariable("groupId") Integer groupId,
 		@CurrentUser CustomUserDetails customUserDetails) {
 		groupService.deleteById(groupId, customUserDetails);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

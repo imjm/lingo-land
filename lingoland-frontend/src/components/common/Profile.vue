@@ -1,6 +1,6 @@
 <script setup>
 import { useUserStore } from "@/stores/user";
-import { ref, defineProps, onMounted } from "vue";
+import { defineProps, onMounted, ref } from "vue";
 import ImageBox from "./ImageBox.vue";
 
 const props = defineProps({
@@ -32,6 +32,14 @@ onMounted(() => {
 <template>
     <v-card width="90%" height="100%" class="d-flex align-center">
         <v-row class="d-flex flex-column ma-6">
+            <v-col class="d-flex justify-end">
+                <v-select
+                    max-width="45"
+                    density="compact"
+                    variant="solo"
+                    :items="['로그아웃', '내 정보']"
+                ></v-select>
+            </v-col>
             <v-col class="d-flex align-center justify-center">
                 <ImageBox :source="userProfile.profileImage" />
             </v-col>

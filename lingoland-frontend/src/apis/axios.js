@@ -15,6 +15,13 @@ instance.defaults.headers.put["Content-Type"] = "application/json";
 
 instance.interceptors.request.use(
     (config) => {
+        // 세션 스토리지에서 'accessToken'을 가져옴
+        const token = sessionStorage.getItem("accessToken");
+
+        // 토큰이 존재하면, 요청 헤더에 인증 토큰을 추가
+        if (token) {
+            config.headers["Authorization"] = token;
+        }
         return config;
     },
     (error) => {
@@ -48,12 +55,19 @@ instance.interceptors.response.use(
 
                 // 새 액세스 토큰이 응답되면,
                 const refreshResponse = await instance
-                    .post("/reissue", {
-                        withCredentials: true,
-                    })
+                    .post(
+                        "/reissue",
+                        {},
+                        {
+                            withCredentials: true,
+                        }
+                    )
                     .then((response) => {
                         console.log(response)
                         return Promise.resolve(response); // 결과를 리턴해서 refreshResponse에 넣어줌
+                    })
+                    .catch((error) => {
+                        console.log(error);
                     });
 
                 // 모든 요청에 access token이 포함되어 가도록 보장
@@ -61,6 +75,7 @@ instance.interceptors.response.use(
 
                 instance.defaults.headers.common["Authorization"] =
                     newAccessToken;
+
                 prevRequest.headers.authorization = newAccessToken;
             } catch (error) {
                 // 토큰 갱신에 실패하면 Circuit break
@@ -70,7 +85,6 @@ instance.interceptors.response.use(
                 tokenRefreshingMutex.release();
             }
             // Critical Section above ========================================================
-
             // Critical section 내부의 작업을 통해 모든 요청에 access token이 가는 것이 보장됨
             return instance(prevRequest);
         } else if (response.status === httpStatus.FORBIDDEN) {
