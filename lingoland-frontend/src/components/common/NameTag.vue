@@ -13,11 +13,23 @@ const props = defineProps({
 </script>
 
 <template>
-    <div>
+    <div class="border-md nameTag">
         {{ data }}
     </div>
 </template>
 
 <style scoped>
-
+.nameTag{
+    background-color: #4C4637;
+    color :white;
+    height : 60px;
+    width : 200px;
+    display : flex;
+    justify-content: center;
+    align-items: center;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    font-size : 25px;
+    padding : 10px;
+}
 </style>

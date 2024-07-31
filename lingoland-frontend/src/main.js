@@ -28,6 +28,15 @@ const vuetify = createVuetify({
     },
     components,
     directives,
+    // breakpoint: {
+    //     thresholds: {
+    //       xs: 600,
+    //       sm: 960,
+    //       md: 1280,
+    //       lg: 1920,
+    //     },
+    //     scrollBarWidth: 24,
+    //   },
 });
 
 const app = createApp(App);

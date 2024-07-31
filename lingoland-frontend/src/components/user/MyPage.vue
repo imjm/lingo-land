@@ -106,7 +106,7 @@ function clickTales() {
                                 background-color="#537960"
                                 data="ㅇㅇㅇ의 동화"
                                 source="src\assets\내동화.png"
-                                @click-event="getGroupList"
+                                @click-event="clickTales"
                             />
                         </v-col>
                     </v-row>

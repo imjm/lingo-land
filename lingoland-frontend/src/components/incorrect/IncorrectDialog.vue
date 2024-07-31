@@ -1,15 +1,15 @@
 <script setup>
 import IncorrectList from "@/components/incorrect/IncorrectList.vue";
-import PageNavigationButton from "@/components/common/PageNavigationButton.vue"
+import PageNavigationButton from "@/components/common/PageNavigationButton.vue";
 import GenericButton from "../common/GenericButton.vue";
 
 import { ref } from "vue";
 import { defineProps } from "vue";
+import NameTag from "../common/NameTag.vue";
 
-
-const props= defineProps({
-    incorrects : String,
-})
+const props = defineProps({
+    incorrects: String,
+});
 const dialog = ref(false);
 </script>
 
@@ -24,8 +24,8 @@ const dialog = ref(false);
             }
         "
     />
-
-    <v-dialog v-model="dialog" width="50%">
+    <v-dialog v-model="dialog" width="50%" >
+        <NameTag data="오답노트"/>
         <IncorrectList :incorrects="incorrects" />
         <div class="d-flex justify-end bg-white">
             <GenericButton
@@ -46,4 +46,8 @@ const dialog = ref(false);
     </v-dialog>
 </template>
 
-<style scoped></style>
+<style scoped>
+
+
+
+</style>
