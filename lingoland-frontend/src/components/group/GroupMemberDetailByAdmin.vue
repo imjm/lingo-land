@@ -9,25 +9,23 @@ import { ref } from "vue";
 import IncorrectDialog from "../incorrect/IncorrectDialog.vue";
 
 const incorrectList = ref([
-  "문제 1",
-  "문제 2",
-  "문제 3",
-  "문제 4",
-  "문제 5",
-  "문제 1",
-  "문제 2",
-  "문제 3",
-  "문제 4",
-  "문제 5",
-  // 데이터 받아오기
+    "문제 1",
+    "문제 2",
+    "문제 3",
+    "문제 4",
+    "문제 5",
+    "문제 1",
+    "문제 2",
+    "문제 3",
+    "문제 4",
+    "문제 5",
+    // 데이터 받아오기
 ]);
 </script>
 
 <template>
-    <v-main class="d-flex justify-center">
+    <v-main class="d-flex mt-10 justify-center">
         <v-container>
-            <h1>MainPage View</h1>
-
             <v-row>
                 <v-col cols="5">
                     <v-row>
@@ -35,7 +33,7 @@ const incorrectList = ref([
                     </v-row>
                     <v-row>
                         <v-col>
-                           <IncorrectDialog :incorrects="incorrectList"/>
+                            <IncorrectDialog :incorrects="incorrectList" />
                         </v-col>
                     </v-row>
                 </v-col>

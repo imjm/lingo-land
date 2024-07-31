@@ -8,14 +8,14 @@ const items = taleStore.tales;
 
 const search = ref("");
 const headers = ref([
-    { title: "No.", value: "id" },
+    { title: "번호", value: "id" },
     { title: "제목", value: "title" },
     { title: "Thumbnail", value: "cover" },
     { title: "한 줄 소개", value: "summary" },
     // 필요에 따라 추가 컬럼 정의
 ]);
 
-const rowClick = (event,{item}) => {
+const rowClick = (event, { item }) => {
     console.log("나는 눌리긴 하는중!@!@><");
     // console.log();
     taleStore.oneTaleById(item.id);
@@ -24,9 +24,15 @@ const rowClick = (event,{item}) => {
 
 <template>
     <!-- <button @click="rowClick">asdfasdf</button> -->
-    <v-card flat class="gowun-batang-regular">
-        <v-card-title class="d-flex align-center pe-2">
-            <v-icon icon="mdi-video-input-component"></v-icon> &nbsp; 동화 목록
+    <v-card
+        flat
+        class="gowun-batang-regular mx-5 px-5"
+        :style="{ width: '80%' }"
+        
+    >
+        <v-card-title class="d-flex align-center pa-3">
+            <span class="material-icons"> menu_book </span>
+            <span style="font-size:xx-large; font-weight: bold;"> &nbsp; 동화 목록</span>
 
             <v-spacer></v-spacer>
             <!-- 검색 -->
@@ -62,23 +68,21 @@ const rowClick = (event,{item}) => {
                     contain
                 ></v-img>
             </template>
-
-            <!-- <template v-slot:item="{ item }">
-                <tr @click="goToDetail(item)">
-                    <td v-for="val in item">{{ val }}</td>
-                </tr>
-            </template> -->
         </v-data-table>
     </v-card>
 </template>
 
-<style >
-
-@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap');
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap");
 .gowun-batang-regular {
-  font-family: "Gowun Batang", serif;
-  font-weight: 500;
-  font-style: normal;
-  font-size : large;
+    font-family: "Gowun Batang", serif;
+    font-weight: 500;
+    font-style: normal;
+    font-size: large;
+}
+
+thead span {
+    font-weight : bold;
+    font-size: large;
 }
 </style>
