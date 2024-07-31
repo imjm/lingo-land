@@ -3,7 +3,7 @@ import TaleList from "@/components/tale/TaleList.vue";
 </script>
 
 <template>
-    <v-sheet rounded class="ma-10">
+    <v-sheet rounded class="ma-10 gowun-batang-regular">
         <v-row>
             <v-col cols="2" class="my-5 ml-10">
 
@@ -35,4 +35,13 @@ import TaleList from "@/components/tale/TaleList.vue";
     </v-sheet>
 </template>
 
-<style scoped></style>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap');
+.gowun-batang-regular {
+  font-family: "Gowun Batang", serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size : large;
+}
+</style>

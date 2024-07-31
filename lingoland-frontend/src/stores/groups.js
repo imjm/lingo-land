@@ -123,9 +123,7 @@ export const useGroupStore = defineStore("group", () => {
     };
 
     return {
-        modifyGroup,
-        createGroup,
-        checkDuplicate,
-        getGroups,
+        
+        modifyGroup, createGroup, checkDuplicate,  getGroups, 
     };
 });
