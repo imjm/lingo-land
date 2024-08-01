@@ -58,8 +58,8 @@ function handleChickMovement(keysPressed, coordinatesElement) {
         }
 
         chickModel.position.x = Math.max(
-            -5.25,
-            Math.min(5.25, chickModel.position.x)
+            -4.00,
+            Math.min(4.00, chickModel.position.x)
         );
 
         const { x, y, z } = chickModel.position;
@@ -67,11 +67,11 @@ function handleChickMovement(keysPressed, coordinatesElement) {
             2
         )}, Z: ${z.toFixed(2)}`;
 
-        if (x.toFixed(2) == -5.25) {
+        if (x.toFixed(2) == -4.00) {
             checkAnswer(1);
         } else if (x.toFixed(2) == 0) {
             checkAnswer(2);
-        } else if (x.toFixed(2) == 5.25) {
+        } else if (x.toFixed(2) == 5.00) {
             checkAnswer(3);
         }
     }
