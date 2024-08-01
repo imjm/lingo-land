@@ -31,4 +31,21 @@ const groupMemberStore = useGroupMemberStore();
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey;
+    border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: rgb(252, 194, 85);
+    border-radius: 10px;
+}
+</style>

@@ -5,7 +5,6 @@
         </v-list-item>
     </v-list>
 </template>
-
 <script setup>
 import { defineProps } from "vue";
 import GameMemberListItem from "./GameMemberListItem.vue";
@@ -19,5 +18,20 @@ const props = defineProps({
 .game-member-list {
     max-height: 50%; /* 최대 높이 설정 */
     overflow-y: auto; /* 수직 스크롤을 가능하게 설정 */
+} /* width */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey;
+    border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: rgb(252, 194, 85);
+    border-radius: 10px;
 }
 </style>
