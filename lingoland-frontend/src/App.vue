@@ -44,7 +44,7 @@ import { RouterView } from "vue-router";
     >
     |
 
-    <v-app class="bg-amber-lighten-3">
+    <v-app class="bg-amber-lighten-3 gamja-flower-regular ">
         <RouterView></RouterView>
     </v-app>
 </template>
@@ -57,7 +57,6 @@ import { RouterView } from "vue-router";
   font-style: normal;
   font-size : xx-large;
 }
-
 
 .do-hyeon-regular {
   font-family: "Do Hyeon", sans-serif;

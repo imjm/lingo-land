@@ -51,7 +51,7 @@ function clickTales() {
                         >
                             <v-row class="d-flex align-center justify-center">
                                 <v-col cols="4">
-                                    <h2 class="mx-10">내가 속한 그룹 목록</h2>
+                                    <h2 class="mx-10" style="font-size: xx-large; width :70%">내 그룹 목록</h2>
                                 </v-col>
                                 <v-col cols="8">
                                     <div class="mr-5 mt-4">
@@ -122,4 +122,5 @@ function clickTales() {
     border-radius: 4px;
     font-size: x-large;
 }
+
 </style>
