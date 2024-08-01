@@ -5,7 +5,6 @@ import { useTaleStore } from "@/stores/tales";
 
 const store = useTaleStore();
 </script>
-<meta name="viewport" content="width=device-width, initial-scale=1"></meta>
 
 <template>
     <v-expansion-panels class="pa-4" variant="popout">
@@ -25,18 +24,18 @@ const store = useTaleStore();
 <style scoped>
 /* width */
 ::-webkit-scrollbar {
-  width: 10px;
+    width: 10px;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 5px grey;
-  border-radius: 10px;
+    box-shadow: inset 0 0 5px grey;
+    border-radius: 10px;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: rgb(252, 194, 85);
-  border-radius: 10px;
+    background: rgb(252, 194, 85);
+    border-radius: 10px;
 }
 </style>

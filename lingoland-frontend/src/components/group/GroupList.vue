@@ -1,6 +1,3 @@
-<meta name="viewport" content="width=device-width, initial-scale=1"></meta>
-
-
 <script setup>
 import { useGroupStore } from "@/stores/groups";
 import { onMounted, ref, defineProps } from "vue";
@@ -74,18 +71,18 @@ onMounted(() => {
 }
 /* width */
 ::-webkit-scrollbar {
-  width: 10px;
+    width: 10px;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 5px grey;
-  border-radius: 10px;
+    box-shadow: inset 0 0 5px grey;
+    border-radius: 10px;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: purple;
-  border-radius: 10px;
+    background: purple;
+    border-radius: 10px;
 }
 </style>
