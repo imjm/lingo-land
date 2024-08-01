@@ -1,17 +1,26 @@
 <script setup>
+import defaultImage from "@/assets/sampleImg.jpg";
+import { useGroupStore } from "@/stores/groups";
+import { ref } from "vue";
 import GenericButton from "../common/GenericButton.vue";
 import GenericInput from "../common/GenericInput.vue";
 import GenericInputArea from "../common/GenericInputArea.vue";
 import ImageBox from "../common/ImageBox.vue";
 import NameTag from "../common/NameTag.vue";
 import SubmitButton from "../common/SubmitButton.vue";
-import defaultImage from "@/assets/sampleImg.jpg";
 
+const groupStore = useGroupStore();
 const model = defineModel();
 
-const props = defineProps({
-    groupInfo: Object,
+const joinInfo = ref({
+    description: "",
+    password: "",
 });
+
+function joinGroup(groupId) {
+    groupStore.joinGroup(groupId, joinInfo.value);
+    model.value.isOpen = false;
+}
 </script>
 
 <template>
@@ -34,18 +43,15 @@ const props = defineProps({
                 </v-col>
                 <v-col>
                     <h3>자기소개</h3>
-                    <GenericInputArea />
+                    <GenericInputArea v-model="joinInfo.description" />
+
                     <h3>비밀번호</h3>
-                    <GenericInput type="password" />
+                    <GenericInput type="password" v-model="joinInfo.password" />
                     <SubmitButton
                         class="ms-auto d-flex align-left"
                         data="가입하기"
                         width="100%"
-                        @click-event="
-                            () => {
-                                model.isOpen = false;
-                            }
-                        "
+                        @click-event="joinGroup(model.groupInfo.id)"
                     />
                     <GenericButton
                         class="mt-4 ms-auto d-flex align-left"

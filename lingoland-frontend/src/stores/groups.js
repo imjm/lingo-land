@@ -154,6 +154,24 @@ export const useGroupStore = defineStore("group", () => {
         return myGroupList;
     };
 
+    const joinGroup = async (groupId, joinInfo) => {
+        const joinGroupResult = await axios
+            .post(`/groups/${groupId}/users`, joinInfo, {
+                withCredentials: true,
+            })
+            .then((response) => {
+                if (response.status === httpStatus.NOCONTENT) {
+                    console.log(response);
+                    return Promise.resolve(response.data);
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+        return joinGroupResult;
+    };
+
     return {
         modifyGroup,
         createGroup,
@@ -161,5 +179,6 @@ export const useGroupStore = defineStore("group", () => {
         getGroups,
         getGroup,
         getMyGroups,
+        joinGroup,
     };
 });
