@@ -16,6 +16,10 @@ import { RouterView } from "vue-router";
         writingGameResult</RouterLink
     >
     |
+    <RouterLink :to="{ name: 'runningGame', params: { roomId: '1' } }">
+        runningGame</RouterLink
+    >
+    |
     <RouterLink :to="{ name: 'mainPage' }"> mainPage</RouterLink> |
     <RouterLink :to="{ name: 'myPage' }">myPage</RouterLink> |
     <RouterLink :to="{ name: 'myPageModify' }">mypageModify</RouterLink> |
