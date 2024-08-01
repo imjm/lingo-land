@@ -7,7 +7,7 @@ const options = ref([]);
 const isCorrect = ref(null);
 
 function loadQuestions() {
-    fetch("problem.json") // JSON 파일 경로
+    fetch("/problem.json") // JSON 파일 경로
         .then((response) => response.json())
         .then((data) => {
             questions.value = data;
