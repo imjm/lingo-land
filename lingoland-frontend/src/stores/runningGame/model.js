@@ -35,7 +35,7 @@ function loadChickModel() {
 
 
 function handleChickMovement(keysPressed, coordinatesElement) {
-    const moveSpeed = 1;
+    const moveSpeed = 10;
     const moveForward =
         (keysPressed["ArrowUp"] || keysPressed["w"] ? 1 : 0) -
         (keysPressed["ArrowDown"] || keysPressed["s"] ? 1 : 0);
@@ -71,7 +71,7 @@ function handleChickMovement(keysPressed, coordinatesElement) {
             checkAnswer(1);
         } else if (x.toFixed(2) == 0) {
             checkAnswer(2);
-        } else if (x.toFixed(2) == 5.00) {
+        } else if (x.toFixed(2) == 4.00) {
             checkAnswer(3);
         }
     }
