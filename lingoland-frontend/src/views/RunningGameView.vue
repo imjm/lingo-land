@@ -5,7 +5,27 @@
             <canvas id="c"></canvas>
             <div id="timer">00:00:00</div>
             <div id="countdown" v-if="countdown > 0">{{ countdown }}</div>
+
+            <v-row>
+                <v-col class="d-flex align-center justify-center text-h5 my-1">
+                    <div id="progress-bar">
+                        <v-progress-linear
+                            rounded
+                            height="25"
+                            color="primary"
+                            :model-value="zDivided"
+                        >
+                            <template v-slot:default="{ value }">
+                                <div class="text-button">
+                                    {{ Math.ceil(value) }}%
+                                </div>
+                            </template>
+                        </v-progress-linear>
+                    </div>
+                </v-col>
+            </v-row>
         </div>
+        <!-- <p>{{ zCoordinate }}</p> -->
         <div id="coordinates" class="coordinates"></div>
         <!-- 퀴즈 문제 및 보기를 표시하는 부분 -->
         <div id="quiz-container" v-if="currentQuestion && countdown === 0">
@@ -29,19 +49,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-
+import { ref, onMounted, computed } from "vue";
+import { useGameStore } from "@/stores/gameStore";
+import { storeToRefs } from "pinia";
 //초기 세팅
-import {
-    initDraw,
-} from "@/stores/runningGame/init";
+import { initDraw } from "@/stores/runningGame/init";
 
 //카운트다운 & 타이머
-import {
-    startCountdown,
-    countdown,
-} from "@/stores/runningGame/time";
-
+import { startCountdown, countdown } from "@/stores/runningGame/time";
 
 //문제
 import {
@@ -53,13 +68,14 @@ import {
     isCorrect,
 } from "@/stores/runningGame/question";
 
+const gameStore = useGameStore();
+const { zCoordinate } = storeToRefs(gameStore);
+const zDivided = computed(() => zCoordinate.value / 90);
 onMounted(() => {
     startCountdown();
     initDraw();
     loadQuestions(); // 문제 로드
 });
-
-
 </script>
 
 <style scoped>
@@ -89,6 +105,13 @@ onMounted(() => {
     border-radius: 5px;
 }
 
+#progress-bar {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+}
 #quiz-container {
     position: absolute;
     top: 20%;
