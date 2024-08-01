@@ -23,4 +23,6 @@ public interface MemberService {
     void updatePassword(UpdatePasswordDto updatePasswordDto, CustomUserDetails customUserDetails);
 
     void updateProfileImage(UpdateProfileImageDto updateProfileImageDto, CustomUserDetails customUserDetails);
+
+    GetMemberInfoDto getMemberInfoByLoginId(String loginId);
 }
