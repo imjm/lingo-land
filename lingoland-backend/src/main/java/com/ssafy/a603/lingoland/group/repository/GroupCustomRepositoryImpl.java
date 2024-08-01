@@ -6,11 +6,12 @@ import static com.ssafy.a603.lingoland.member.entity.QMember.member;
 
 import java.util.List;
 
+import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.util.StringUtils;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.ssafy.a603.lingoland.group.dto.GroupListResponseDTO;
+import com.ssafy.a603.lingoland.group.dto.GroupInfoResponseDTO;
 import com.ssafy.a603.lingoland.group.dto.MemberInGroupResponseDTO;
 
 import lombok.RequiredArgsConstructor;
@@ -19,9 +20,11 @@ import lombok.RequiredArgsConstructor;
 public class GroupCustomRepositoryImpl implements GroupCustomRepository {
 	private final JPAQueryFactory queryFactory;
 
-	public List<MemberInGroupResponseDTO> findAllMembresInGroup(int groupId, String keyword) {
+	// 그룹ID 가 같은 멤버 모두 출력 (그룹원 목록 출력)
+	public List<MemberInGroupResponseDTO> findAllMembersInGroup(Integer groupId, String keyword) {
 		List<MemberInGroupResponseDTO> members = queryFactory.select(
 				Projections.constructor(MemberInGroupResponseDTO.class,
+					member.loginId,
 					member.nickname,
 					member.profileImage,
 					groupMember.description,
@@ -36,53 +39,66 @@ public class GroupCustomRepositoryImpl implements GroupCustomRepository {
 				containsNickname(keyword)
 			)
 			.fetch();
-		return moveLeaderToTop(members);
+		return members;
 	}
 
-	public List<GroupListResponseDTO> findMyGroups(int memberId, String keyword) {
-		return queryFactory.select(
-				Projections.constructor(GroupListResponseDTO.class,
-					group.id,
-					group.name,
-					group.description
-				))
+	//member가 속한 모든 그룹 목록 출력
+	public List<GroupInfoResponseDTO> findGroupsByMemberId(Integer memberId, String keyword, boolean includeMember) {
+		return queryFactory.select(groupInfoProjection())
 			.from(groupMember)
 			.join(group).on(group.id.eq(groupMember.group.id))
+			.join(member).on(member.id.eq(groupMember.member.id))
 			.where(
 				applySoftDelete(),
-				targetMember(memberId),
+				includeMember ? includeMember(memberId) : excludeMember(memberId),
 				containsGroupname(keyword)
 			)
 			.fetch();
 	}
 
-	private List<MemberInGroupResponseDTO> moveLeaderToTop(List<MemberInGroupResponseDTO> members) {
-		int leaderIndex = -1;
+	@Override
+	public GroupInfoResponseDTO findGroupInfoById(Integer groupId) {
+		return queryFactory.select(groupInfoProjection())
+			.from(groupMember)
+			.join(group).on(group.id.eq(groupMember.group.id))
+			.join(member).on(member.id.eq(groupMember.member.id))
+			.where(
+				applySoftDelete(),
+				targetGroup(groupId),
+				onlyLeader()
+			)
+			.fetchOne();
+	}
 
-		for (int i = 0; i < members.size(); i++) {
-			if (members.get(i).isLeader()) {
-				leaderIndex = i;
-				break;
-			}
-		}
-
-		if (leaderIndex != -1 && leaderIndex != 0) {
-			MemberInGroupResponseDTO leader = members.remove(leaderIndex);
-			members.add(0, leader);
-		}
-		return members;
+	private ConstructorExpression<GroupInfoResponseDTO> groupInfoProjection() {
+		return Projections.constructor(GroupInfoResponseDTO.class,
+			group.id,
+			group.name,
+			group.description,
+			group.memberCount,
+			group.leader.nickname,
+			group.groupImage
+		);
 	}
 
 	private BooleanExpression applySoftDelete() {
 		return groupMember.isDeleted.eq(false);
 	}
 
-	private BooleanExpression targetMember(int memberId) {
-		return groupMember.member.id.eq(memberId);
+	private BooleanExpression includeMember(Integer memberId) {
+		return memberId == null ? null : member.id.eq(memberId);
 	}
 
-	private BooleanExpression targetGroup(int groupId) {
-		return groupMember.group.id.eq(groupId);
+	private BooleanExpression excludeMember(Integer memberId) {
+		return memberId == null ? null : member.id.ne(memberId);
+	}
+
+	private BooleanExpression targetGroup(Integer groupId) {
+		return groupId == null ? null : group.id.eq(groupId);
+	}
+
+	private BooleanExpression onlyLeader() {
+		return group.leader.id.eq(member.id);
 	}
 
 	private BooleanExpression containsNickname(String keyword) {

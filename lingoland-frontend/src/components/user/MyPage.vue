@@ -6,8 +6,8 @@ import incorrectDialog from "@/components/incorrect/IncorrectDialog.vue";
 import { useGroupStore } from "@/stores/groups";
 import GroupList from "../group/GroupList.vue";
 
-import { ref } from "vue";
 import { useTaleStore } from "@/stores/tales";
+import { ref } from "vue";
 
 const groupStore = useGroupStore();
 
@@ -25,12 +25,11 @@ const incorrectList = ref([
     // 데이터 받아오기
 ]);
 
-const taleStore = useTaleStore()
+const taleStore = useTaleStore();
 
 function clickTales() {
     taleStore.myTalesList();
 }
-
 </script>
 
 <template>
@@ -57,7 +56,6 @@ function clickTales() {
                                 <v-col cols="8">
                                     <div class="mr-5 mt-4">
                                         <v-autocomplete
-                                            :items="items"
                                             append-inner-icon="mdi-microphone"
                                             class="mx-auto"
                                             density="comfortable"
@@ -74,7 +72,7 @@ function clickTales() {
                                     </div>
                                 </v-col>
                             </v-row>
-                            <GroupList />
+                            <GroupList :check-my-group="true" />
                         </v-sheet>
                     </v-row>
                     <v-row class="mr-1 d-flex justify-end">

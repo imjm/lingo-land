@@ -28,11 +28,12 @@ const rowClick = (event, { item }) => {
         flat
         class="gowun-batang-regular mx-5 px-5"
         :style="{ width: '80%' }"
-        
     >
         <v-card-title class="d-flex align-center pa-3">
             <span class="material-icons"> menu_book </span>
-            <span style="font-size:xx-large; font-weight: bold;"> &nbsp; 동화 목록</span>
+            <span style="font-size: xx-large; font-weight: bold">
+                &nbsp; 동화 목록</span
+            >
 
             <v-spacer></v-spacer>
             <!-- 검색 -->
@@ -82,7 +83,23 @@ const rowClick = (event, { item }) => {
 }
 
 thead span {
-    font-weight : bold;
+    font-weight: bold;
     font-size: large;
+}
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey;
+    border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: rgb(252, 194, 85);
+    border-radius: 10px;
 }
 </style>

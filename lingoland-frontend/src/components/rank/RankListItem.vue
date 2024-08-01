@@ -1,16 +1,12 @@
 <script setup>
-import { useMemberStore } from "@/stores/members";
 import { defineProps } from "vue";
-const store = useMemberStore();
+
 const props = defineProps({
     member: {
         type: Object,
         required: true,
     },
 });
-const clickMember = () => {
-    store.clickMember(props.member);
-};
 </script>
 
 <template>
