@@ -116,11 +116,28 @@ export const useUserStore = defineStore("userStore", () => {
         return userProfile;
     };
 
+    // 유저 프로필 조회(loginId 기준)
+    const getProfileById = async (loginId) => {
+        const userProfile = await axios
+            .get(`/users/${loginId}`, { withCredentials: true })
+            .then((response) => {
+                if (response.status === httpStatus.OK) {
+                    return Promise.resolve(response.data);
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+        return userProfile;
+    };
+
     return {
         checkPassword,
         checkDuplicate,
         signUp,
         login,
         getProfile,
+        getProfileById,
     };
 });
