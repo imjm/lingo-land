@@ -5,12 +5,12 @@ import { ref } from "vue";
 import { addLights } from "./light";
 import { loadMapSection, loadNewMapSection } from "./map";
 import { handleChickMovement } from "./model";
-
+import { useGameStore } from "../gameStore";
 import { updateTimer } from "./time";
 
 let renderer, scene, mixer, camera, controls, chickModel;
 let moveSide = ref(0);
-
+const gameStore = useGameStore();
 // 카메라 설정
 const cameraSettings = {
     distance: 10, // 카메라와 캐릭터 사이의 거리
@@ -173,6 +173,8 @@ function updateCameraPosition() {
         );
         camera.position.copy(chickPosition).add(cameraOffset);
         camera.lookAt(chickPosition); // 카메라가 병아리 모델을 항상 바라보도록 설정
+    
+        gameStore.updateZCoordinate(chickPosition.z);
     }
 }
 
