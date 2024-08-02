@@ -2,15 +2,18 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
-export const useGameStore = defineStore('gameStore', () => {
-    const zCoordinate = ref(0);
 
-    function updateZCoordinate(newZ) {
-        zCoordinate.value = newZ;
-    }
-
-    return {
-        zCoordinate,
-        updateZCoordinate,
-    };
+export const useGameStore = defineStore("gameStore", {
+    state: () => ({
+        zCoordinate: ref(0),
+        isGameEnded: false,
+    }),
+    actions: {
+        updateZCoordinate(z) {
+            this.zCoordinate = z;
+        },
+        endGame() {
+            this.isGameEnded = true;
+        },
+    },
 });
