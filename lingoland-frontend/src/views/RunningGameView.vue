@@ -26,12 +26,16 @@
             </v-row>
         </div>
         <div id="coordinates" class="coordinates"></div>
-        <div v-if="currentQuestion && countdown === 0 && zCoordinate >= 1000" id="quiz-container">
+
+        <div
+            v-if="currentQuestion && zCoordinate >= 1000"
+            id="quiz-container"
+        >
             <h2>{{ currentQuestion.problem }}</h2>
             <ul class="no_dot d-flex justify-center">
                 <li v-for="(option, index) in options" :key="index">
-                    <button @click="checkAnswer(index + 1)">
-                        {{ option }}
+                    <button>
+                        {{ option }}    
                     </button>
                 </li>
             </ul>
@@ -39,18 +43,11 @@
                 {{ isCorrect ? "정답입니다!" : "틀렸습니다!" }}
             </p>
         </div>
-        <div v-else-if="countdown === 0">
+        <div>
             <p>퀴즈가 완료되었습니다!</p>
         </div>
     </div>
 </template>
-
-
-
-
-
-
-
 
 <script setup>
 import { ref, onMounted, watch, computed } from "vue";
@@ -71,7 +68,7 @@ import {
     options,
     isCorrect,
     updateQuestionBasedOnZ,
-    resetQuestionOnExit
+    resetQuestionOnExit,
 } from "@/stores/runningGame/question";
 
 const gameStore = useGameStore();
@@ -93,13 +90,6 @@ watch(zCoordinate, (newZ) => {
     }
 });
 </script>
-
-
-
-
-
-
-
 
 <style scoped>
 .no_dot {
