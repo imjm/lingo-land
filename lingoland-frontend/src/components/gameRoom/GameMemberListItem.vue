@@ -10,19 +10,18 @@ const props = defineProps({
     <v-list-item-content>
         <v-container class="border-md">
             <v-row rows="2">
-                <div>{{ member }}</div>
+                <div>{{ member.nickname }}</div>
             </v-row>
             <v-row rows="10">
                 <v-col cols="4">
                     <img
-                        src="/src/assets/sampleImg.jpg"
+                        :src="member.profileImage"
                         class="rounded-circle mx-auto"
                         style="height: 64px; width: 64px"
                     />
                 </v-col>
                 <v-col cols="8">
-                    <div>member.신분</div>
-                    <div>member.자기소개</div>
+                    <div>{{ member.experiencePoint }}</div>
                 </v-col>
             </v-row>
         </v-container>

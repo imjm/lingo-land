@@ -1,5 +1,6 @@
 package com.ssafy.a603.lingoland.openvidu;
 
+import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 import io.openvidu.java.client.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,8 +28,11 @@ public class OpenViduService {
     /*
     * 주어진 세션 ID에 대해 연결 토큰을 생성하고 반환한다.
     * */
-    public String generateToken(String sessionId) throws OpenViduJavaClientException, OpenViduHttpException {
+    public String generateToken(String sessionId, CustomUserDetails customUserDetails) throws OpenViduJavaClientException, OpenViduHttpException {
         Session session = openVidu.getActiveSession(sessionId);
-        return session.createConnection(new ConnectionProperties.Builder().build()).getToken();
+        String loginId = customUserDetails.getUsername();
+
+        ConnectionProperties properties = new ConnectionProperties.Builder().data(loginId).build();
+        return session.createConnection(properties).getToken();
     }
 }

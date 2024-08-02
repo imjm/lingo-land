@@ -1,10 +1,3 @@
-<template>
-    <v-list class="game-member-list">
-        <v-list-item v-for="(member, index) in members" :key="index">
-            <GameMemberListItem :member="member"></GameMemberListItem>
-        </v-list-item>
-    </v-list>
-</template>
 <script setup>
 import { defineProps } from "vue";
 import GameMemberListItem from "./GameMemberListItem.vue";
@@ -13,6 +6,16 @@ const props = defineProps({
     members: Array,
 });
 </script>
+
+<template>
+    <v-list class="game-member-list">
+        <v-list-item v-for="(member, index) in members" :key="index">
+            <GameMemberListItem
+                :member="member.userProfile"
+            ></GameMemberListItem>
+        </v-list-item>
+    </v-list>
+</template>
 
 <style scoped>
 .game-member-list {

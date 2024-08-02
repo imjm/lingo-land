@@ -59,6 +59,12 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(getMemberInfoDto);
     }
 
+    @GetMapping("/{loginId}")
+    public ResponseEntity<?> getMemberInfoByLoginId(@PathVariable(value = "loginId") String loginId){
+        GetMemberInfoDto getMemberInfoDto = memberService.getMemberInfoByLoginId(loginId);
+        return ResponseEntity.status(HttpStatus.OK).body(getMemberInfoDto);
+    }
+
     @PutMapping("/nickname")
     public ResponseEntity<?> updateNickname(@Valid @RequestBody UpdateNicknameDto updateNicknameDto,
                                             @CurrentUser CustomUserDetails customUserDetails) {

@@ -45,11 +45,11 @@ const router = createRouter({
                     component: () =>
                         import("@/views/WritingGameResultView.vue"),
                 },
+
                 {
-                    path: ":roomId/testGameRoom",
-                    name: "testGameRoom",
-                    component: () =>
-                        import("@/components/gameRoom/testRoom.vue"),
+                    path: ":roomId/running-game",
+                    name: "runningGame",
+                    component: () => import("@/views/RunningGameView.vue"),
                 },
             ],
         },

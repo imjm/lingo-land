@@ -81,6 +81,16 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
 			.build();
 	}
 
+	@Override
+	public GetMemberInfoDto getMemberInfoByLoginId(String loginId) {
+		Member member = getMember(loginId);
+		return GetMemberInfoDto.builder()
+				.nickname(member.getNickname())
+				.profileImage(member.getProfileImage())
+				.experiencePoint(member.getExperiencePoint())
+				.build();
+	}
+
 	@Transactional
 	public void updateNickname(UpdateNicknameDto updateNicknameDto, CustomUserDetails customUserDetails) {
 		Member member = getMember(customUserDetails.getUsername());

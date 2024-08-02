@@ -1,8 +1,12 @@
 package com.ssafy.a603.lingoland.openvidu;
 
+import com.ssafy.a603.lingoland.member.security.CurrentUser;
+import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 import io.openvidu.java.client.OpenViduHttpException;
 import io.openvidu.java.client.OpenViduJavaClientException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,12 +21,14 @@ public class OpenViduController {
 
 
     @PostMapping("/sessions")
-    public String createSession() throws OpenViduJavaClientException, OpenViduHttpException {
-        return openViduService.createSession();
+    public ResponseEntity<?> createSession() throws OpenViduJavaClientException, OpenViduHttpException {
+        return ResponseEntity.status(HttpStatus.OK).body(openViduService.createSession());
     }
 
     @PostMapping("/sessions/{sessionId}/connections")
-    public String generateToken(@PathVariable(value = "sessionId") String sessionId) throws OpenViduJavaClientException, OpenViduHttpException {
-        return openViduService.generateToken(sessionId);
+    public ResponseEntity<?> generateToken(@PathVariable(value = "sessionId") String sessionId,
+                                        @CurrentUser CustomUserDetails customUserDetails) throws OpenViduJavaClientException, OpenViduHttpException {
+        String token = openViduService.generateToken(sessionId, customUserDetails);
+        return ResponseEntity.status(HttpStatus.OK).body(token);
     }
 }
