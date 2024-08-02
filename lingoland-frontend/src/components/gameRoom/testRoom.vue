@@ -5,7 +5,6 @@ import { useGameRoomStore } from "@/stores/gameRoom";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
-
 const gameRoomStore = useGameRoomStore();
 
 const OV = new OpenVidu();
@@ -33,14 +32,28 @@ function joinRoom(sessionId) {
             });
     });
 }
+
+function endGame() {
+    const signalOptions = {
+        data: JSON.stringify({ type: "gameEnd", data: "Game over data" }),
+        type: "gameEnd",
+    };
+
+    session.signal(signalOptions).then(() => {
+        console.log("Game end signal sent");
+    }).catch((error) => {
+        console.error("Error sending signal:", error);
+    });
+}
+
 onMounted(() => {
-    // console.log(route.params.roomId);
     joinRoom(route.params.roomId);
 });
 </script>
 
 <template>
     <div id="video-container"></div>
+    <button @click="endGame">End Game</button>
 </template>
 
 <style scoped></style>

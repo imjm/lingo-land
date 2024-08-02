@@ -29,6 +29,8 @@ public class OpenViduService {
     * */
     public String generateToken(String sessionId) throws OpenViduJavaClientException, OpenViduHttpException {
         Session session = openVidu.getActiveSession(sessionId);
-        return session.createConnection(new ConnectionProperties.Builder().build()).getToken();
+        return session.createConnection(new ConnectionProperties.Builder()
+                        .data("loginId:12345")
+                .build()).getToken();
     }
 }

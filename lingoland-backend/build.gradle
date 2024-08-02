@@ -36,6 +36,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation group: 'org.apache.camel.springboot', name: 'camel-rabbitmq-starter', version: '3.17.0'
     implementation group: 'io.openvidu', name: 'openvidu-java-client', version: '2.30.0'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'

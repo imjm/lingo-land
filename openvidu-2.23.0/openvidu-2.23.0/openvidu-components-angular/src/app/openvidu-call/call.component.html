@@ -1,0 +1,27 @@
+<ov-videoconference
+	[tokens]="tokens"
+	(onJoinButtonClicked)="onJoinClicked()"
+	(onToolbarLeaveButtonClicked)="onToolbarLeaveButtonClicked()"
+	(onToolbarCameraButtonClicked)="onToolbarCameraButtonClicked()"
+	(onToolbarMicrophoneButtonClicked)="onToolbarMicrophoneButtonClicked()"
+	(onToolbarScreenshareButtonClicked)="onToolbarScreenshareButtonClicked()"
+	(onToolbarFullscreenButtonClicked)="onToolbarFullscreenButtonClicked()"
+	(onToolbarParticipantsPanelButtonClicked)="onToolbarParticipantsPanelButtonClicked()"
+	(onToolbarChatPanelButtonClicked)="onToolbarChatPanelButtonClicked()"
+	(onToolbarStartRecordingClicked)="onStartRecordingClicked()"
+	(onToolbarStopRecordingClicked)="onStopRecordingClicked()"
+	(onActivitiesPanelStartRecordingClicked)="onStartRecordingClicked()"
+	(onActivitiesPanelStopRecordingClicked)="onStopRecordingClicked()"
+	(onActivitiesPanelDeleteRecordingClicked)="onDeleteRecordingClicked($event)"
+	[minimal]="false"
+	[prejoin]="true"
+	[activitiesPanelRecordingActivity]="true"
+	[recordingActivityRecordingsList]="recordingList"
+	[recordingActivityRecordingError]="recordingError"
+	[toolbarSettingsButton]="true"
+>
+	<!-- <div *ovActivitiesPanel>HELLO</div> -->
+
+	<!-- <ov-toolbar *ovToolbar [activitiesPanelButton]="false"
+	[chatPanelButton]="false"></ov-toolbar> -->
+</ov-videoconference>
