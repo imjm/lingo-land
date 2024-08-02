@@ -11,13 +11,28 @@ const shownQuestions = new Set(); // 이미 표시된 문제를 추적
 
 function loadQuestions() {
     fetch("/problem.json") // JSON 파일 경로
-        .then((response) => response.json())
-        .then((data) => {
-            questions.value = data;
-        })
-        .catch((error) => {
-            console.error("문제 로드 실패:", error);
-        });
+    .then((response) => response.json())
+    .then((data) => {
+        questions.value = data;
+    })
+    .catch((error) => {
+        console.error("문제 로드 실패:", error);
+    });
+}
+
+function updateQuestionBasedOnZ(zCoordinate) {
+    if (zCoordinate < 1000) {
+        return; // 1000 미만에서는 퀴즈를 표시하지 않음
+    }
+    
+    const index = Math.floor(zCoordinate / 1000) - 1; // 0-based index for each 1000 units of z
+    if (index >= 0 && index < questions.value.length) {
+        if (!shownQuestions.has(index) && !currentQuestion.value) { // 이미 표시된 문제인지 확인하고 현재 문제가 없는지 확인
+            currentIndex.value = index;
+            loadQuestion();
+            shownQuestions.add(index); // 표시된 문제로 기록
+        }
+    }
 }
 
 function loadQuestion() {
@@ -37,6 +52,7 @@ function loadQuestion() {
     }
 }
 
+
 function checkAnswer(selected) {
     if (currentQuestion.value === null) return;
 
@@ -50,21 +66,6 @@ function checkAnswer(selected) {
             isCorrect.value = null; // 정답 여부 초기화
         }, 3000);
     }, 5000); // 5초 후에 정답 표시
-}
-
-function updateQuestionBasedOnZ(zCoordinate) {
-    if (zCoordinate < 1000) {
-        return; // 1000 미만에서는 퀴즈를 표시하지 않음
-    }
-
-    const index = Math.floor(zCoordinate / 1000) - 1; // 0-based index for each 1000 units of z
-    if (index >= 0 && index < questions.value.length) {
-        if (!shownQuestions.has(index) && !currentQuestion.value) { // 이미 표시된 문제인지 확인하고 현재 문제가 없는지 확인
-            currentIndex.value = index;
-            loadQuestion();
-            shownQuestions.add(index); // 표시된 문제로 기록
-        }
-    }
 }
 
 function resetQuestionOnExit(zCoordinate) {
