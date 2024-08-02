@@ -1,27 +1,59 @@
 <script setup>
-import { ref } from "vue";
-import GameMemberList from "@/components/gameRoom/GameMemberList.vue";
-import GameButton from "@/components/gameRoom/GameButton.vue";
-import img1 from "@/assets/달리기.jpg";
 import sampleImg from "@/assets/sampleImg.jpg";
+import img1 from "@/assets/달리기.jpg";
+import GameButton from "@/components/gameRoom/GameButton.vue";
+import GameMemberList from "@/components/gameRoom/GameMemberList.vue";
+import { useGameRoomStore } from "@/stores/gameRoom";
+import { useUserStore } from "@/stores/user";
+import { OpenVidu } from "openvidu-browser";
+import { onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
 
-const memberList = ref([
-    "멤버 1",
-    "멤버 2",
-    "멤버 3",
-    "멤버 4",
-    "멤버 5",
-    "멤버 1",
-    "멤버 2",
-    "멤버 3",
-    "멤버 4",
-    "멤버 5",
-    // 데이터 받아오기
-]);
+const route = useRoute();
+const userStore = useUserStore();
 
-const makeQr = () => {
-    //큐알 모달창 만들기이이이이이
-};
+const gameRoomStore = useGameRoomStore();
+
+const OV = new OpenVidu();
+const session = OV.initSession();
+
+const participants = ref([]);
+
+// 세션에 스트림이 생성될 때 호출되는 콜백 함수
+session.on("streamCreated", function (event) {
+    session.subscribe(event.stream, "subscriber");
+});
+
+session.on("connectionCreated", (event) => {
+    userStore.getProfileById(event.connection.data).then((info) => {
+        console.log("************info", info);
+
+        // 프로필 이미지가 없으면 기본 이미지를 넣어준다.
+        if (!info.profileImage) {
+            info.profileImage = sampleImg;
+        }
+
+        participants.value.push({
+            connectionId: event.connection.connectionId,
+            userProfile: info,
+        });
+
+        console.log("***************현재참가중인 유저", participants.value);
+    });
+});
+
+session.on("connectionDestroyed", (event) => {
+    const connectionId = event.connection.connectionId;
+
+    participants.value = participants.value.filter(
+        (participant) => participant.connectionId !== connectionId
+    );
+    console.log("************************Participant left:", connectionId);
+    console.log(
+        "************************All participants:",
+        participants.value
+    );
+});
 
 const runningGame = () => {
     console.log("달리기 게임시작");
@@ -30,16 +62,36 @@ const runningGame = () => {
 const writingGame = () => {
     console.log("글쓰기 게임시작");
 };
+
+function joinRoom(sessionId) {
+    gameRoomStore.getToken(sessionId).then((customToken) => {
+        // 토큰을 얻어왔어
+        session
+            .connect(customToken)
+            .then(() => {
+                const publisher = OV.initPublisher("subscriber");
+                session.publish(publisher);
+            })
+            .catch((error) => {
+                console.error(
+                    "There was an error connecting to the session:",
+                    error
+                );
+            });
+    });
+}
+
+onMounted(() => {
+    joinRoom(route.params.roomId);
+});
 </script>
 
 <template>
     <v-main class="d-flex justify-center">
         <v-container>
-            <h1>GameRoomView</h1>
-
             <v-row>
                 <v-col cols="5">
-                    <GameMemberList :members="memberList" />
+                    <GameMemberList :members="participants" />
                 </v-col>
 
                 <v-col cols="7">
@@ -67,9 +119,9 @@ const writingGame = () => {
                             id="room-code"
                         >
                             <div>방 코드</div>
-                            <div>1234-5678</div>
+                            <div>{{ route.params.roomId }}</div>
                         </div>
-                        <v-btn id="link" @click="makeQr"> QR 생성하기 </v-btn>
+                        <v-btn id="link" @click="makeQr">링크 복사</v-btn>
                     </div>
                 </v-col>
             </v-row>

@@ -52,7 +52,6 @@
 
 
 
-
 <script setup>
 import { ref, onMounted, watch, computed } from "vue";
 import { useGameStore } from "@/stores/gameStore";
@@ -94,7 +93,6 @@ watch(zCoordinate, (newZ) => {
     }
 });
 </script>
-
 
 
 

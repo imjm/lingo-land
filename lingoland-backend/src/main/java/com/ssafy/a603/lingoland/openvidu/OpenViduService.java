@@ -28,13 +28,11 @@ public class OpenViduService {
     /*
     * 주어진 세션 ID에 대해 연결 토큰을 생성하고 반환한다.
     * */
-    public CustomTokenDto generateToken(String sessionId, CustomUserDetails customUserDetails) throws OpenViduJavaClientException, OpenViduHttpException {
+    public String generateToken(String sessionId, CustomUserDetails customUserDetails) throws OpenViduJavaClientException, OpenViduHttpException {
         Session session = openVidu.getActiveSession(sessionId);
-        String token = session.createConnection(new ConnectionProperties.Builder().build()).getToken();
         String loginId = customUserDetails.getUsername();
-        return CustomTokenDto.builder()
-                .token(token)
-                .loginId(loginId)
-                .build();
+
+        ConnectionProperties properties = new ConnectionProperties.Builder().data(loginId).build();
+        return session.createConnection(properties).getToken();
     }
 }

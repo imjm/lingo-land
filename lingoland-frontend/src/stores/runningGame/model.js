@@ -35,7 +35,7 @@ function loadChickModel() {
 
 
 function handleChickMovement(keysPressed, coordinatesElement) {
-    const moveSpeed = 1;
+    const moveSpeed = 10;
     const moveForward =
         (keysPressed["ArrowUp"] || keysPressed["w"] ? 1 : 0) -
         (keysPressed["ArrowDown"] || keysPressed["s"] ? 1 : 0);

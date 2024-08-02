@@ -21,14 +21,14 @@ public class OpenViduController {
 
 
     @PostMapping("/sessions")
-    public String createSession() throws OpenViduJavaClientException, OpenViduHttpException {
-        return openViduService.createSession();
+    public ResponseEntity<?> createSession() throws OpenViduJavaClientException, OpenViduHttpException {
+        return ResponseEntity.status(HttpStatus.OK).body(openViduService.createSession());
     }
 
     @PostMapping("/sessions/{sessionId}/connections")
     public ResponseEntity<?> generateToken(@PathVariable(value = "sessionId") String sessionId,
                                         @CurrentUser CustomUserDetails customUserDetails) throws OpenViduJavaClientException, OpenViduHttpException {
-        CustomTokenDto customTokenDto = openViduService.generateToken(sessionId, customUserDetails);
-        return ResponseEntity.status(HttpStatus.OK).body(customTokenDto);
+        String token = openViduService.generateToken(sessionId, customUserDetails);
+        return ResponseEntity.status(HttpStatus.OK).body(token);
     }
 }
