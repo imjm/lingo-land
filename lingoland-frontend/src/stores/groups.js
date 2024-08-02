@@ -1,8 +1,7 @@
 import { httpStatus } from "@/apis/http-status";
 import { defineStore } from "pinia";
 import swal from "sweetalert2";
-import { inject } from "vue";
-
+import { inject, ref } from "vue";
 import { useRouter } from "vue-router";
 
 export const useGroupStore = defineStore("group", () => {
@@ -73,26 +72,38 @@ export const useGroupStore = defineStore("group", () => {
     };
 
     // 그룹 수정
-    const modifyGroup = async (groupInfo) => {
-        console.log(groupInfo);
-        await axios
-            .put("/groups", groupInfo, { withCredentials: true })
+    const modifyGroup = async (groupInfo, groupImage) => {
+        const formData = new FormData();
+        formData.append(
+            "updateGroup",
+            new Blob([JSON.stringify(groupInfo)], { type: "application/json" })
+        );
+        if (groupImage) {
+            formData.append("groupImage", groupImage);
+        }
+
+        axios
+            .put(`/groups/${groupInfo.id}`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+                withCredentials: true,
+            })
             .then((response) => {
-                if (response.status === httpStatus.CREATE) {
+                if (response.status === httpStatus.NOCONTENT) {
                     Swal.fire({
                         title: "그룹 정보 수정 성공!",
                         icon: "success",
                         confirmButtonText: "완료",
-                    }).then((response) => {
-                        console.log(response.data.groupId);
+                    }).then(() => {
                         router.replace({
                             name: "groupDetail",
-                            params: { groupId: response.data.groupId },
+                            params: { groupId: groupInfo.id },
                         });
                     });
                 } else {
                     Swal.fire({
-                        title: "그룹 정보 수정 실패",
+                        title: "response 실패",
                         icon: "error",
                     });
                 }
@@ -134,7 +145,6 @@ export const useGroupStore = defineStore("group", () => {
                 if (error.status === httpStatus.CONFLICT) {
                 }
             });
-
         return group;
     };
 

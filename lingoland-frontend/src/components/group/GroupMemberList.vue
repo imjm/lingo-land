@@ -7,11 +7,7 @@ const props = defineProps({
     groupMemberList: Object,
 });
 
-function modify() {
-    // 그룹장인 경우만 수정되도록
-    console.log("modify");
-    router.push({ name: "groupModify" });
-}
+
 </script>
 
 <template>
@@ -25,17 +21,7 @@ function modify() {
         </v-expansion-panel>
     </v-expansion-panels>
 
-    <v-row>
-        <v-col>
-            <div class="d-flex justify-end ma-2">
-                <GenericButton
-                    class="mx-5"
-                    data="그룹 수정"
-                    @click-event="modify"
-                />
-            </div>
-        </v-col>
-    </v-row>
+
 </template>
 
 <style scoped></style>

@@ -17,7 +17,7 @@ function makeRoom() {
     const sessionPromise = gameRoomStore.getSession();
 
     sessionPromise.then((sessionId) => {
-         router.push({
+        router.push({
             name: "gameRoom",
             params: { roomId: sessionId },
         });
@@ -37,7 +37,7 @@ function joinRoom() {
         <v-container>
             <v-row>
                 <v-col cols="5" class="d-flex align-center justify-center">
-                    <Profile source="src\\assets\\sampleImg.jpg" />
+                    <Profile />
                 </v-col>
 
                 <v-col cols="7">

@@ -3,7 +3,6 @@ import GroupList from "@/components/group/GroupList.vue";
 </script>
 
 <template>
-    <br />
     <main>
         <div class="d-flex justify-center">
             <v-sheet rounded class="ma-10" width="1000">
