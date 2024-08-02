@@ -172,7 +172,7 @@ function updateCameraPosition() {
             new THREE.Matrix4().makeRotationY(chickRotation)
         );
         camera.position.set(0, chickPosition.y + cameraOffset.y, chickPosition.z + cameraOffset.z); // x축을 0으로 설정
-        camera.lookAt(0,chickPosition.y,chickPosition.z); // 카메라가 병아리 모델을 항상 바라보도록 설정
+        camera.lookAt(0,chickPosition.y+3,chickPosition.z); // 카메라가 병아리 모델을 항상 바라보도록 설정
     
         gameStore.updateZCoordinate(chickPosition.z);
     }
