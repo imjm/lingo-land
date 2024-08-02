@@ -66,11 +66,11 @@ function handleChickMovement(keysPressed, coordinatesElement) {
 
         // x축 위치에 따른 정답 체크
         if (x.toFixed(2) == -4.00) {
-            checkAnswer(1);
+            checkAnswer(3);
         } else if (x.toFixed(2) == 0) {
             checkAnswer(2);
         } else if (x.toFixed(2) == 4.00) {
-            checkAnswer(3);
+            checkAnswer(1);
         }
 
         // z 좌표가 13000이 되면 경기 종료

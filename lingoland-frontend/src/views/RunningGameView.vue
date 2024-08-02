@@ -28,7 +28,7 @@
         <div id="coordinates" class="coordinates"></div>
 
         <div
-            v-if="currentQuestion && zCoordinate >= 500"
+            v-if="currentQuestion"
             id="quiz-container"
         >
             <h2>{{ currentQuestion.problem }}</h2>
@@ -65,8 +65,7 @@ import {
     currentQuestion,
     options,
     isCorrect,
-    updateQuestionBasedOnZ,
-    resetQuestionOnExit,
+    updateQuestion,
 } from "@/stores/runningGame/question";
 
 const gameStore = useGameStore();
@@ -79,17 +78,25 @@ onMounted(() => {
     startCountdown();
     initDraw();
     loadQuestions(); // 문제 로드
+    setInterval(() => {
+        updateQuestion();
+        console.log('문제 부름')
+        console.log(currentQuestion.value)
+    }, 9000);
 });
 
+
 // zCoordinate 값에 따라 퀴즈를 업데이트
-watch(zCoordinate, (newZ) => {
-    if (newZ >= 500) {
-        updateQuestionBasedOnZ(newZ);
-    } 
-    // else {
-    //     resetQuestionOnExit(newZ);
-    // }
-});
+// watch(zCoordinate, (newZ) => {
+//     if (newZ % 500===0) {
+//         updateQuestionBasedOnZ(newZ);
+//     } 
+//     // else {
+//     //     resetQuestionOnExit(newZ);
+//     // }
+// });
+
+
 </script>
 
 <style scoped>
