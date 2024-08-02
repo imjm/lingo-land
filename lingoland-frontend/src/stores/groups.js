@@ -162,11 +162,21 @@ export const useGroupStore = defineStore("group", () => {
             .then((response) => {
                 if (response.status === httpStatus.NOCONTENT) {
                     console.log(response);
-                    return Promise.resolve(response.data);
+                    Swal.fire({
+                        title: "그룹가입 완료",
+                        icon: "success",
+                        confirmButtonText: "완료",
+                    }).then(() => {
+                        router.replace({ name: "myPage" });                        
+                    });
                 }
             })
             .catch((error) => {
                 console.log(error);
+                Swal.fire({
+                    title: "그룹가입 실패",
+                    icon: "error",
+                });
             });
 
         return joinGroupResult;
