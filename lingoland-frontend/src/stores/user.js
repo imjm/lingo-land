@@ -139,6 +139,24 @@ export const useUserStore = defineStore("userStore", () => {
         return userProfile;
     };
 
+    const modifyNickname = async (newNickname) => {
+        await axios
+            .put(
+                "/users/nickname",
+                { nickname: newNickname },
+                { withCredentials: true }
+            )
+            .then((response) => {
+                if (response.status === httpStatus.OK) {
+                    console.log(response);
+                    router.replace({ name: "myPage" });
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
     return {
         checkPassword,
         checkDuplicate,
@@ -147,5 +165,6 @@ export const useUserStore = defineStore("userStore", () => {
         logout,
         getProfile,
         getProfileById,
+        modifyNickname,
     };
 });
