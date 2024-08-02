@@ -27,23 +27,23 @@
         </div>
         <div id="coordinates" class="coordinates"></div>
 
-        <div
-            v-if="currentQuestion"
-            id="quiz-container"
-        >
+        <div v-if="currentQuestion" id="quiz-container">
             <h2>{{ currentQuestion.problem }}</h2>
+            <div v-if="questionCountDown > 0">{{ questionCountDown }}</div>
             <ul class="no_dot d-flex justify-center">
                 <li v-for="(option, index) in options" :key="index">
                     <button>
-                        {{ option }}    
+                        {{ option }}
                     </button>
                 </li>
             </ul>
-            <p style="font-size : 50px" v-if="isCorrect !== null">
-                {{ isCorrect ? "정답입니다!" : "틀렸습니다!" }}
-            </p>
         </div>
-        <div>
+        <div v-if="isCorrect" id="quiz-container">
+            <h2>
+                {{ isCorrect ? "정답입니다!" : "틀렸습니다!" }}
+            </h2>
+        </div>
+        <div v-if="questions === null" id="quiz-container">
             <p>퀴즈가 완료되었습니다!</p>
         </div>
     </div>
@@ -66,6 +66,7 @@ import {
     options,
     isCorrect,
     updateQuestion,
+    questionCountDown,
 } from "@/stores/runningGame/question";
 
 const gameStore = useGameStore();
@@ -80,23 +81,10 @@ onMounted(() => {
     loadQuestions(); // 문제 로드
     setInterval(() => {
         updateQuestion();
-        console.log('문제 부름')
-        console.log(currentQuestion.value)
+        console.log("문제 부름");
+        console.log(currentQuestion.value);
     }, 9000);
 });
-
-
-// zCoordinate 값에 따라 퀴즈를 업데이트
-// watch(zCoordinate, (newZ) => {
-//     if (newZ % 500===0) {
-//         updateQuestionBasedOnZ(newZ);
-//     } 
-//     // else {
-//     //     resetQuestionOnExit(newZ);
-//     // }
-// });
-
-
 </script>
 
 <style scoped>
@@ -140,11 +128,11 @@ onMounted(() => {
     transform: translate(-50%, -50%); /* 중앙 정렬 */
     width: 1000px; /* 원하는 너비 */
     padding: 20px;
-    background-color: rgba(161, 161, 161, 0.7); /* 배경 색상 */
+    background-color: rgba(0, 0, 0, 0.7); /* 배경 색상 */
     border-radius: 10px; /* 모서리 둥글게 */
     text-align: center; /*텍스트 중앙 정렬 */
     justify-content: center;
-    color: black;
+    color: white;
     z-index: 1000;
 }
 

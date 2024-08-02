@@ -9,6 +9,20 @@ let closeQuestionTimeout = null;
 const shownQuestions = new Set(); // 이미 표시된 문제를 추적
 let index = 0;
 
+const questionCountDown = ref(5);
+
+function qcountdown() {
+    questionCountDown.value = 5;
+
+    const interval = setInterval(() => {
+        if (questionCountDown.value > 0) {
+            questionCountDown.value--;
+        } else {
+            clearInterval(interval);
+        }
+    }, 1000);
+}
+
 function loadQuestions() {
     fetch("/problem.json") // JSON 파일 경로
         .then((response) => response.json())
@@ -23,14 +37,15 @@ function loadQuestions() {
 
 function updateQuestion() {
     if (index >= 0 && index < questions.value.length) {
-        // if (!currentQuestion.value) {
-        //     // 이미 표시된 문제인지 확인하고 현재 문제가 없는지 확인
-        loadQuestion();
-        console.log(index);
-        shownQuestions.add(index); // 표시된 문제로 기록
-        // }
+        if (!currentQuestion.value) {
+            //     // 이미 표시된 문제인지 확인하고 현재 문제가 없는지 확인
+            loadQuestion();
+            console.log(index);
+            shownQuestions.add(index); // 표시된 문제로 기록
+        }
+    } else {
+        questions.value = null;
     }
-    index++;
 }
 
 function loadQuestion() {
@@ -45,6 +60,8 @@ function loadQuestion() {
         // if (answerTimeout) clearTimeout(answerTimeout);
         // if (closeQuestionTimeout) clearTimeout(closeQuestionTimeout);
     }
+    index++;
+    qcountdown();
 }
 
 function checkAnswer(selected) {
@@ -54,15 +71,20 @@ function checkAnswer(selected) {
     console.log("내가 고른 거 : ", selected);
     //정답 여부를 표시
     answerTimeout = setTimeout(() => {
+        console.log("나는 불리는 중입니다ㅜㅜ");
         isCorrect.value = selected == currentQuestion.value.answer;
+        currentQuestion.value = null; // 문제 창 닫기
+        if (answerTimeout) clearTimeout(answerTimeout);
         closeQuestionTimeout = setTimeout(() => {
-            currentQuestion.value = null; // 문제 창 닫기
             isCorrect.value = null; // 정답 여부 초기화
+            if (closeQuestionTimeout) clearTimeout(closeQuestionTimeout);
             resetQuestionOnExit();
-        }, 1000);
-    }, 4000);
-    // 정답 여부 표시 후 2초 뒤에 문제 창 닫기
+        }, 2000);
+    }, 5000); // 정답 여부 표시 후 2초 뒤에 문제 창 닫기
 }
+
+// function checkAnswerAndTime() {
+// }
 
 function resetQuestionOnExit() {
     if (answerTimeout) clearTimeout(answerTimeout);
@@ -78,5 +100,6 @@ export {
     options,
     isCorrect,
     updateQuestion,
-    resetQuestionOnExit, // 새로운 함수 내보내기
+    resetQuestionOnExit,
+    questionCountDown, // 새로운 함수 내보내기
 };
