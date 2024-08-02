@@ -15,6 +15,17 @@ const userProfile = ref({
     experiencePoint: 0,
 });
 
+function selectItem(event) {
+    console.log(event);
+
+    if (event === "로그아웃") {
+        userStore.logout();
+    } else if (event === "내 정보 수정") {
+        // 내 정보를 가지고
+        // 내 정보 수정 페이지로 이동
+    }
+}
+
 onMounted(() => {
     const profile = userStore.getProfile();
 
@@ -37,7 +48,8 @@ onMounted(() => {
                     max-width="45"
                     density="compact"
                     variant="solo"
-                    :items="['로그아웃', '내 정보']"
+                    :items="['로그아웃', '내 정보 수정']"
+                    @update:modelValue="selectItem"
                 ></v-select>
             </v-col>
             <v-col class="d-flex align-center justify-center">
