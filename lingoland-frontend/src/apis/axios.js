@@ -68,8 +68,8 @@ instance.interceptors.response.use(
                         if (error.response.status === httpStatus.BADREQUEST) {
                             // 리프레시 토큰 갱신이 잘못된 경우
                             // 기존 엑세스 토큰 삭제 후 로그인페이지로 리다이렉트
-                            localStorage.removeItem("accessToken");
-                            delete axios.defaults.headers.common[
+                            sessionStorage.removeItem("accessToken");
+                            delete instance.defaults.headers.common[
                                 "Authorization"
                             ];
                             router.replace({ name: "login" });
@@ -78,6 +78,9 @@ instance.interceptors.response.use(
 
                 // 모든 요청에 access token이 포함되어 가도록 보장
                 const newAccessToken = refreshResponse.headers.authorization;
+
+                // localStorage에 access token 추가
+                sessionStorage.setItem("accessToken", newAccessToken);
 
                 instance.defaults.headers.common["Authorization"] =
                     newAccessToken;
