@@ -33,23 +33,17 @@ function loadChickModel() {
     });
 }
 
-
 function handleChickMovement(keysPressed, coordinatesElement) {
-    const moveSpeed = 1;
-    const moveForward =
-        (keysPressed["ArrowUp"] || keysPressed["w"] ? 1 : 0) -
-        (keysPressed["ArrowDown"] || keysPressed["s"] ? 1 : 0);
+    const moveSpeed = 10;
+    const autoForwardSpeed = 1; // 자동으로 앞으로 가는 속도
 
     if (chickModel && countdown.value === 0) {
-        if (moveForward !== 0) {
-            const forwardDirection = new THREE.Vector3(1, 0, 0); // 앞쪽 방향
-            forwardDirection.applyQuaternion(chickModel.quaternion); // 현재 회전에 따라 방향 벡터를 업데이트합니다.
-            chickModel.position.addScaledVector(
-                forwardDirection,
-                moveForward * moveSpeed
-            );
-        }
+        // 자동으로 앞으로 이동
+        const forwardDirection = new THREE.Vector3(1, 0, 0); // 앞쪽 방향
+        forwardDirection.applyQuaternion(chickModel.quaternion); // 현재 회전에 따라 방향 벡터를 업데이트합니다.
+        chickModel.position.addScaledVector(forwardDirection, autoForwardSpeed);
 
+        // 키 입력에 따른 옆으로 이동 처리
         if (moveSide.value !== 0) {
             const sideDirection = new THREE.Vector3(0, 0, -1); // 옆 방향
             sideDirection.applyQuaternion(chickModel.quaternion); // 현재 회전에 따라 방향 벡터를 업데이트합니다.
@@ -57,9 +51,10 @@ function handleChickMovement(keysPressed, coordinatesElement) {
             moveSide.value = 0; // 한 번 이동한 후 상태 리셋
         }
 
+        // x축 이동 범위 제한
         chickModel.position.x = Math.max(
-            -5.25,
-            Math.min(5.25, chickModel.position.x)
+            -4.00,
+            Math.min(4.00, chickModel.position.x)
         );
 
         const { x, y, z } = chickModel.position;
@@ -67,15 +62,15 @@ function handleChickMovement(keysPressed, coordinatesElement) {
             2
         )}, Z: ${z.toFixed(2)}`;
 
-        if (x.toFixed(2) == -5.25) {
+        // x축 위치에 따른 정답 체크
+        if (x.toFixed(2) == -4.00) {
             checkAnswer(1);
         } else if (x.toFixed(2) == 0) {
             checkAnswer(2);
-        } else if (x.toFixed(2) == 5.25) {
+        } else if (x.toFixed(2) == 4.00) {
             checkAnswer(3);
         }
     }
 }
-
 
 export { loadChickModel, handleChickMovement };
