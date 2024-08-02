@@ -7,9 +7,10 @@ import { useGameRoomStore } from "@/stores/gameRoom";
 import { useUserStore } from "@/stores/user";
 import { OpenVidu } from "openvidu-browser";
 import { onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
+const router = useRouter();
 const userStore = useUserStore();
 
 const gameRoomStore = useGameRoomStore();
@@ -24,21 +25,28 @@ session.on("streamCreated", function (event) {
     session.subscribe(event.stream, "subscriber");
 });
 
+// 세션에 새로운 유저가 참가하면 호출되는 콜백함수
 session.on("connectionCreated", (event) => {
     userStore.getProfileById(event.connection.data).then((info) => {
-        console.log("************info", info);
+        // 참가자 배열에 이미 있는 사람인지 확인 필요
+        // 배열에서 userId 중복되는지 확인
+        const exists = participants.value.some(
+            (participant) => participant.userId === event.connection.data
+        );
 
-        // 프로필 이미지가 없으면 기본 이미지를 넣어준다.
-        if (!info.profileImage) {
-            info.profileImage = sampleImg;
+        // 중복되지 않으면 배열에 추가
+        if (!exists) {
+            // 프로필 이미지가 없으면 기본 이미지를 넣어준다.
+            if (!info.profileImage) {
+                info.profileImage = sampleImg;
+            }
+
+            participants.value.push({
+                connectionId: event.connection.connectionId,
+                userId: event.connection.data,
+                userProfile: info,
+            });
         }
-
-        participants.value.push({
-            connectionId: event.connection.connectionId,
-            userProfile: info,
-        });
-
-        console.log("***************현재참가중인 유저", participants.value);
     });
 });
 
@@ -48,19 +56,49 @@ session.on("connectionDestroyed", (event) => {
     participants.value = participants.value.filter(
         (participant) => participant.connectionId !== connectionId
     );
-    console.log("************************Participant left:", connectionId);
-    console.log(
-        "************************All participants:",
-        participants.value
-    );
 });
 
-const runningGame = () => {
-    console.log("달리기 게임시작");
+// Signal 수신 처리
+session.on("signal:gameStart", function (event) {
+    const gameType = JSON.parse(event.data);
+
+    if (gameType.type === 1) {
+        // 달리기 게임으로
+        router.replace({ name: "runningGame" });
+    } else if (gameType.type === 2) {
+        // 글쓰기 게임으로
+        router.replace({ name: "writingGame" });
+    }
+});
+
+const startRunningGame = () => {
+    // 시그널 송신
+    session
+        .signal({
+            type: "gameStart",
+            data: JSON.stringify({ type: 1, data: "running game" }),
+        })
+        .then(() => {
+            console.log("******************Game start running signal sent");
+        })
+        .catch((error) => {
+            console.error("****************Error sending signal:", error);
+        });
 };
 
-const writingGame = () => {
-    console.log("글쓰기 게임시작");
+const startWritingGame = () => {
+    // 시그널 수신
+    session
+        .signal({
+            type: "gameStart",
+            data: JSON.stringify({ type: 2, data: "writing game" }),
+        })
+        .then(() => {
+            console.log("******************Game start writing signal sent");
+        })
+        .catch((error) => {
+            console.error("****************Error sending signal:", error);
+        });
 };
 
 function joinRoom(sessionId) {
@@ -69,7 +107,7 @@ function joinRoom(sessionId) {
         session
             .connect(customToken)
             .then(() => {
-                const publisher = OV.initPublisher("subscriber");
+                const publisher = OV.initPublisher("publisher");
                 session.publish(publisher);
             })
             .catch((error) => {
@@ -97,16 +135,17 @@ onMounted(() => {
                 <v-col cols="7">
                     <div
                         class="d-flex justify-space-evenly"
-                        style="height: 30%"
+                        style="height: 100%"
                     >
                         <GameButton
-                            @click-event="runningGame"
+                            @click-event="startRunningGame"
                             :img="img1"
                             name="달리기"
                             desc="문해력이 딸리든 뭐든!!!!!! 일단 달려 볼까!!!!!!!!"
                         ></GameButton>
+
                         <GameButton
-                            @click-event="writingGame"
+                            @click-event="startWritingGame"
                             :img="sampleImg"
                             name="글쓰기"
                             desc="글을 잘 쓰든 말든!!!!!!!!"
