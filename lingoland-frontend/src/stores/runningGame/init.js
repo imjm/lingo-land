@@ -32,7 +32,7 @@ function initDraw() {
 
     addLights(scene);
 
-    for (let i = -1; i < 5; i++) {
+    for (let i = -1; i < 10; i++) {
         loadMapSection(i * 1950 - 650);
         loadNewMapSection(i * 1950 + 325);
     }
@@ -43,7 +43,12 @@ function initDraw() {
     
     window.addEventListener("resize", onWindowResize, false);
 
+
     function animate() {
+        if (gameStore.isGameEnded) {
+            return; // 게임 종료 시 애니메이션 중지
+        }
+
         requestAnimationFrame(animate);
         const delta = clock.getDelta(); // delta time 계산
         if (mixer) mixer.update(delta); // delta를 이용한 애니메이션 업데이트
@@ -59,7 +64,6 @@ function initDraw() {
 
     animate();
 }
-
 function initScene() {
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x87ceeb); // 하늘색 배경 설정
