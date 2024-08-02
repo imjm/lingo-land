@@ -8,14 +8,7 @@ import sampleImg from "@/assets/sampleImg.jpg";
 const memberList = ref([
     "멤버 1",
     "멤버 2",
-    "멤버 3",
-    "멤버 4",
-    "멤버 5",
-    "멤버 1",
-    "멤버 2",
-    "멤버 3",
-    "멤버 4",
-    "멤버 5",
+   
     // 데이터 받아오기
 ]);
 

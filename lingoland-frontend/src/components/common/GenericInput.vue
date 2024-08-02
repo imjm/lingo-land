@@ -35,6 +35,7 @@ const props = defineProps({
             variant="outlined"
             :placeholder="hint"
             @blur="$emit('blurEvent')"
+           
             ></v-text-field>
             <!-- :readonly="readonly" -->
             <!-- :value="value" -->
