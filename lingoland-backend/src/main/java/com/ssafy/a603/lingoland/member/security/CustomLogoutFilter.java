@@ -29,13 +29,13 @@ public class CustomLogoutFilter extends GenericFilterBean {
     private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
 
         String requestURI = request.getRequestURI();
-        if(!requestURI.matches("^\\/logout$")) {
+        if(!requestURI.matches("^\\/api/v1/logout$")) {
             filterChain.doFilter(request, response);
             return;
         }
 
         String requestMethod = request.getMethod();
-        if(!requestMethod.equals("POST")) {
+        if(!requestMethod.equals("PUT")) {
             filterChain.doFilter(request, response);
             return;
         }
