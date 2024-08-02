@@ -21,11 +21,11 @@ function loadQuestions() {
 }
 
 function updateQuestionBasedOnZ(zCoordinate) {
-    if (zCoordinate < 1000) {
+    if (zCoordinate < 500) {
         return; // 1000 미만에서는 퀴즈를 표시하지 않음
     }
     
-    const index = Math.floor(zCoordinate / 1000) - 1; // 0-based index for each 1000 units of z
+    const index = Math.floor(zCoordinate / 800) - 1; // 0-based index for each 1000 units of z
     if (index >= 0 && index < questions.value.length) {
         if (!shownQuestions.has(index) && !currentQuestion.value) { // 이미 표시된 문제인지 확인하고 현재 문제가 없는지 확인
             currentIndex.value = index;
@@ -64,13 +64,13 @@ function checkAnswer(selected) {
         closeQuestionTimeout = setTimeout(() => {
             currentQuestion.value = null; // 문제 창 닫기
             isCorrect.value = null; // 정답 여부 초기화
-        }, 3000);
+        }, 2000);
     }, 5000); // 5초 후에 정답 표시
 }
 
 function resetQuestionOnExit(zCoordinate) {
-    const index = Math.floor(zCoordinate / 1000) - 1;
-    if (currentQuestion.value && !shownQuestions.has(index)) {
+    const index = Math.floor(zCoordinate / 800) - 1;
+    if (currentQuestion.value && shownQuestions.has(index)) {
         currentQuestion.value = null;
         isCorrect.value = null;
         if (answerTimeout) clearTimeout(answerTimeout);

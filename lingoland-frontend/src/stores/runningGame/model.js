@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { scene, renderer, mixer, chickModel, moveSide } from "./init";
 import { countdown } from "./time";
 import { checkAnswer } from "./question";
-import { useGameStore } from "../gameStore";
+import { useGameStore } from "./gameStore";
 
 function loadChickModel() {
     let loader = new GLTFLoader();

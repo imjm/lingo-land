@@ -5,7 +5,7 @@ import { ref } from "vue";
 import { addLights } from "./light";
 import { loadMapSection, loadNewMapSection } from "./map";
 import { handleChickMovement } from "./model";
-import { useGameStore } from "../gameStore";
+import { useGameStore } from "./gameStore";
 import { updateTimer } from "./time";
 
 let renderer, scene, mixer, camera, controls, chickModel;

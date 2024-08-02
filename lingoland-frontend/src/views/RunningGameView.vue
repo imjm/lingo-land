@@ -28,7 +28,7 @@
         <div id="coordinates" class="coordinates"></div>
 
         <div
-            v-if="currentQuestion && zCoordinate >= 1000"
+            v-if="currentQuestion && zCoordinate >= 500"
             id="quiz-container"
         >
             <h2>{{ currentQuestion.problem }}</h2>
@@ -39,7 +39,7 @@
                     </button>
                 </li>
             </ul>
-            <p v-if="isCorrect !== null">
+            <p style="font-size : 50px" v-if="isCorrect !== null">
                 {{ isCorrect ? "정답입니다!" : "틀렸습니다!" }}
             </p>
         </div>
@@ -51,7 +51,7 @@
 
 <script setup>
 import { ref, onMounted, watch, computed } from "vue";
-import { useGameStore } from "@/stores/gameStore";
+import { useGameStore } from "@/stores/runningGame/gameStore";
 import { storeToRefs } from "pinia";
 // 초기 세팅
 import { initDraw } from "@/stores/runningGame/init";
@@ -62,8 +62,6 @@ import { startCountdown, countdown } from "@/stores/runningGame/time";
 // 문제
 import {
     loadQuestions,
-    loadQuestion,
-    checkAnswer,
     currentQuestion,
     options,
     isCorrect,
@@ -73,6 +71,8 @@ import {
 
 const gameStore = useGameStore();
 const { zCoordinate } = storeToRefs(gameStore);
+
+//게임진행률
 const zDivided = computed(() => zCoordinate.value / 90);
 
 onMounted(() => {
@@ -83,11 +83,12 @@ onMounted(() => {
 
 // zCoordinate 값에 따라 퀴즈를 업데이트
 watch(zCoordinate, (newZ) => {
-    if (newZ >= 1000) {
+    if (newZ >= 500) {
         updateQuestionBasedOnZ(newZ);
-    } else {
-        resetQuestionOnExit(newZ);
-    }
+    } 
+    // else {
+    //     resetQuestionOnExit(newZ);
+    // }
 });
 </script>
 
@@ -130,13 +131,13 @@ watch(zCoordinate, (newZ) => {
     top: 20%;
     left: 50%;
     transform: translate(-50%, -50%); /* 중앙 정렬 */
-    width: 400px; /* 원하는 너비 */
+    width: 1000px; /* 원하는 너비 */
     padding: 20px;
-    background-color: rgba(0, 0, 0, 0.7); /* 배경 색상 */
+    background-color: rgba(161, 161, 161, 0.7); /* 배경 색상 */
     border-radius: 10px; /* 모서리 둥글게 */
     text-align: center; /*텍스트 중앙 정렬 */
     justify-content: center;
-    color: white;
+    color: black;
     z-index: 1000;
 }
 
