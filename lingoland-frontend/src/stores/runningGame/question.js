@@ -3,7 +3,8 @@ import { ref } from "vue";
 const questions = ref([]);
 const currentQuestion = ref(null);
 const options = ref([]);
-const isCorrect = ref(false);
+const isCorrect = ref(null);
+let answer = null;
 let answerTimeout = null;
 let closeQuestionTimeout = null;
 const shownQuestions = new Set(); // 이미 표시된 문제를 추적
@@ -62,6 +63,10 @@ function loadQuestion() {
     }
     index++;
     qcountdown();
+
+    answerTimeout = setTimeout(() => {
+        checkAnswerAndTime();
+    }, 5000);
 }
 
 function checkAnswer(selected) {
@@ -70,21 +75,19 @@ function checkAnswer(selected) {
     console.log("정답 : ", currentQuestion.value.answer);
     console.log("내가 고른 거 : ", selected);
     //정답 여부를 표시
-    answerTimeout = setTimeout(() => {
-        console.log("나는 불리는 중입니다ㅜㅜ");
-        isCorrect.value = selected == currentQuestion.value.answer;
-        currentQuestion.value = null; // 문제 창 닫기
-        if (answerTimeout) clearTimeout(answerTimeout);
-        closeQuestionTimeout = setTimeout(() => {
-            isCorrect.value = null; // 정답 여부 초기화
-            if (closeQuestionTimeout) clearTimeout(closeQuestionTimeout);
-            resetQuestionOnExit();
-        }, 2000);
-    }, 5000); // 정답 여부 표시 후 2초 뒤에 문제 창 닫기
+    answer = selected;
 }
 
-// function checkAnswerAndTime() {
-// }
+function checkAnswerAndTime() {
+    console.log("나는 불리는 중입니다!");
+    isCorrect.value = answer == currentQuestion.value.answer;
+    currentQuestion.value = null; // 문제 창 닫기
+    closeQuestionTimeout = setTimeout(() => {
+        isCorrect.value = null; // 정답 여부 초기화
+        resetQuestionOnExit();
+    }, 2000);
+    // 정답 여부 표시 후 2초 뒤에 문제 창 닫기
+}
 
 function resetQuestionOnExit() {
     if (answerTimeout) clearTimeout(answerTimeout);
