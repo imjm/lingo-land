@@ -1,8 +1,7 @@
-import { defineStore } from "pinia";
 import { httpStatus } from "@/apis/http-status";
+import { defineStore } from "pinia";
 import swal from "sweetalert2";
-import { inject, ref } from "vue";
-import { useRouter } from "vue-router";
+import { inject } from "vue";
 
 export const useGameRoomStore = defineStore("gameRoom", () => {
     window.Swal = swal;
