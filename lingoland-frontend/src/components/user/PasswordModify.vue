@@ -27,6 +27,13 @@ function cancel() {
                     <v-col class="ma-10 align-content-space-between">
                         <GenericInput
                             type="password"
+                            data="현재 비밀번호 "
+                            id="userPassword"
+                            hint="현재 비밀번호를 입력하세요"
+                        />
+
+                        <GenericInput
+                            type="password"
                             data="변경할 비밀번호 "
                             id="newPassword"
                             hint="새 비밀번호"
