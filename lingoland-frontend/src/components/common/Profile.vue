@@ -1,13 +1,13 @@
 <script setup>
+import sampleImage from "@/assets/sampleImg.jpg";
 import { useUserStore } from "@/stores/user";
-import { defineProps, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import ImageBox from "./ImageBox.vue";
-
-const props = defineProps({
-    source: String,
-});
+import { useRouter } from "vue-router";
 
 const userStore = useUserStore();
+
+const router = useRouter();
 
 const userProfile = ref({
     nickname: "",
@@ -23,6 +23,7 @@ function selectItem(event) {
     } else if (event === "내 정보 수정") {
         // 내 정보를 가지고
         // 내 정보 수정 페이지로 이동
+        router.push({ name: "myPageModify" });
     }
 }
 
@@ -34,7 +35,9 @@ onMounted(() => {
         userProfile.value.experiencePoint = getValue.experiencePoint;
 
         if (getValue.profileImage === null) {
-            userProfile.value.profileImage = props.source;
+            userProfile.value.profileImage = sampleImage;
+        } else {
+            userProfile.value.profileImage = getValue.profileImage;
         }
     });
 });
