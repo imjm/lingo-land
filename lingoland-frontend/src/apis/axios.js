@@ -53,31 +53,41 @@ instance.interceptors.response.use(
             try {
                 tokenRefreshingMutex.acquire();
 
-                // 새 액세스 토큰이 응답되면,
-                const refreshResponse = await instance
-                    .post(
-                        "/reissue",
-                        {},
-                        {
-                            withCredentials: true,
-                        }
-                    )
+                const refreshResponse = await axios({
+                    url: `${VITE_LOCAL_URL}/reissue`,
+                    method: "post",
+                    data: {},
+                    withCredentials: true,
+                })
                     .then((response) => {
-                        console.log(response)
-                        return Promise.resolve(response); // 결과를 리턴해서 refreshResponse에 넣어줌
+                        console.log(response);
+                        return Promise.resolve(response.data); // 결과를 리턴해서 refreshResponse에 넣어줌
                     })
                     .catch((error) => {
-                        console.log(error);
+                        console.log(error.response);
+                        if (error.response.status === httpStatus.BADREQUEST) {
+                            // 리프레시 토큰 갱신이 잘못된 경우
+                            // 기존 엑세스 토큰 삭제 후 로그인페이지로 리다이렉트
+                            sessionStorage.removeItem("accessToken");
+                            delete instance.defaults.headers.common[
+                                "Authorization"
+                            ];
+                            router.replace({ name: "login" });
+                        }
                     });
 
                 // 모든 요청에 access token이 포함되어 가도록 보장
                 const newAccessToken = refreshResponse.headers.authorization;
+
+                // localStorage에 access token 추가
+                sessionStorage.setItem("accessToken", newAccessToken);
 
                 instance.defaults.headers.common["Authorization"] =
                     newAccessToken;
 
                 prevRequest.headers.authorization = newAccessToken;
             } catch (error) {
+                console.log(error);
                 // 토큰 갱신에 실패하면 Circuit break
                 // router.push({ name: "login" });
                 return Promise.reject(error);
