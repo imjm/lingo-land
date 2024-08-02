@@ -93,11 +93,18 @@ export const useUserStore = defineStore("userStore", () => {
             });
     };
 
-    const logout = async (userId) => {
-        await axios.delete("/logout", userId, { withCredentials: true });
-        localStorage.removeItem("accessToken");
-        delete axios.defaults.headers.common["Authorization"];
-        router.replace({ name: "login" });
+    const logout = async () => {
+        await axios
+            .put("/logout", {}, { withCredentials: true })
+            .then((response) => {
+                console.log(response);
+                sessionStorage.removeItem("accessToken");
+                delete axios.defaults.headers.common["Authorization"];
+                router.replace({ name: "login" });
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     };
 
     // 유저 프로필 조회
@@ -137,6 +144,7 @@ export const useUserStore = defineStore("userStore", () => {
         checkDuplicate,
         signUp,
         login,
+        logout,
         getProfile,
         getProfileById,
     };

@@ -15,7 +15,7 @@ const router = useRouter();
 const groupList = ref();
 const dialog = ref({
     groupInfo: Object,
-    isOpen: false,
+    isOpen: false,  
 });
 
 function clickFunction(groupInfo, groupId) {

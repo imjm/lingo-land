@@ -31,8 +31,8 @@ public class GroupCustomRepositoryImpl implements GroupCustomRepository {
 					member.id.eq(group.leader.id).as("isLeader")
 				))
 			.from(member)
-			.join(groupMember).on(member.id.eq(groupMember.member.id))
-			.join(group).on(groupMember.group.id.eq(group.id))
+			.join(groupMember).on(member.id.eq(groupMember.member.id)).fetchJoin()
+			.join(group).on(groupMember.group.id.eq(group.id)).fetchJoin()
 			.where(
 				applySoftDelete(),
 				targetGroup(groupId),
@@ -45,9 +45,10 @@ public class GroupCustomRepositoryImpl implements GroupCustomRepository {
 	//member가 속한 모든 그룹 목록 출력
 	public List<GroupInfoResponseDTO> findGroupsByMemberId(Integer memberId, String keyword, boolean includeMember) {
 		return queryFactory.select(groupInfoProjection())
+			.distinct()
 			.from(groupMember)
-			.join(group).on(group.id.eq(groupMember.group.id))
-			.join(member).on(member.id.eq(groupMember.member.id))
+			.join(group).on(group.id.eq(groupMember.group.id)).fetchJoin()
+			.join(member).on(member.id.eq(groupMember.member.id)).fetchJoin()
 			.where(
 				applySoftDelete(),
 				includeMember ? includeMember(memberId) : excludeMember(memberId),
@@ -60,8 +61,8 @@ public class GroupCustomRepositoryImpl implements GroupCustomRepository {
 	public GroupInfoResponseDTO findGroupInfoById(Integer groupId) {
 		return queryFactory.select(groupInfoProjection())
 			.from(groupMember)
-			.join(group).on(group.id.eq(groupMember.group.id))
-			.join(member).on(member.id.eq(groupMember.member.id))
+			.join(group).on(group.id.eq(groupMember.group.id)).fetchJoin()
+			.join(member).on(member.id.eq(groupMember.member.id)).fetchJoin()
 			.where(
 				applySoftDelete(),
 				targetGroup(groupId),
@@ -90,7 +91,15 @@ public class GroupCustomRepositoryImpl implements GroupCustomRepository {
 	}
 
 	private BooleanExpression excludeMember(Integer memberId) {
-		return memberId == null ? null : member.id.ne(memberId);
+		// 멤버가 속한 그룹 ID 조회
+		List<Integer> includedGroupIds = queryFactory
+			.select(groupMember.group.id)
+			.from(groupMember)
+			.where(groupMember.member.id.eq(memberId))
+			.fetch();
+
+		// 제외할 그룹 ID를 조건에 추가
+		return group.id.notIn(includedGroupIds);
 	}
 
 	private BooleanExpression targetGroup(Integer groupId) {
