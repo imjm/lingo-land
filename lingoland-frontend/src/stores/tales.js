@@ -35,7 +35,7 @@ export const useTaleStore = defineStore("tale", () => {
     const oneTaleById = function(bookId) {
         axios.get(`/fairy-tales/${bookId}`).then((response) => {
             tale.value=response.data
-            console.log('동화받아왔음')       
+            console.log('동화받아왔음')
             console.log(response.data)
         }).then(()=> {
             router.push({ name: "bookDetail", params: { bookId: bookId } });
