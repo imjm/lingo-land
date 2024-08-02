@@ -38,7 +38,7 @@
                 </li>
             </ul>
         </div>
-        <div v-if="isCorrect" id="quiz-container">
+        <div v-if="isCorrect!=null" id="quiz-container">
             <h2>
                 {{ isCorrect ? "정답입니다!" : "틀렸습니다!" }}
             </h2>
