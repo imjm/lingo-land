@@ -5,12 +5,12 @@ import { ref } from "vue";
 import { addLights } from "./light";
 import { loadMapSection, loadNewMapSection } from "./map";
 import { handleChickMovement } from "./model";
-
+import { useGameStore } from "../gameStore";
 import { updateTimer } from "./time";
 
 let renderer, scene, mixer, camera, controls, chickModel;
 let moveSide = ref(0);
-
+const gameStore = useGameStore();
 // 카메라 설정
 const cameraSettings = {
     distance: 10, // 카메라와 캐릭터 사이의 거리
@@ -136,10 +136,10 @@ function setupKeyListeners() {
 
         // 옆으로 이동 처리
         if (event.key === "ArrowLeft" || event.key === "a") {
-            moveSide.value = 5.25; // 왼쪽으로 이동
+            moveSide.value = 4; // 왼쪽으로 이동
         }
         if (event.key === "ArrowRight" || event.key === "d") {
-            moveSide.value = -5.25; // 오른쪽으로 이동
+            moveSide.value = -4; // 오른쪽으로 이동
         }
     });
 
@@ -171,8 +171,10 @@ function updateCameraPosition() {
         cameraOffset.applyMatrix4(
             new THREE.Matrix4().makeRotationY(chickRotation)
         );
-        camera.position.copy(chickPosition).add(cameraOffset);
-        camera.lookAt(chickPosition); // 카메라가 병아리 모델을 항상 바라보도록 설정
+        camera.position.set(0, chickPosition.y + cameraOffset.y, chickPosition.z + cameraOffset.z); // x축을 0으로 설정
+        camera.lookAt(0,chickPosition.y,chickPosition.z); // 카메라가 병아리 모델을 항상 바라보도록 설정
+    
+        gameStore.updateZCoordinate(chickPosition.z);
     }
 }
 

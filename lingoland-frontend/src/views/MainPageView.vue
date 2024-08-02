@@ -16,12 +16,9 @@ const roomCode = ref("");
 function makeRoom() {
     const sessionPromise = gameRoomStore.getSession();
 
-    // 세션 아이디가 있는 프로미스
-    // testRoom으로 라우팅
     sessionPromise.then((sessionId) => {
-        console.log(sessionId)
-        router.push({
-            name: "testGameRoom",
+         router.push({
+            name: "gameRoom",
             params: { roomId: sessionId },
         });
     });
@@ -29,7 +26,7 @@ function makeRoom() {
 
 function joinRoom() {
     router.push({
-        name: "testGameRoom",
+        name: "gameRoom",
         params: { roomId: roomCode.value },
     });
 }
