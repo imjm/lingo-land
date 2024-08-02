@@ -1,4 +1,4 @@
-package com.ssafy.a603.lingoland.writingGame;
+package com.ssafy.a603.lingoland.writingGame.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.a603.lingoland.writingGame.dto.DrawingRequestDTO;
+import com.ssafy.a603.lingoland.writingGame.service.WritingGameService;
 
 import lombok.RequiredArgsConstructor;
 

@@ -1,4 +1,4 @@
-package com.ssafy.a603.lingoland.writingGame;
+package com.ssafy.a603.lingoland.writingGame.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,12 +13,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.a603.lingoland.global.error.entity.ErrorCode;
 import com.ssafy.a603.lingoland.global.error.exception.InvalidInputException;
 import com.ssafy.a603.lingoland.writingGame.dto.DrawingRequestDTO;
 import com.ssafy.a603.lingoland.writingGame.dto.KarloDTO;
 import com.ssafy.a603.lingoland.writingGame.dto.KarloReturn;
+import com.ssafy.a603.lingoland.writingGame.dto.Story;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class WritingGameService {
+public class WritingGameServiceImpl implements WritingGameService {
 	private final ObjectMapper objectMapper;
 	private final RedisTemplate<String, Object> redisTemplate;
 	private final ConcurrentHashMap<String, List<DrawingRequestDTO>> requestMap = new ConcurrentHashMap<>();
@@ -34,6 +36,12 @@ public class WritingGameService {
 	@Value("${kakao.api.key}")
 	private String restApiKey;
 
+	@Override
+	public void start() {
+		// TODO : 시작할 때 정보 제공하기, 어떤정보 받아? (우리 몇번 할거야, lingoland:fairyTale:session:{xxx} 10..)
+	}
+
+	@Override
 	public void submitStory(String sessionId, DrawingRequestDTO dto) {
 		log.info("Submitting story for session: {}", sessionId);
 		requestMap.putIfAbsent(sessionId, new ArrayList<>());
@@ -48,6 +56,11 @@ public class WritingGameService {
 		}
 	}
 
+	@Override
+	public void end() {
+		// TODO : 끝날 때 뭐할거야? redis 정보 postgresql에 넣기,
+	}
+
 	@Async("sampleExecutor")
 	public void processStoriesAsync(List<DrawingRequestDTO> requests) {
 		log.info("Processing stories asynchronously");
@@ -58,6 +71,34 @@ public class WritingGameService {
 				log.info("Translated story: {}", translated);
 				String imgUrl = generateImage(translated);
 				log.info("Generated image URL: {}", imgUrl);
+
+				// TODO : 넘어온 base64를 저장을 어디에? 일단 저장해...
+
+				String redisKey = "lingoland:fairyTale:" + request.loginId();
+				Story node = Story.builder()
+					.illustration(imgUrl)
+					.story(request.story())
+					.build();
+
+				try {
+					if (request.isFirst()) {
+						List<Story> lists = new ArrayList<>();
+						lists.add(node);
+						redisTemplate.opsForValue().set(redisKey, objectMapper.writeValueAsString(lists));
+						log.info("Stored first story in Redis with key: {}", redisKey);
+					} else {
+						String existingJson = (String)redisTemplate.opsForValue().get(redisKey);
+						List<Story> existingStories = objectMapper.readValue(existingJson,
+							new TypeReference<List<Story>>() {
+							});
+						existingStories.add(node);
+						redisTemplate.opsForValue().set(redisKey, objectMapper.writeValueAsString(existingStories));
+						log.info("Updated story list in Redis with key: {}", redisKey);
+					}
+				} catch (JsonProcessingException e) {
+					log.error("Error processing JSON", e);
+					throw new RuntimeException(e);
+				}
 			});
 		}
 		log.info("Writing Game One Hop End");

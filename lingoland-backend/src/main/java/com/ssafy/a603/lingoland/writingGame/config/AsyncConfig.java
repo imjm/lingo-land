@@ -1,4 +1,4 @@
-package com.ssafy.a603.lingoland.writingGame;
+package com.ssafy.a603.lingoland.writingGame.config;
 
 import java.util.concurrent.Executor;
 
