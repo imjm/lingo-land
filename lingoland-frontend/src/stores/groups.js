@@ -177,7 +177,7 @@ export const useGroupStore = defineStore("group", () => {
                         icon: "success",
                         confirmButtonText: "완료",
                     }).then(() => {
-                        router.replace({ name: "myPage" });                        
+                        router.replace({ name: "myPage" });
                     });
                 }
             })
