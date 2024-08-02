@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { scene, renderer, mixer, chickModel, moveSide } from "./init";
 import { countdown } from "./time";
 import { checkAnswer } from "./question";
+import { useGameStore } from "../gameStore";
 
 function loadChickModel() {
     let loader = new GLTFLoader();
@@ -36,8 +37,9 @@ function loadChickModel() {
 function handleChickMovement(keysPressed, coordinatesElement) {
     const moveSpeed = 10;
     const autoForwardSpeed = 1; // 자동으로 앞으로 가는 속도
+    const gameStore = useGameStore();
 
-    if (chickModel && countdown.value === 0) {
+    if (chickModel && countdown.value === 0 && !gameStore.isGameEnded) {
         // 자동으로 앞으로 이동
         const forwardDirection = new THREE.Vector3(1, 0, 0); // 앞쪽 방향
         forwardDirection.applyQuaternion(chickModel.quaternion); // 현재 회전에 따라 방향 벡터를 업데이트합니다.
@@ -69,6 +71,12 @@ function handleChickMovement(keysPressed, coordinatesElement) {
             checkAnswer(2);
         } else if (x.toFixed(2) == 4.00) {
             checkAnswer(3);
+        }
+
+        // z 좌표가 13000이 되면 경기 종료
+        if (z >= 13000) {
+            gameStore.endGame(); // 경기 종료 함수 호출
+            alert("경기 종료!");
         }
     }
 }
