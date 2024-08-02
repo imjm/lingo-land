@@ -76,7 +76,10 @@ export const useGroupStore = defineStore("group", () => {
     // 그룹 수정
     const modifyGroup = async (groupInfo, groupImage) => {
         const formData = new FormData();
-        formData.append("updateGroup", JSON.stringify(groupInfo));
+        formData.append(
+            "updateGroup",
+            new Blob([JSON.stringify(groupInfo)], { type: "application/json" })
+        );
         if (groupImage) {
             formData.append("groupImage", groupImage);
         }
@@ -89,7 +92,7 @@ export const useGroupStore = defineStore("group", () => {
                 withCredentials: true,
             })
             .then((response) => {
-                if (response.status === httpStatus.NO_CONTENT) {
+                if (response.status === httpStatus.NOCONTENT) {
                     Swal.fire({
                         title: "그룹 정보 수정 성공!",
                         icon: "success",
@@ -102,7 +105,7 @@ export const useGroupStore = defineStore("group", () => {
                     });
                 } else {
                     Swal.fire({
-                        title: "그룹 정보 수정 실패",
+                        title: "response 실패",
                         icon: "error",
                     });
                 }

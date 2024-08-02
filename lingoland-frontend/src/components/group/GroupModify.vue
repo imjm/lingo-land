@@ -5,19 +5,22 @@ import GenericInput from "../common/GenericInput.vue";
 import GenericInputArea from "../common/GenericInputArea.vue";
 import ImageBox from "../common/ImageBox.vue";
 import SubmitButton from "../common/SubmitButton.vue";
-// import imageSource from "@/assets/sampleImg.jpg";
 import NameTag from "../common/NameTag.vue";
 import { onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
 
 const groupStore = useGroupStore();
 const { myGroup } = storeToRefs(groupStore);
-// name: id: description: memberCount: leaderNickname:
 
-// myGroup.value.description='내가 바꿔지는가?';
-// console.log(myGroup.value.description)
+//보낼 DTO
+const groupImage = ref(); // 기본은 원래 적용되어 있는 것으로
+const updateGroup = ref({
+    id:0,
+    name:'',
+    password:'',
+    description:''
+});
 
-let groupImage = ref(); // 기본은 원래 적용되어 있는 것으로
 let imageSource = ref();
 function handleFileChange(event) {
     const file = event.target.files[0];
@@ -34,14 +37,18 @@ function handleFileChange(event) {
 }
 
 function modifyGroup() {
-    groupStore.modifyGroup(myGroup, groupImage);
+    updateGroup.value.id=groupStore.myGroup.value.id
+    updateGroup.value.name=groupStore.myGroup.value.name
+    updateGroup.value.password=groupStore.myGroup.value.password
+    updateGroup.value.description=groupStore.myGroup.value.description  
+    groupStore.modifyGroup(updateGroup.value, groupImage.value);
+    
 }
 
 console.log(groupStore.myGroup.value.name);
 
 onMounted(() => {
     console.log(groupStore.myGroup.value);
-    console.log();
 });
 </script>
 
@@ -78,9 +85,10 @@ onMounted(() => {
                             <GenericInputArea
                                 data="그룹 소개"
                                 placeholder="그룹 소개를 입력하세요"
+                                v-model="myGroup.value.description"
                             />
 
-                            <GenericInput
+                            <GenericInput   
                                 type="password"
                                 data="비밀번호 변경"
                                 id="groupPassword"
@@ -90,7 +98,6 @@ onMounted(() => {
                                 type="password"
                                 data="비밀번호확인"
                                 id="groupPasswordCheck"
-                                v-model="myGroup.value.password"
                             />
 
                             <SubmitButton
