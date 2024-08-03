@@ -119,6 +119,15 @@ function joinRoom(sessionId) {
     });
 }
 
+// 방코드 복사하기
+async function writeClipboardText(text) {
+    try {
+        await navigator.clipboard.writeText(text);
+    } catch (error) {
+        console.error(error.message);
+    }
+}
+
 onMounted(() => {
     joinRoom(route.params.roomId);
 });
@@ -129,7 +138,10 @@ onMounted(() => {
         <v-container>
             <v-row>
                 <v-col cols="5">
-                    <GameMemberList :members="participants" :style="{height: '90vh'}" />
+                    <GameMemberList
+                        :members="participants"
+                        :style="{ height: '90vh' }"
+                    />
                 </v-col>
 
                 <v-col cols="7">
@@ -154,13 +166,18 @@ onMounted(() => {
 
                     <div class="d-flex justify-space-evenly">
                         <div
-                            class="d-flex align-center justify-center flex-column justify-space-evenly"
+                            class="d-flex align-center justify-center flex-column"
                             id="room-code"
                         >
-                            <div>방 코드</div>
-                            <div>{{ route.params.roomId }}</div>
+                            <h4>방 코드</h4>
+                            <h4>{{ route.params.roomId }}</h4>
                         </div>
-                        <v-btn id="link" @click="makeQr"> URL 복사하기 </v-btn>
+                        <v-btn
+                            id="link"
+                            @click="writeClipboardText(route.params.roomId)"
+                        >
+                            URL 복사하기
+                        </v-btn>
                     </div>
                 </v-col>
             </v-row>
@@ -173,7 +190,7 @@ onMounted(() => {
     width: 40%;
     height: 150px;
     font-size: x-large;
-    font-weight : 600;
+    font-weight: 600;
     background-color: #cccbff;
     border-radius: 1%;
 }
