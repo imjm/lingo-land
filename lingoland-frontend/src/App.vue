@@ -55,7 +55,7 @@ import { RouterView } from "vue-router";
   font-family: "Gamja Flower", sans-serif;
   font-weight: 500;
   font-style: normal;
-  font-size : xx-large;
+  font-size : x-large;
 }
 
 .do-hyeon-regular {
