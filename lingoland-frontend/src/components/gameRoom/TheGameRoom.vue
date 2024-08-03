@@ -87,17 +87,17 @@ onMounted(() => {
 </script>
 
 <template>
-    <v-main class="d-flex justify-center">
+    <v-main class="d-flex justify-center mt-10">
         <v-container>
             <v-row>
                 <v-col cols="5">
-                    <GameMemberList :members="participants" />
+                    <GameMemberList :members="participants" :style="{height: '90vh'}" />
                 </v-col>
 
                 <v-col cols="7">
                     <div
                         class="d-flex justify-space-evenly"
-                        style="height: 30%"
+                        style="height: 65vh"
                     >
                         <GameButton
                             @click-event="runningGame"
