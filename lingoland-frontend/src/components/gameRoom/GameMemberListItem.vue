@@ -1,12 +1,12 @@
 <script setup>
-import { defineProps, onMounted, ref } from "vue";
-import { useRankStore } from "@/stores/ranks";
+import { useUserStore } from "@/stores/user";
+import { defineProps } from "vue";
 
 const props = defineProps({
     member: Object,
 });
 
-const rankStore = useRankStore();
+const userStore = useUserStore();
 </script>
 
 <template>
@@ -24,7 +24,7 @@ const rankStore = useRankStore();
                     />
                 </v-col>
                 <v-col cols="8">
-                    <h3 class="align-center">{{ rankStore.getstatue(member.experiencePoint) }}</h3>
+                    <h3 class="align-center">{{ userStore.getstatue(member.experiencePoint) }}</h3>
                 </v-col>
             </v-row>
         </v-container>
