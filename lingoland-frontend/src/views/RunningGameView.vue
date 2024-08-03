@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="gowun-batang-regular">
         <!-- Canvas와 타이머를 포함하는 상위 div -->
         <div id="game-container">
             <canvas id="c"></canvas>
@@ -88,6 +88,15 @@ onMounted(() => {
 </script>
 
 <style scoped>
+
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap');
+.gowun-batang-regular {
+  font-family: "Gowun Batang", serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size : large;
+}
+
 .no_dot {
     list-style-type: none;
 }
@@ -135,6 +144,7 @@ onMounted(() => {
     color: white;
     z-index: 1000;
 }
+
 
 button {
     margin: 5px;

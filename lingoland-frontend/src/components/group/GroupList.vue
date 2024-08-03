@@ -66,6 +66,7 @@ onMounted(() => {
 
 <style scoped>
 .game-member-list {
+    height: auto;
     max-height: 70%; /* 최대 높이 설정 */
     overflow-y: auto; /* 수직 스크롤을 가능하게 설정 */
 }
