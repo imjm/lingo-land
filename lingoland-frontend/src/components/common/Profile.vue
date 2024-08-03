@@ -44,7 +44,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <v-card width="90%" height="100%" class="d-flex align-center">
+    <v-card width="auto" height="auto" class="d-flex align-center" max-height="700">
         <v-row class="d-flex flex-column ma-6">
             <v-col class="d-flex justify-end">
                 <v-select

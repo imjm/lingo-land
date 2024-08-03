@@ -33,3 +33,7 @@ openvidu:
 server:
   tomcat:
     max-http-form-post-size: 5MB
+
+kakao:
+  api:
+    key: ${KAKAO_REST_KEY}

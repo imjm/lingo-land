@@ -8,7 +8,7 @@ const groupMemberStore = useGroupMemberStore();
 
 <template>
     <div>
-        <v-card color="rgba(172, 204, 124, 1)" class="pt-3" height="100%">
+        <v-card color="rgba(172, 204, 124, 1)" class="pt-3 " height="75vh">
             <v-row>
                 <v-col>
                     <h1 class="ml-10">순위</h1>
@@ -17,7 +17,7 @@ const groupMemberStore = useGroupMemberStore();
                     <DropBox width="50%" class="pr-8" />
                 </v-col>
             </v-row>
-            <v-expansion-panels class="pa-4" variant="popout">
+            <v-expansion-panels class="d-flex pa-4 member-list" variant="popout">
                 <v-expansion-panel
                     v-for="(member, i) in groupMemberStore.members"
                     :key="i"
@@ -32,6 +32,10 @@ const groupMemberStore = useGroupMemberStore();
 </template>
 
 <style scoped>
+.member-list {
+    height: auto;
+    max-height: 70%; /* 최대 높이 설정 */
+    overflow-y: auto;}
 /* width */
 ::-webkit-scrollbar {
     width: 10px;

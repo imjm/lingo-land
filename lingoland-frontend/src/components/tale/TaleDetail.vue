@@ -1,18 +1,22 @@
 <script setup>
 import { useTaleStore } from "@/stores/tales";
-import WritingResultListItem from "../writingGame/WritingResultListItem.vue";
-import { defineProps } from "vue";
 
 const taleStore = useTaleStore();
 const { tale } = taleStore;
-
+// import { useTaleStore } from "@/stores/tales";
+//         const taleStore = useTaleStore()
+//         const goTotalesList = () => {
+//             taleStore.myTalesList();
+//         };
+//         <GenericButton
+//         class="ma-5"
+//         :style="{ width: '100' }"
+//         data="목록보기"
+//         @click-event="goTotalesList"
+//         />
 
 //= title cover summary content(list);
-
-
 </script>
-
-
 
 <template>
     <v-carousel hide-delimiter-background progress="primary" hide-delimiters>
@@ -28,4 +32,5 @@ const { tale } = taleStore;
         </v-carousel-item>
     </v-carousel>
 </template>
-<style scoped></style>
+<style scoped>
+</style>

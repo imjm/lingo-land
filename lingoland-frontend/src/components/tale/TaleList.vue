@@ -1,27 +1,91 @@
 <script setup>
-import { onMounted } from "vue";
-import TaleListItem from "./TaleListItem.vue";
+import { ref } from "vue";
+import TaleListItem from "./Not-use-TaleListItem.vue";
 import { useTaleStore } from "@/stores/tales";
 
-const store = useTaleStore();
+const taleStore = useTaleStore();
+const items = taleStore.tales;
+
+const search = ref("");
+const headers = ref([
+    { title: "번호", value: "id" },
+    { title: "제목", value: "title" },
+    { title: "Thumbnail", value: "cover" },
+    { title: "한 줄 소개", value: "summary" },
+    // 필요에 따라 추가 컬럼 정의
+]);
+
+const rowClick = (event, { item }) => {
+    console.log("나는 눌리긴 하는중!@!@><");
+    // console.log();
+    taleStore.oneTaleById(item.id);
+};
 </script>
 
 <template>
-    <v-expansion-panels class="pa-4" variant="popout">
-        <v-expansion-panel>
-            <!-- 아직 변수 값을 몰라 임의로 작성하였습니다. 데이터는 store에 임의로 작성하여 구성했습니다. -->
-            <TaleListItem
-                v-for="(tale, i) in store.tales"
-                :key="i"
-                :tale="tale"
-            />
-        </v-expansion-panel>
-    </v-expansion-panels>
+    <!-- <button @click="rowClick">asdfasdf</button> -->
+    <v-card
+        flat
+        class="gowun-batang-regular mx-5 px-5"
+        :style="{ width: '80%' }"
+    >
+        <v-card-title class="d-flex align-center pa-3">
+            <span class="material-icons"> menu_book </span>
+            <span style="font-size: xx-large; font-weight: bold">
+                &nbsp; 동화 목록</span
+            >
 
-    <!-- 아직 변수 값을 몰라 임의로 작성하였습니다. 데이터는 store에 임의로 작성하여 구성했습니다. -->
+            <v-spacer></v-spacer>
+            <!-- 검색 -->
+            <v-text-field
+                v-model="search"
+                density="compact"
+                label="제목을 입력해 주세요"
+                prepend-inner-icon="mdi-magnify"
+                variant="solo-filled"
+                flat
+                hide-details
+                single-line
+            ></v-text-field>
+        </v-card-title>
+
+        <v-divider></v-divider>
+
+        <!-- 데이터 내용 -->
+        <v-data-table
+            v-model:search="search"
+            :headers="headers"
+            :items="items"
+            @click:row="rowClick"
+            items-per-page="6"
+        >
+            <template v-slot:item.cover="{ item }">
+                <v-img
+                    class="my-2"
+                    :src="item.cover"
+                    height="100px"
+                    max-width="100px"
+                    width="100%"
+                    contain
+                ></v-img>
+            </template>
+        </v-data-table>
+    </v-card>
 </template>
 
-<style scoped>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap");
+.gowun-batang-regular {
+    font-family: "Gowun Batang", serif;
+    font-weight: 500;
+    font-style: normal;
+    font-size: large;
+}
+
+thead span {
+    font-weight: bold;
+    font-size: large;
+}
 /* width */
 ::-webkit-scrollbar {
     width: 10px;

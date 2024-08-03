@@ -15,7 +15,7 @@ const props = defineProps({
             <img :src="img" width="90%" />
         </div>
         <div height="10%">{{ name }}</div>
-        <div>{{ desc }}</div>
+        <div style="font-size:large">{{ desc }}</div>
     </button>
 </template>
 

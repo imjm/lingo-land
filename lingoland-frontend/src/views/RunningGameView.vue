@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="gowun-batang-regular">
         <!-- Canvas와 타이머를 포함하는 상위 div -->
         <div id="game-container">
             <canvas id="c"></canvas>
@@ -26,35 +26,32 @@
             </v-row>
         </div>
         <div id="coordinates" class="coordinates"></div>
-        <div v-if="currentQuestion && countdown === 0 && zCoordinate >= 1000" id="quiz-container">
+
+        <div v-if="currentQuestion" id="quiz-container">
             <h2>{{ currentQuestion.problem }}</h2>
+            <div v-if="questionCountDown > 0">{{ questionCountDown }}</div>
             <ul class="no_dot d-flex justify-center">
                 <li v-for="(option, index) in options" :key="index">
-                    <button @click="checkAnswer(index + 1)">
+                    <button>
                         {{ option }}
                     </button>
                 </li>
             </ul>
-            <p v-if="isCorrect !== null">
-                {{ isCorrect ? "정답입니다!" : "틀렸습니다!" }}
-            </p>
         </div>
-        <div v-else-if="countdown === 0">
+        <div v-if="isCorrect!=null" id="quiz-container">
+            <h2>
+                {{ isCorrect ? "정답입니다!" : "틀렸습니다!" }}
+            </h2>
+        </div>
+        <div v-if="questions === null" id="quiz-container">
             <p>퀴즈가 완료되었습니다!</p>
         </div>
     </div>
 </template>
 
-
-
-
-
-
-
-
 <script setup>
 import { ref, onMounted, watch, computed } from "vue";
-import { useGameStore } from "@/stores/gameStore";
+import { useGameStore } from "@/stores/runningGame/gameStore";
 import { storeToRefs } from "pinia";
 // 초기 세팅
 import { initDraw } from "@/stores/runningGame/init";
@@ -65,43 +62,41 @@ import { startCountdown, countdown } from "@/stores/runningGame/time";
 // 문제
 import {
     loadQuestions,
-    loadQuestion,
-    checkAnswer,
     currentQuestion,
     options,
     isCorrect,
-    updateQuestionBasedOnZ,
-    resetQuestionOnExit
+    updateQuestion,
+    questionCountDown,
 } from "@/stores/runningGame/question";
 
 const gameStore = useGameStore();
 const { zCoordinate } = storeToRefs(gameStore);
+
+//게임진행률
 const zDivided = computed(() => zCoordinate.value / 90);
 
 onMounted(() => {
     startCountdown();
     initDraw();
     loadQuestions(); // 문제 로드
-});
-
-// zCoordinate 값에 따라 퀴즈를 업데이트
-watch(zCoordinate, (newZ) => {
-    if (newZ >= 1000) {
-        updateQuestionBasedOnZ(newZ);
-    } else {
-        resetQuestionOnExit(newZ);
-    }
+    setInterval(() => {
+        updateQuestion();
+        console.log("문제 부름");
+        console.log(currentQuestion.value);
+    }, 9000);
 });
 </script>
 
-
-
-
-
-
-
-
 <style scoped>
+
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap');
+.gowun-batang-regular {
+  font-family: "Gowun Batang", serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size : large;
+}
+
 .no_dot {
     list-style-type: none;
 }
@@ -140,7 +135,7 @@ watch(zCoordinate, (newZ) => {
     top: 20%;
     left: 50%;
     transform: translate(-50%, -50%); /* 중앙 정렬 */
-    width: 400px; /* 원하는 너비 */
+    width: 1000px; /* 원하는 너비 */
     padding: 20px;
     background-color: rgba(0, 0, 0, 0.7); /* 배경 색상 */
     border-radius: 10px; /* 모서리 둥글게 */
@@ -149,6 +144,7 @@ watch(zCoordinate, (newZ) => {
     color: white;
     z-index: 1000;
 }
+
 
 button {
     margin: 5px;

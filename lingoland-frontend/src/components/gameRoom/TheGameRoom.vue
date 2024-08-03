@@ -125,29 +125,29 @@ onMounted(() => {
 </script>
 
 <template>
-    <v-main class="d-flex justify-center">
+    <v-main class="d-flex justify-center mt-10">
         <v-container>
             <v-row>
                 <v-col cols="5">
-                    <GameMemberList :members="participants" />
+                    <GameMemberList :members="participants" :style="{height: '90vh'}" />
                 </v-col>
 
                 <v-col cols="7">
                     <div
                         class="d-flex justify-space-evenly"
-                        style="height: 100%"
+                        style="height: 65vh"
                     >
                         <GameButton
                             @click-event="startRunningGame"
                             :img="img1"
                             name="달리기"
-                            desc="문해력이 딸리든 뭐든!!!!!! 일단 달려 볼까!!!!!!!!"
+                            desc="문해력 문제를 맞추며 달려라!"
                         ></GameButton>
 
                         <GameButton
                             @click-event="startWritingGame"
                             :img="sampleImg"
-                            name="글쓰기"
+                            name="동화만들기"
                             desc="글을 잘 쓰든 말든!!!!!!!!"
                         ></GameButton>
                     </div>
@@ -160,7 +160,7 @@ onMounted(() => {
                             <div>방 코드</div>
                             <div>{{ route.params.roomId }}</div>
                         </div>
-                        <v-btn id="link" @click="makeQr">링크 복사</v-btn>
+                        <v-btn id="link" @click="makeQr"> URL 복사하기 </v-btn>
                     </div>
                 </v-col>
             </v-row>
@@ -173,6 +173,7 @@ onMounted(() => {
     width: 40%;
     height: 150px;
     font-size: x-large;
+    font-weight : 600;
     background-color: #cccbff;
     border-radius: 1%;
 }
@@ -180,7 +181,6 @@ onMounted(() => {
 #room-code {
     width: 40%;
     height: 150px;
-    font-size: large;
     background-color: #d2f0ff;
     border-radius: 1%;
 }
