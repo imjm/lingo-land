@@ -93,6 +93,7 @@ export const useUserStore = defineStore("userStore", () => {
             });
     };
 
+    // 로그아웃
     const logout = async () => {
         await axios
             .put("/logout", {}, { withCredentials: true })
@@ -139,6 +140,7 @@ export const useUserStore = defineStore("userStore", () => {
         return userProfile;
     };
 
+    // 유저 닉네임 수정
     const modifyNickname = async (newNickname) => {
         await axios
             .put(
@@ -149,11 +151,44 @@ export const useUserStore = defineStore("userStore", () => {
             .then((response) => {
                 if (response.status === httpStatus.OK) {
                     console.log(response);
-                    router.replace({ name: "myPage" });
+                    Swal.fire({
+                        title: "닉네임 수정 완료",
+                        icon: "success",
+                        confirmButtonText: "완료",
+                    }).then(() => {
+                        router.replace({ name: "myPage" });
+                    });
                 }
             })
             .catch((error) => {
                 console.log(error);
+            });
+    };
+
+    // 유저 비밀번호 수정
+    const modifyPassword = async (passwordDTO) => {
+        await axios
+            .put("/users/password", passwordDTO, { withCredentials: true })
+            .then((response) => {
+                if (response.status === httpStatus.OK) {
+                    console.log(response);
+                    Swal.fire({
+                        title: "비밀번호 수정 완료",
+                        icon: "success",
+                        confirmButtonText: "완료",
+                    }).then(() => {
+                        router.replace({ name: "myPage" });
+                    });
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                if (error.response.status === httpStatus.BADREQUEST) {
+                    Swal.fire({
+                        title: error.response.data,
+                        icon: "error",
+                    });
+                }
             });
     };
 
@@ -166,5 +201,6 @@ export const useUserStore = defineStore("userStore", () => {
         getProfile,
         getProfileById,
         modifyNickname,
+        modifyPassword,
     };
 });
