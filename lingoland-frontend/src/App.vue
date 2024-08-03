@@ -43,6 +43,7 @@ import { RouterView } from "vue-router";
         >groupMemberDetailByAdmin</RouterLink
     >
     |
+    
 
     <v-app class="bg-amber-lighten-3 gamja-flower-regular ">
         <RouterView></RouterView>
