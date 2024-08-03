@@ -5,7 +5,7 @@ import { ref } from "vue";
 import { addLights } from "./light";
 import { loadMapSection, loadNewMapSection } from "./map";
 import { handleChickMovement } from "./model";
-import { useGameStore } from "../gameStore";
+import { useGameStore } from "./gameStore";
 import { updateTimer } from "./time";
 
 let renderer, scene, mixer, camera, controls, chickModel;
@@ -32,7 +32,7 @@ function initDraw() {
 
     addLights(scene);
 
-    for (let i = -1; i < 5; i++) {
+    for (let i = -1; i < 10; i++) {
         loadMapSection(i * 1950 - 650);
         loadNewMapSection(i * 1950 + 325);
     }
@@ -43,7 +43,12 @@ function initDraw() {
     
     window.addEventListener("resize", onWindowResize, false);
 
+
     function animate() {
+        if (gameStore.isGameEnded) {
+            return; // 게임 종료 시 애니메이션 중지
+        }
+
         requestAnimationFrame(animate);
         const delta = clock.getDelta(); // delta time 계산
         if (mixer) mixer.update(delta); // delta를 이용한 애니메이션 업데이트
@@ -59,7 +64,6 @@ function initDraw() {
 
     animate();
 }
-
 function initScene() {
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x87ceeb); // 하늘색 배경 설정
@@ -172,7 +176,7 @@ function updateCameraPosition() {
             new THREE.Matrix4().makeRotationY(chickRotation)
         );
         camera.position.set(0, chickPosition.y + cameraOffset.y, chickPosition.z + cameraOffset.z); // x축을 0으로 설정
-        camera.lookAt(0,chickPosition.y,chickPosition.z); // 카메라가 병아리 모델을 항상 바라보도록 설정
+        camera.lookAt(0,chickPosition.y+3,chickPosition.z); // 카메라가 병아리 모델을 항상 바라보도록 설정
     
         gameStore.updateZCoordinate(chickPosition.z);
     }

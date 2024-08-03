@@ -17,7 +17,7 @@ function makeRoom() {
     const sessionPromise = gameRoomStore.getSession();
 
     sessionPromise.then((sessionId) => {
-         router.push({
+        router.push({
             name: "gameRoom",
             params: { roomId: sessionId },
         });

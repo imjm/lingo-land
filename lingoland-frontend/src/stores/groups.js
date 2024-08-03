@@ -13,8 +13,6 @@ export const useGroupStore = defineStore("group", () => {
     const router = useRouter();
     const axios = inject("axios");
 
-    const myGroup = ref({});
-
     /**
      * actions
      */
@@ -166,6 +164,34 @@ export const useGroupStore = defineStore("group", () => {
         return myGroupList;
     };
 
+    const joinGroup = async (groupId, joinInfo) => {
+        const joinGroupResult = await axios
+            .post(`/groups/${groupId}/users`, joinInfo, {
+                withCredentials: true,
+            })
+            .then((response) => {
+                if (response.status === httpStatus.NOCONTENT) {
+                    console.log(response);
+                    Swal.fire({
+                        title: "그룹가입 완료",
+                        icon: "success",
+                        confirmButtonText: "완료",
+                    }).then(() => {
+                        router.replace({ name: "myPage" });
+                    });
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                Swal.fire({
+                    title: "그룹가입 실패",
+                    icon: "error",
+                });
+            });
+
+        return joinGroupResult;
+    };
+
     return {
         modifyGroup,
         createGroup,
@@ -173,6 +199,6 @@ export const useGroupStore = defineStore("group", () => {
         getGroups,
         getGroup,
         getMyGroups,
-        myGroup,
+        joinGroup,
     };
 });
