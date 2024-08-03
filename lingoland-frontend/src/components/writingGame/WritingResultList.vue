@@ -3,59 +3,54 @@
         <div class="book" ref="book">
             <div class="page" :class="{ active: activePage === 1, flipped: activePage > 1 }" @click="handlePageClick">
                 <div class="front">
-                    <h1>Touch-enabled Book/Page Flip Effect Example</h1>
+                    <h1>집에 가고 싶어요</h1>
+                    <div>커버 이미지</div>
+
                     <div id="carbon-block"></div>
                 </div>
                 <div class="back">
                     <h1>– 1 –</h1>
-                    <p>글!!!!!!!!!!!!!!!!!!!!!</p>
+                    <WritingResultListItem source="\src\assets\달리기.jpg" text="어쩌구 저쩌구" />
                 </div>
             </div>
             <div class="page" :class="{ active: activePage === 2, flipped: activePage > 2 }" @click="handlePageClick">
                 <div class="front">
                     <h1>– 2 –</h1>
-                    <p>글!!!!!!!!!!!!!!!!!!!!!</p>
 
+                    <WritingResultListItem source="\src\assets\sampleImg.jpg" text="어쩌구 저쩌구" />
                 </div>
                 <div class="back">
                     <h1>– 3 –</h1>
-                    <p>글!!!!!!!!!!!!!!!!!!!!!</p>
 
                 </div>
             </div>
             <div class="page" :class="{ active: activePage === 3, flipped: activePage > 3 }" @click="handlePageClick">
                 <div class="front">
                     <h1>– 4 –</h1>
-                    <p>글!!!!!!!!!!!!!!!!!!!!!</p>
 
                 </div>
                 <div class="back">
                     <h1>– 5 –</h1>
-                    <p>글!!!!!!!!!!!!!!!!!!!!!</p>
 
                 </div>
             </div>
             <div class="page" :class="{ active: activePage === 4, flipped: activePage > 4 }" @click="handlePageClick">
                 <div class="front">
                     <h1>– 6 –</h1>
-                    <p>글!!!!!!!!!!!!!!!!!!!!!</p>
 
                 </div>
                 <div class="back">
                     <h1>– 7 –</h1>
-                    <p>글!!!!!!!!!!!!!!!!!!!!!</p>
 
                 </div>
             </div>
             <div class="page" :class="{ active: activePage === 5, flipped: activePage > 5 }" @click="handlePageClick">
                 <div class="front">
                     <h1>– 8 –</h1>
-                    <p>글!!!!!!!!!!!!!!!!!!!!!</p>
 
                 </div>
                 <div class="back">
                     <h1>– 9 –</h1>
-                    <p>글!!!!!!!!!!!!!!!!!!!!!</p>
 
                 </div>
             </div>
@@ -65,6 +60,7 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+import WritingResultListItem from './WritingResultListItem.vue';
 
 const activePage = ref(1);
 const totalPages = 5;
@@ -114,14 +110,14 @@ h1 {
 .scene {
     width: 45%;
     height: 90%;
-    margin: 5% 5% 5% 50%;
+    margin: 2% 2% 2% 50%;
     perspective: 1000px;
 }
 
 .book {
     position: relative;
     width: 100%;
-    height: 90%;
+    height: 100%;
     transform-style: preserve-3d;
 }
 
@@ -141,10 +137,10 @@ h1 {
     position: absolute;
     width: 100%;
     height: 100%;
-    padding: 10% 5% 5%;
+    padding: 2% 5% 5%;
     box-sizing: border-box;
     backface-visibility: hidden;
-    background: linear-gradient(to bottom right, #f5f5dc, #ffffff );
+    background: linear-gradient(to bottom right, #f5f5dc, #ffffff);
 }
 
 .back {
