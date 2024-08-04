@@ -38,6 +38,14 @@ instance.interceptors.response.use(
     async (error) => {
         const { config, response } = error;
 
+        if (response.config.url === "/login") {
+            Swal.fire({
+                title: "로그인 실패",
+                icon: "error",
+            });
+            return;
+        }
+
         // 토큰 재발급 진행
         if (response.status === httpStatus.UNAUTHORIZED) {
             // /auth/refresh로 요청을 진행해야 하므로, 기존의 요청을 저장.
