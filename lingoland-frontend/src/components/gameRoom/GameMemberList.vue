@@ -22,6 +22,7 @@ const props = defineProps({
     max-height: 100%; /* 최대 높이 설정 */
     overflow-y: auto; /* 수직 스크롤을 가능하게 설정 */
 } /* width */
+
 ::-webkit-scrollbar {
     width: 10px;
 }

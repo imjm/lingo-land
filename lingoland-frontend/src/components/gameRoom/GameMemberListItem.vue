@@ -1,27 +1,30 @@
 <script setup>
+import { useUserStore } from "@/stores/user";
 import { defineProps } from "vue";
 
 const props = defineProps({
     member: Object,
 });
+
+const userStore = useUserStore();
 </script>
 
 <template>
     <v-list-item-content>
         <v-container class="border-md">
             <v-row rows="2">
-                <div>{{ member.nickname }}</div>
+                <h2 class="ml-4">{{ member.nickname }}</h2>
             </v-row>
             <v-row rows="10">
                 <v-col cols="4">
                     <img
                         :src="member.profileImage"
                         class="rounded-circle mx-auto"
-                        style="height: 64px; width: 64px"
+                        style="height: 80px; width: 80px"
                     />
                 </v-col>
                 <v-col cols="8">
-                    <div>{{ member.experiencePoint }}</div>
+                    <h3 class="align-center">{{ userStore.getstatue(member.experiencePoint) }}</h3>
                 </v-col>
             </v-row>
         </v-container>

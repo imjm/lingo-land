@@ -1,7 +1,7 @@
 import { httpStatus } from "@/apis/http-status";
 import { defineStore } from "pinia";
 import swal from "sweetalert2";
-import { inject } from "vue";
+import { inject, ref } from "vue";
 import { useRouter } from "vue-router";
 
 export const useUserStore = defineStore("userStore", () => {
@@ -13,9 +13,33 @@ export const useUserStore = defineStore("userStore", () => {
     const router = useRouter();
     const axios = inject("axios");
 
+    // 신분명이 결정되면 수정 예정
+    const statue = ref([
+        "신분1",
+        "신분2",
+        "신분3",
+        "신분4",
+        "신분5",
+        "신분6",
+        "신분7",
+        "신분9",
+        "신분10",
+    ]);
+
     /**
      * actions
      */
+    // 경험치를 어떤 기준으로 신분을 나눌 것인지 결정되면 수정 예정
+    function getstatue(experiencePoint) {
+        console.log("*****************경험치", experiencePoint);
+        console.log(
+            "*****************신분",
+            statue.value[experiencePoint / 100]
+        );
+
+        return statue.value[experiencePoint / 100];
+    }
+
     function checkPassword(originPassword, checkPassword) {
         // 비밀번호와 비밀번호 확인이 일치한지 확인
         if (originPassword === checkPassword) {
@@ -193,6 +217,7 @@ export const useUserStore = defineStore("userStore", () => {
     };
 
     return {
+        getstatue,
         checkPassword,
         checkDuplicate,
         signUp,
