@@ -1,26 +1,23 @@
 <script setup>
-import { ref, onMounted, watch, computed } from "vue";
 import { useGameStore } from "@/stores/runningGame/gameStore";
 import { storeToRefs } from "pinia";
-import { OpenVidu } from "openvidu-browser";
+import { computed, onMounted } from "vue";
 // 초기 세팅
 import { initDraw } from "@/stores/runningGame/init";
 
 // 카운트다운 & 타이머
-import { startCountdown, countdown } from "@/stores/runningGame/time";
+import { countdown, startCountdown } from "@/stores/runningGame/time";
 
 // 문제
 import {
-  loadQuestions,
   currentQuestion,
-  options,
   isCorrect,
-  updateQuestion,
+  loadQuestions,
+  options,
   questionCountDown,
+  updateQuestion,
 } from "@/stores/runningGame/question";
 
-const OV = new OpenVidu();
-const session = OV.initSession();
 const gameStore = useGameStore();
 const { zCoordinate } = storeToRefs(gameStore);
 
