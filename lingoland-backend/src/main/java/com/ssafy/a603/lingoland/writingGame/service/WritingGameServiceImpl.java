@@ -72,15 +72,12 @@ public class WritingGameServiceImpl implements WritingGameService {
 
 	@Override
 	public int[] start(String sessionId, WritingGameStartRequestDTO request) {
-		// TODO : 시작할 때 정보 제공하기, 어떤정보 받아? (우리 몇번 할거야, lingoland:fairyTale:session:{xxx} 10..)
 		String redisKey = "lingoland:fairyTale:session:" + sessionId;
 		try {
 			redisTemplate.opsForValue().set(redisKey, objectMapper.writeValueAsString(request));
 		} catch (JsonProcessingException e) {
 			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
 		}
-
-		// TODO : 줘야할 정보 있나? 백엔드에서 순서 결정해?
 		return randomNumList(request.numPart());
 	}
 
@@ -89,11 +86,18 @@ public class WritingGameServiceImpl implements WritingGameService {
 		log.info("Submitting story for session: {}", sessionId);
 		requestMap.putIfAbsent(sessionId, new ArrayList<>());
 		List<DrawingRequestDTO> requests = requestMap.get(sessionId);
+		requests.add(dto);
 
 		// TODO : dto에서 numpart 받지 말고 redis 에 저장된 numpart 꺼내오기
-
-		requests.add(dto);
-		if (requests.size() == dto.numPart()) {
+		String sessionInfoJson = (String)redisTemplate.opsForValue().get(sessionId);
+		WritingGameStartRequestDTO sessionInfo = null;
+		try {
+			sessionInfo = objectMapper.readValue(sessionInfoJson,
+				WritingGameStartRequestDTO.class);
+		} catch (JsonProcessingException e) {
+			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
+		}
+		if (requests.size() == sessionInfo.numPart()) {
 			log.info("All Member Submit Story!!!");
 			List<DrawingRequestDTO> collected = new ArrayList<>(requests);
 			requestMap.remove(sessionId);
