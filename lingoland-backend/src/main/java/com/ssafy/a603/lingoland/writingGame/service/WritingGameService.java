@@ -1,12 +1,13 @@
 package com.ssafy.a603.lingoland.writingGame.service;
 
+import java.util.List;
+
+import com.ssafy.a603.lingoland.fairyTale.entity.FairyTale;
 import com.ssafy.a603.lingoland.writingGame.dto.DrawingRequestDTO;
 import com.ssafy.a603.lingoland.writingGame.dto.WritingGameStartRequestDTO;
 
 public interface WritingGameService {
-	public int[] start(String sessionId, WritingGameStartRequestDTO request);
+	int[] start(String sessionId, WritingGameStartRequestDTO request);
 
-	public void submitStory(String sessionId, DrawingRequestDTO dto);
-
-	public void end();
+	List<FairyTale> submitStory(String sessionId, DrawingRequestDTO dto);
 }

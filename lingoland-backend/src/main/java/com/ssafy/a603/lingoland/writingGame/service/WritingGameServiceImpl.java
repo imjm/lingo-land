@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.a603.lingoland.fairyTale.entity.FairyTale;
 import com.ssafy.a603.lingoland.global.error.entity.ErrorCode;
 import com.ssafy.a603.lingoland.global.error.exception.BaseException;
 import com.ssafy.a603.lingoland.global.error.exception.InvalidInputException;
@@ -81,7 +82,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 	}
 
 	@Override
-	public void submitStory(String sessionId, DrawingRequestDTO dto) {
+	public List<FairyTale> submitStory(String sessionId, DrawingRequestDTO dto) {
 		log.info("Submitting story for session: {}", sessionId);
 		requestMap.putIfAbsent(sessionId, new ArrayList<>());
 		List<DrawingRequestDTO> requests = requestMap.get(sessionId);
@@ -100,17 +101,33 @@ public class WritingGameServiceImpl implements WritingGameService {
 			log.info("All members have submitted stories for session: {}", sessionId);
 			List<DrawingRequestDTO> collected = new ArrayList<>(requests);
 			requestMap.remove(sessionId);
-			CompletableFuture.runAsync(() -> processStoriesAsync(sessionId, collected));
+
+			CompletableFuture<List<FairyTale>> future = CompletableFuture.runAsync(
+					() -> processStoriesAsync(sessionId, collected, sessionInfo))
+				.thenApply(voidResult -> {
+					if (requests.get(0).order() == sessionInfo.maxTurn()) {
+						log.info("Final tasks after all stories are processed for session: {}", sessionId);
+						return end(collected);
+					} else {
+						return new ArrayList<FairyTale>();
+					}
+				});
+
+			return future.join();
+		} else {
+			return new ArrayList<>();
 		}
 	}
 
-	@Override
-	public void end() {
+	@Async("sampleExecutor")
+	private List<FairyTale> end(List<DrawingRequestDTO> requests) {
 		// TODO : 끝날 때 뭐할거야? redis 정보 postgresql에 넣기, redis에
+		return List.of();
 	}
 
 	@Async("sampleExecutor")
-	public void processStoriesAsync(String sessionId, List<DrawingRequestDTO> requests) {
+	public void processStoriesAsync(String sessionId, List<DrawingRequestDTO> requests,
+		WritingGameStartRequestDTO sessionInfo) {
 		log.info("Processing stories asynchronously for session: {}", sessionId);
 		List<CompletableFuture<Void>> futures = new ArrayList<>();
 		for (DrawingRequestDTO request : requests) {
@@ -129,10 +146,6 @@ public class WritingGameServiceImpl implements WritingGameService {
 					.build();
 
 				try {
-					String sessionInfoJson = (String)redisTemplate.opsForValue()
-						.get("lingoland:fairyTale:session:" + sessionId);
-					WritingGameStartRequestDTO sessionInfo = objectMapper.readValue(sessionInfoJson,
-						WritingGameStartRequestDTO.class);
 					if (request.order() == 1) {
 						List<Story> lists = new ArrayList<>();
 						lists.add(node);
@@ -147,9 +160,6 @@ public class WritingGameServiceImpl implements WritingGameService {
 						redisTemplate.opsForValue()
 							.set(redisStoryKey, objectMapper.writeValueAsString(existingStories));
 						log.info("Updated story list in Redis with key: {}", redisStoryKey);
-					}
-					if (request.order() == sessionInfo.maxTurn()) {
-						end();
 					}
 				} catch (JsonProcessingException e) {
 					log.error("Error processing JSON", e);
