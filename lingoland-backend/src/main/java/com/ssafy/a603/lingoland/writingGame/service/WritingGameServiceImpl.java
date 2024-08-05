@@ -73,9 +73,11 @@ public class WritingGameServiceImpl implements WritingGameService {
 	@Override
 	public int[] start(String sessionId, WritingGameStartRequestDTO request) {
 		String redisKey = "lingoland:fairyTale:session:" + sessionId;
+		log.info("Starting game for session: {}", sessionId);
 		try {
 			redisTemplate.opsForValue().set(redisKey, objectMapper.writeValueAsString(request));
 		} catch (JsonProcessingException e) {
+			log.error("Failed to serialize WritingGameStartRequestDTO", e);
 			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
 		}
 		return randomNumList(request.numPart());
@@ -87,18 +89,18 @@ public class WritingGameServiceImpl implements WritingGameService {
 		requestMap.putIfAbsent(sessionId, new ArrayList<>());
 		List<DrawingRequestDTO> requests = requestMap.get(sessionId);
 		requests.add(dto);
+		log.debug("Added DrawingRequestDTO to session: {}, current size: {}", sessionId, requests.size());
 
-		// TODO : dto에서 numpart 받지 말고 redis 에 저장된 numpart 꺼내오기
-		String sessionInfoJson = (String)redisTemplate.opsForValue().get(sessionId);
-		WritingGameStartRequestDTO sessionInfo = null;
+		String sessionInfoJson = (String)redisTemplate.opsForValue().get("lingoland:fairyTale:session:" + sessionId);
+		WritingGameStartRequestDTO sessionInfo;
 		try {
-			sessionInfo = objectMapper.readValue(sessionInfoJson,
-				WritingGameStartRequestDTO.class);
+			sessionInfo = objectMapper.readValue(sessionInfoJson, WritingGameStartRequestDTO.class);
 		} catch (JsonProcessingException e) {
+			log.error("Failed to deserialize WritingGameStartRequestDTO", e);
 			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
 		}
 		if (requests.size() == sessionInfo.numPart()) {
-			log.info("All Member Submit Story!!!");
+			log.info("All members have submitted stories for session: {}", sessionId);
 			List<DrawingRequestDTO> collected = new ArrayList<>(requests);
 			requestMap.remove(sessionId);
 			CompletableFuture.runAsync(() -> processStoriesAsync(sessionId, collected));
@@ -112,7 +114,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 
 	@Async("sampleExecutor")
 	public void processStoriesAsync(String sessionId, List<DrawingRequestDTO> requests) {
-		log.info("Processing stories asynchronously");
+		log.info("Processing stories asynchronously for session: {}", sessionId);
 		List<CompletableFuture<Void>> futures = new ArrayList<>();
 		for (DrawingRequestDTO request : requests) {
 			CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
@@ -121,10 +123,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 				log.info("Translated story: {}", translated);
 				String imgUrl = generateImage(translated);
 				log.info("Generated image URL: {}", imgUrl);
-
-				// TODO : 넘어온 base64를 저장을 어디에? 일단 저장해...
 				decodeBase64ToFile(imgUrl, "asdf.png");
-
 				String redisRoomKey = "lingoland:fairyTale:session:" + sessionId;
 				String redisStoryKey = "lingoland:fairyTale:" + request.key();
 				Story node = Story.builder()
@@ -133,10 +132,10 @@ public class WritingGameServiceImpl implements WritingGameService {
 					.build();
 
 				try {
-					String sessionInfoJson = (String)redisTemplate.opsForValue().get(sessionId);
+					String sessionInfoJson = (String)redisTemplate.opsForValue()
+						.get("lingoland:fairyTale:session:" + sessionId);
 					WritingGameStartRequestDTO sessionInfo = objectMapper.readValue(sessionInfoJson,
 						WritingGameStartRequestDTO.class);
-					// TODO : 이사람이 첫번째인지 아는 방법
 					if (request.order() == 1) {
 						List<Story> lists = new ArrayList<>();
 						lists.add(node);
@@ -168,6 +167,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 	}
 
 	private String translate2English3(String story) {
+		log.info("Translating story using custom API");
 		RestClient myRestClient = RestClient.create();
 		String json = myRestClient.post()
 			.uri("http://localhost:11434/api/generate")
@@ -177,17 +177,21 @@ public class WritingGameServiceImpl implements WritingGameService {
 		try {
 			JsonNode jsonNode = objectMapper.readTree(json);
 			String response = jsonNode.get("response").asText();
+			log.info("Translation result: {}", response);
 			return response;
 		} catch (JsonProcessingException e) {
+			log.error("Failed to process JSON response from translation API", e);
 			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
 		}
 	}
 
 	private String translate2English2(String story) {
+		log.info("Translating story using DeepL");
 		try {
 			TextResult result = translator.translateText(story, "KO", "EN-US");
 			return result.getText();
 		} catch (Exception e) {
+			log.error("Translation failed with DeepL", e);
 			throw new InvalidInputException(ErrorCode.INVALID_INPUT_VALUE);
 		}
 	}
