@@ -107,7 +107,7 @@ public class GroupServiceImpl implements GroupService {
 		if (group.getLeader().getId() != customUserDetails.getMemberId()) {
 			log.error("Member with ID: {} is not the leader of group ID: {}", customUserDetails.getMemberId(),
 				groupId);
-			throw new ForbiddenException(ErrorCode.MEMBER_FORBIDDEN);
+			throw new ForbiddenException(ErrorCode.GROUP_NOT_LEADER);
 		}
 
 		group.updateGroup(request);
@@ -126,7 +126,7 @@ public class GroupServiceImpl implements GroupService {
 		);
 		if (group.getLeader().getId() != customUserDetails.getMemberId()) {
 			log.error("Member with ID: {} is not the leader of group ID: {}", customUserDetails.getMemberId(), groupId);
-			throw new ForbiddenException(ErrorCode.MEMBER_FORBIDDEN);
+			throw new ForbiddenException(ErrorCode.GROUP_NOT_LEADER);
 		}
 		group.delete();
 		log.info("Group with ID: {} deleted successfully.", groupId);
@@ -196,6 +196,7 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	private void addMemberToGroup(Group group, Member member, String description) {
+		log.info("add member {} to group {}", member.getId(), group.getId());
 		GroupMemberId groupMemberId = GroupMemberId.builder()
 			.groupId(group.getId())
 			.memberId(member.getId())

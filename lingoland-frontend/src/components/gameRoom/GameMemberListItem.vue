@@ -24,7 +24,21 @@ const userStore = useUserStore();
                     />
                 </v-col>
                 <v-col cols="8">
-                    <h3 class="align-center">{{ userStore.getstatue(member.experiencePoint) }}</h3>
+                    <h3 class="align-center">
+                        {{ userStore.getstatue(member.experiencePoint) }}
+                    </h3>
+                    <v-progress-linear
+                        rounded
+                        height="25"
+                        color="primary"
+                        :model-value="member.experiencePoint"
+                    >
+                        <template v-slot:default="{ value }">
+                            <div class="text-button">
+                                {{ Math.ceil(value) }}%
+                            </div>
+                        </template>
+                    </v-progress-linear>
                 </v-col>
             </v-row>
         </v-container>

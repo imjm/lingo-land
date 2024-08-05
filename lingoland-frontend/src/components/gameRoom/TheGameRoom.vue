@@ -6,8 +6,11 @@ import GameMemberList from "@/components/gameRoom/GameMemberList.vue";
 import { useGameRoomStore } from "@/stores/gameRoom";
 import { useUserStore } from "@/stores/user";
 import { OpenVidu } from "openvidu-browser";
+import swal from "sweetalert2";
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+
+window.Swal = swal;
 
 const route = useRoute();
 const router = useRouter();
@@ -123,6 +126,11 @@ function joinRoom(sessionId) {
 async function writeClipboardText(text) {
     try {
         await navigator.clipboard.writeText(text);
+        Swal.fire({
+            title: "방 코드가 복사되었습니다.",
+            icon: "success",
+            confirmButtonText: "완료",
+        });
     } catch (error) {
         console.error(error.message);
     }

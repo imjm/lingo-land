@@ -2,7 +2,7 @@
 import { ref, onMounted, watch, computed } from "vue";
 import { useGameStore } from "@/stores/runningGame/gameStore";
 import { storeToRefs } from "pinia";
-import {OpenVidu} from "openvidu-browser";
+import { OpenVidu } from "openvidu-browser";
 // 초기 세팅
 import { initDraw } from "@/stores/runningGame/init";
 
@@ -31,6 +31,7 @@ onMounted(() => {
   startCountdown();
   initDraw();
   loadQuestions(); // 문제 로드
+
   setInterval(() => {
     updateQuestion();
     console.log("문제 부름");
@@ -53,6 +54,7 @@ onMounted(() => {
               rounded
               height="25"
               color="primary"
+              font-color="white"
               :model-value="zDivided"
             >
               <template v-slot:default="{ value }">
@@ -124,10 +126,11 @@ onMounted(() => {
 
 #progress-bar {
   position: absolute;
-  bottom: 20px;
+  bottom: 60px;
   left: 50%;
   transform: translateX(-50%);
   width: 80%;
+  color: white;
 }
 #quiz-container {
   position: absolute;
