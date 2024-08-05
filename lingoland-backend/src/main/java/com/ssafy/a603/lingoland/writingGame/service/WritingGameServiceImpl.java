@@ -52,7 +52,6 @@ public class WritingGameServiceImpl implements WritingGameService {
 		this.redisTemplate = redisTemplate;
 		this.requestMap = new ConcurrentHashMap<>();
 		this.restClient = RestClient.builder()
-			.baseUrl("https://api.kakaobrain.com")
 			.defaultStatusHandler(HttpStatusCode::is4xxClientError,
 				(request, response) -> {
 					log.error("Client Error Code={}", response.getStatusCode());
@@ -63,8 +62,6 @@ public class WritingGameServiceImpl implements WritingGameService {
 					log.error("Server Error Code={}", response.getStatusCode());
 					log.error("Server Error Message={}", new String(response.getBody().readAllBytes()));
 				})
-			.defaultHeader("Authorization", "KakaoAK " + restApiKey)
-			.defaultHeader("Content-Type", "application/json")
 			.build();
 		this.restApiKey = restApiKey;
 		this.translator = new Translator(deepLApiKey);
@@ -167,9 +164,8 @@ public class WritingGameServiceImpl implements WritingGameService {
 	}
 
 	private String translate2English3(String story) {
-		log.info("Translating story using custom API");
-		RestClient myRestClient = RestClient.create();
-		String json = myRestClient.post()
+		log.info("Translating story using Allama3.1");
+		String json = restClient.post()
 			.uri("http://localhost:11434/api/generate")
 			.body(new AllamaDTO(story))
 			.retrieve()
@@ -207,7 +203,9 @@ public class WritingGameServiceImpl implements WritingGameService {
 		}
 
 		KoGPTReturn koGPTReturn = restClient.post()
-			.uri("v1/inference/kogpt/generation")
+			.uri("https://api.kakaobrain.com/v1/inference/kogpt/generation")
+			.header("Authorization", "KakaoAK " + restApiKey)
+			.header("Content-Type", "application/json")
 			.body(new KoGPTDTO(story))
 			.retrieve()
 			.body(KoGPTReturn.class);
@@ -228,7 +226,9 @@ public class WritingGameServiceImpl implements WritingGameService {
 		log.info("generate image using text {}", translated);
 		KarloReturn karloReturn = null;
 		karloReturn = restClient.post()
-			.uri("v2/inference/karlo/t2i")
+			.uri("https://api.kakaobrain.com/v2/inference/karlo/t2i")
+			.header("Authorization", "KakaoAK " + restApiKey)
+			.header("Content-Type", "application/json")
 			.body(new KarloDTO(translated))
 			.retrieve()
 			.body(KarloReturn.class);
