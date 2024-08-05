@@ -12,6 +12,8 @@ RUN gradle dependencies --no-daemon
 
 COPY . /app
 
+COPY ../application-prod.yml /app/src/main/resources/application.yml
+
 # 빌드해서 jar 파일 생성
 RUN gradle clean build --no-daemon -x test
 
