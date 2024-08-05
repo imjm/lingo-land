@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.a603.lingoland.global.error.entity.ErrorCode;
+import com.ssafy.a603.lingoland.global.error.exception.BaseException;
 import com.ssafy.a603.lingoland.global.error.exception.InvalidInputException;
 import com.ssafy.a603.lingoland.writingGame.dto.AllamaDTO;
 import com.ssafy.a603.lingoland.writingGame.dto.DrawingRequestDTO;
@@ -76,7 +77,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 		try {
 			redisTemplate.opsForValue().set(redisKey, objectMapper.writeValueAsString(request));
 		} catch (JsonProcessingException e) {
-			throw new InvalidInputException(ErrorCode.INVALID_INPUT_VALUE);
+			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
 		}
 
 		// TODO : 줘야할 정보 있나? 백엔드에서 순서 결정해?
@@ -149,7 +150,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 					}
 				} catch (JsonProcessingException e) {
 					log.error("Error processing JSON", e);
-					throw new InvalidInputException(ErrorCode.INVALID_INPUT_VALUE);
+					throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
 				}
 			});
 			futures.add(future);
@@ -171,7 +172,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 			String response = jsonNode.get("response").asText();
 			return response;
 		} catch (JsonProcessingException e) {
-			throw new InvalidInputException(ErrorCode.INVALID_INPUT_VALUE);
+			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
 		}
 	}
 
@@ -191,7 +192,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 		try {
 			log.info("return : {}", objectMapper.writeValueAsString(new KoGPTDTO(story)));
 		} catch (JsonProcessingException e) {
-			throw new InvalidInputException(ErrorCode.INVALID_INPUT_VALUE);
+			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
 		}
 
 		KoGPTReturn koGPTReturn = restClient.post()
@@ -203,7 +204,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 		try {
 			log.info("return : {}", objectMapper.writeValueAsString(koGPTReturn));
 		} catch (JsonProcessingException e) {
-			throw new InvalidInputException(ErrorCode.INVALID_INPUT_VALUE);
+			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
 		}
 		if (koGPTReturn != null && koGPTReturn.generations().length > 0) {
 			return koGPTReturn.generations()[0].text();
