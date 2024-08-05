@@ -40,6 +40,6 @@ kakao:
   api:
     key: ${KAKAO_REST_KEY}
 
-    deepL:
-      api:
-        key: ${DEEPL_API_KEY}
+deepL:
+  api:
+    key: ${DEEPL_API_KEY}
