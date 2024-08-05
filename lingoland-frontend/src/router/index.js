@@ -51,12 +51,13 @@ const router = createRouter({
         {
           path: ":roomId/running-game",
           name: "runningGame",
-          component: () => import("@/views/RunningGameView.vue"),
+          component: () => import("@/views/runningGame/RunningGameView.vue"),
         },
         {
           path: ":roomId/running-game/result",
           name: "runningGameResult",
-          component: () => import("@/views/RunningGameResultView.vue"),
+          component: () =>
+            import("@/views/runningGame/RunningGameResultView.vue"),
         },
       ],
     },
