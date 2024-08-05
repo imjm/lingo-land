@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.ssafy.a603.lingoland.global.error.entity.ErrorCode;
 import com.ssafy.a603.lingoland.global.error.entity.ErrorResponse;
 import com.ssafy.a603.lingoland.global.error.exception.BaseException;
+import com.ssafy.a603.lingoland.global.error.exception.ForbiddenException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,6 +21,14 @@ public class GlobalExeptionHandler {
 	protected ResponseEntity<ErrorResponse> handle(HttpRequestMethodNotSupportedException e) {
 		log.error("HttpRequestMethodNotSupportedException", e);
 		return createErrorResponseEntity(ErrorCode.METHOD_NOT_ALLOWED);
+	}
+
+	protected ResponseEntity<ErrorResponse> handle(ForbiddenException e) {
+		log.error("Forbidden exception to InvalidInputException");
+		if (e.getErrorCode() == ErrorCode.GROUP_NOT_LEADER) {
+			return createErrorResponseEntity(ErrorCode.INVALID_INPUT_VALUE, ErrorCode.GROUP_NOT_LEADER.getMessage());
+		}
+		return createErrorResponseEntity(ErrorCode.INVALID_INPUT_VALUE);
 	}
 
 	@ExceptionHandler(BaseException.class)
@@ -38,6 +47,12 @@ public class GlobalExeptionHandler {
 	private ResponseEntity<ErrorResponse> createErrorResponseEntity(ErrorCode errorCode) {
 		return new ResponseEntity<>(
 			ErrorResponse.of(errorCode),
+			errorCode.getStatus());
+	}
+
+	private ResponseEntity<ErrorResponse> createErrorResponseEntity(ErrorCode errorCode, String message) {
+		return new ResponseEntity<>(
+			ErrorResponse.of(errorCode, message),
 			errorCode.getStatus());
 	}
 }
