@@ -31,16 +31,19 @@ onMounted(() => {
           <v-col>
             <h1 class="ml-10">달리기 결과</h1>
           </v-col>
- 
         </v-row>
-        <v-expansion-panels class="d-flex pa-4 member-list" variant="popout" width="100">
+        <v-expansion-panels
+          class="d-flex pa-4 member-list"
+          variant="popout"
+          width="100"
+        >
           <v-expansion-panel
             v-for="(member, i) in groupMemberStore.members"
             :key="i"
             hide-actions
           >
             <!-- 아직 변수 값을 몰라 임의로 작성하였습니다. 데이터는 store에 임의로 작성하여 구성했습니다. -->
-            {{ i+1 }}등<RankListItem :member="member" />
+            {{ i + 1 }}등<RankListItem :member="member" />
           </v-expansion-panel>
         </v-expansion-panels>
       </v-card>
@@ -99,8 +102,6 @@ onMounted(() => {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Optional: shadow for better visibility */
 }
 
-
-
 #progress-bar {
   position: absolute;
   bottom: 20px;
@@ -109,14 +110,12 @@ onMounted(() => {
   width: 80%;
 }
 
-
-
 button {
   margin: 5px;
   padding: 10px 20px;
   font-size: 16px;
   color: white;
-  background-color: rgb(255, 255, 255,0.7),; /* Green color */
+  background-color: rgb(255, 255, 255, 0.7); /* Green color */
   border: none;
   border-radius: 5px;
   cursor: pointer;
