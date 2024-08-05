@@ -6,7 +6,7 @@ import { httpStatus } from "./http-status.js";
 const { VITE_SERVER_URL, VITE_LOCAL_URL } = import.meta.env;
 
 export const instance = axios.create({
-    baseURL: VITE_LOCAL_URL,
+    baseURL: VITE_SERVER_URL,
 });
 
 // Request 발생 시 적용할 기본 속성 설정.

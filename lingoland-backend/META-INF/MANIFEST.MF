@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Main-Class: com.ssafy.a603.lingoland.LingolandApplication
+
