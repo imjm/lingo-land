@@ -107,7 +107,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 
 	@Override
 	public void end() {
-		// TODO : 끝날 때 뭐할거야? redis 정보 postgresql에 넣기,
+		// TODO : 끝날 때 뭐할거야? redis 정보 postgresql에 넣기, redis에
 	}
 
 	@Async("sampleExecutor")
@@ -137,7 +137,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 					WritingGameStartRequestDTO sessionInfo = objectMapper.readValue(sessionInfoJson,
 						WritingGameStartRequestDTO.class);
 					// TODO : 이사람이 첫번째인지 아는 방법
-					if (request.isFirst()) {
+					if (request.order() == 1) {
 						List<Story> lists = new ArrayList<>();
 						lists.add(node);
 						redisTemplate.opsForValue().set(redisStoryKey, objectMapper.writeValueAsString(lists));
@@ -151,6 +151,9 @@ public class WritingGameServiceImpl implements WritingGameService {
 						redisTemplate.opsForValue()
 							.set(redisStoryKey, objectMapper.writeValueAsString(existingStories));
 						log.info("Updated story list in Redis with key: {}", redisStoryKey);
+					}
+					if (request.order() == sessionInfo.maxTurn()) {
+						end();
 					}
 				} catch (JsonProcessingException e) {
 					log.error("Error processing JSON", e);
