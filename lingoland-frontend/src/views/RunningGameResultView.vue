@@ -33,7 +33,7 @@ onMounted(() => {
           </v-col>
  
         </v-row>
-        <v-expansion-panels class="d-flex pa-4 member-list" variant="popout" width="200">
+        <v-expansion-panels class="d-flex pa-4 member-list" variant="popout" width="100">
           <v-expansion-panel
             v-for="(member, i) in groupMemberStore.members"
             :key="i"
@@ -79,7 +79,7 @@ onMounted(() => {
   position: absolute;
   top: 70px; /* Adjust vertical position */
   left: 70px; /* Adjust horizontal position */
-  width: 800px; /* Width of the leaderboard card */
+  width: 500px; /* Width of the leaderboard card */
   background-color: rgba(172, 204, 124, 0.5); /* Semi-transparent background */
   z-index: 10; /* Ensure it's above the canvas */
   padding: 10px; /* Add padding if needed */
