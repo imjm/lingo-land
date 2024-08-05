@@ -1,3 +1,15 @@
+<script setup>
+import { ref } from "vue";
+import CountdownTimer from "./CountdownTimer.vue";
+import SubmitButton from "../common/SubmitButton.vue";
+
+const textareaValue = ref("");
+
+const handleTimesUp = () => {
+    console.log("타이머가 종료되었습니다. 텍스트 내용:", textareaValue.value);
+};
+</script>
+
 <template>
     <v-card width="400">
         <CountdownTimer @timesUp="handleTimesUp" />
@@ -12,18 +24,4 @@
     </v-card>
 </template>
 
-<script setup>
-import { ref } from "vue";
-import CountdownTimer from "./CountdownTimer.vue";
-import SubmitButton from "../common/SubmitButton.vue";
-
-const textareaValue = ref("");
-
-const handleTimesUp = () => {
-    console.log("타이머가 종료되었습니다. 텍스트 내용:", textareaValue.value);
-};
-</script>
-
-<style scoped>
-
-</style>
+<style scoped></style>
