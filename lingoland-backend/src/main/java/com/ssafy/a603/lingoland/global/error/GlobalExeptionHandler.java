@@ -23,6 +23,7 @@ public class GlobalExeptionHandler {
 		return createErrorResponseEntity(ErrorCode.METHOD_NOT_ALLOWED);
 	}
 
+	@ExceptionHandler(ForbiddenException.class)
 	protected ResponseEntity<ErrorResponse> handle(ForbiddenException e) {
 		log.error("Forbidden exception to InvalidInputException");
 		if (e.getErrorCode() == ErrorCode.GROUP_NOT_LEADER) {
