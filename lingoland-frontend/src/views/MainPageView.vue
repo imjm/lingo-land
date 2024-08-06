@@ -5,9 +5,11 @@ import PageNavigationButton from "@/components/common/PageNavigationButton.vue";
 import Profile from "@/components/common/Profile.vue";
 import RankList from "@/components/rank/RankList.vue";
 import { useGameRoomStore } from "@/stores/gameRoom";
-import { ref } from "vue";
+import { useGameStore } from "@/stores/runningGame/gameStore";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
+const gameStore = useGameStore();
 const gameRoomStore = useGameRoomStore();
 const router = useRouter();
 
@@ -30,6 +32,35 @@ function joinRoom() {
         params: { roomId: roomCode.value },
     });
 }
+
+onMounted(() => {
+    const reesult = {
+        problemList: [
+            {
+                problemId: 1,
+                answer: 2,
+            },
+            {
+                problemId: 2,
+                answer: 2,
+            },
+            {
+                problemId: 3,
+                answer: 3,
+            },
+            {
+                problemId: 4,
+                answer: 2,
+            },
+            {
+                problemId: 5,
+                answer: 3,
+            },
+        ],
+    };
+
+    gameStore.saveResult(reesult);
+});
 </script>
 
 <template>

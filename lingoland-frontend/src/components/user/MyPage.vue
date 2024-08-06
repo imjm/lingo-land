@@ -3,32 +3,28 @@ import GenericButton from "@/components/common/GenericButton.vue";
 import PageNavigationButton from "@/components/common/PageNavigationButton.vue";
 import Profile from "@/components/common/Profile.vue";
 import incorrectDialog from "@/components/incorrect/IncorrectDialog.vue";
-import { useGroupStore } from "@/stores/groups";
-import GroupList from "../group/GroupList.vue";
-
 import router from "@/router";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
+import GroupList from "../group/GroupList.vue";
+import { useProblemStore } from "@/stores/problem";
 
-const groupStore = useGroupStore();
+const problemStore = useProblemStore();
 
-const incorrectList = ref([
-    "문제 1",
-    "문제 2",
-    "문제 3",
-    "문제 4",
-    "문제 5",
-    "문제 6",
-    "문제 7",
-    "문제 8",
-    "문제 9",
-    "문제 10",
-    // 데이터 받아오기
-]);
-
+const incorrectList = ref();
 
 function clickTales() {
     router.push({ name: "bookList" });
 }
+
+onMounted(() => {
+    const problemList = problemStore.getMyWrongProblems();
+
+    problemList.then((getvalue) => {
+        incorrectList.value = getvalue;
+
+        console.log(incorrectList.value)
+    });
+});
 </script>
 
 <template>

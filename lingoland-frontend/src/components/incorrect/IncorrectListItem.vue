@@ -10,15 +10,28 @@ const props = defineProps({
 <template>
     <v-list-item-content>
         <v-container class="border-md">
-           
-            <v-row >
+            <v-row class="d-flex flex-column">
                 <v-col>
-                    <div class="text-h4">incorrect.question</div>
-                    <div class="text-h5">incorrect.answer</div>
-                    <div class="text-h6">incorrect.desc</div>
+                    <div class="text-h4">{{ incorrect.problem }}</div>
+                </v-col>
+                <v-col>
+                    <div class="text-h6">
+                        문제 해설: {{ incorrect.explanation }}
+                    </div>
+                </v-col>
+                <v-col>
+                    <div class="text-h5">1</div>
+                </v-col>
+                <v-col>
+                    <div class="text-h5">2</div>
+                </v-col>
+                <v-col>
+                    <div class="text-h5">3</div>
+                </v-col>
+                <v-col>
                     <div class="d-flex justify-end">
                         <GenericButton
-                            :style="{   
+                            :style="{
                                 backgroundColor: '#4C4637',
                                 color: 'white',
                             }"
@@ -34,7 +47,7 @@ const props = defineProps({
 <style scoped>
 .border-md {
     background-color: #fff1c2;
-    border-radius : 8px;
-    margin : 8px 0px;
+    border-radius: 8px;
+    margin: 8px 0px;
 }
 </style>
