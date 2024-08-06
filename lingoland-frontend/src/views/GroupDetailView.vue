@@ -39,14 +39,16 @@ onMounted(async () => {
 
 function modify() {
     // 그룹장인 경우만 수정되도록
-    groupStore.myGroup.value = groupInfo.value;
-    router.push({ name: "groupModify" });
+    router.push({
+        name: "groupModify",
+        params: { groupId: route.params.groupId },
+    });
+    console.log('나는 잘됨')
 }
 </script>
 
 <template>
     <v-main class="d-flex mt-10 justify-center">
-    
         <v-row>
             <v-col cols="2"> </v-col>
             <v-col cols="8">
