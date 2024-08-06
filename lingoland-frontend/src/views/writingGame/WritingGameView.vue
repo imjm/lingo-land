@@ -1,13 +1,7 @@
 <script setup>
-import WritingGameSetDialog from "@/components/writingGame/WritingGameSetDialog.vue";
 import WritingInput from "@/components/writingGame/WritingInput.vue";
 import WritingList from "@/components/writingGame/WritingList.vue";
-import { ref } from "vue";
 
-const dialog = ref({
-    totalpage: Number,
-    isOpen: true,
-});
 </script>
 
 <template>
@@ -26,8 +20,6 @@ const dialog = ref({
                 <WritingInput />
             </v-col>
         </v-row>
-
-        <WritingGameSetDialog v-model="dialog" />
     </v-main>
 </template>
 
