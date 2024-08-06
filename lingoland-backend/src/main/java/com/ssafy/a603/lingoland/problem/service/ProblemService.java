@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ProblemService {
 
     private final ProblemRepository problemRepository;
@@ -53,6 +54,11 @@ public class ProblemService {
         return problemMembers.stream()
                 .map(this::mapToGetWrongProblemsDto)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteWrongProblems(Integer problemId, CustomUserDetails customUserDetails) {
+        problemMemberRepository.deleteByMemberIdAndProblemId(problemId, customUserDetails.getMemberId());
     }
 
     private void updateProblemMemberAndProblem(Problem problem, ProblemMember problemMember, int answer) {
