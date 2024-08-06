@@ -1,14 +1,15 @@
 <script setup>
 import sampleImg from "@/assets/sampleImg.jpg";
-import img1 from "@/assets/달리기.jpg";
-import GameButton from "@/components/gameRoom/GameButton.vue";
+import runningImg from "@/assets/달리기.jpg";
 import GameMemberList from "@/components/gameRoom/GameMemberList.vue";
 import { useGameRoomStore } from "@/stores/gameRoom";
 import { useUserStore } from "@/stores/user";
 import { OpenVidu } from "openvidu-browser";
-import swal from "sweetalert2";
+import { default as swal, default as Swal } from "sweetalert2";
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import GenericButton from "../common/GenericButton.vue";
+import GenericInput from "../common/GenericInput.vue";
 
 window.Swal = swal;
 
@@ -17,6 +18,8 @@ const router = useRouter();
 const userStore = useUserStore();
 
 const gameRoomStore = useGameRoomStore();
+
+const pageCount = ref();
 
 const OV = new OpenVidu();
 const session = OV.initSession();
@@ -90,6 +93,17 @@ const startRunningGame = () => {
 };
 
 const startWritingGame = () => {
+    if (!pageCount.value || pageCount.value <= 0) {
+        Swal.fire({
+            title: "한 페이지 이상 입력하세요",
+            icon: "error",
+        });
+
+        return;
+    }
+
+    
+
     // 시그널 수신
     session
         .signal({
@@ -157,19 +171,87 @@ onMounted(() => {
                         class="d-flex justify-space-evenly"
                         style="height: 65vh"
                     >
-                        <GameButton
-                            @click-event="startRunningGame"
-                            :img="img1"
-                            name="달리기"
-                            desc="문해력 문제를 맞추며 달려라!"
-                        ></GameButton>
+                        <v-card
+                            class="d-flex justify-center align-start"
+                            width="40%"
+                            height="90%"
+                            border-radius="1%"
+                            box-shadow="7px 7px 5px rgba(0, 0, 0, 0.25)"
+                            @click="startRunningGame"
+                        >
+                            <v-row
+                                class="d-flex justify-center align-center flex-column"
+                            >
+                                <v-col>
+                                    <v-img
+                                        class="ma-3 mt-10"
+                                        :src="runningImg"
+                                    ></v-img>
+                                </v-col>
+                                <v-col
+                                    class="d-flex justify-center align-center"
+                                >
+                                    <div height="10%">달리기</div>
+                                </v-col>
+                                <v-col
+                                    class="d-flex justify-center align-center"
+                                >
+                                    <div style="font-size: large">
+                                        문해력 문제를 맞추며 달려라!
+                                    </div>
+                                </v-col>
+                            </v-row>
+                        </v-card>
 
-                        <GameButton
-                            @click-event="startWritingGame"
-                            :img="sampleImg"
-                            name="동화만들기"
-                            desc="글을 잘 쓰든 말든!!!!!!!!"
-                        ></GameButton>
+                        <v-card
+                            class="d-flex justify-center align-start"
+                            width="40%"
+                            height="90%"
+                            border-radius="1%"
+                            box-shadow="7px 7px 5px rgba(0, 0, 0, 0.25)"
+                        >
+                            <v-row
+                                class="d-flex justify-center align-center flex-column"
+                            >
+                                <v-col>
+                                    <v-img
+                                        class="ma-3 mt-10"
+                                        :src="sampleImg"
+                                    ></v-img>
+                                </v-col>
+                                <v-col
+                                    class="d-flex justify-center align-center"
+                                >
+                                    <div height="10%">동화만들기</div>
+                                </v-col>
+                                <v-col
+                                    class="d-flex justify-center align-center"
+                                >
+                                    <div style="font-size: large">
+                                        글을 잘 쓰든 말든!!!!!!!!
+                                    </div>
+                                </v-col>
+                                <v-col>
+                                    <GenericInput
+                                        v-model="pageCount"
+                                        hint="페이지 수를 입력하세요"
+                                        class="mx-2"
+                                        type="number"
+                                        min="1"
+                                        max="10"
+                                    />
+                                </v-col>
+                                <v-col
+                                    class="d-flex justify-center align-center"
+                                >
+                                    <GenericButton
+                                        width="90%"
+                                        data="시작하기"
+                                        @click-event="startWritingGame"
+                                    />
+                                </v-col>
+                            </v-row>
+                        </v-card>
                     </div>
 
                     <div class="d-flex justify-space-evenly">
