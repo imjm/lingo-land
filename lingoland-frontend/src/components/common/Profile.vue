@@ -13,6 +13,7 @@ const userProfile = ref({
     nickname: "",
     profileImage: null,
     experiencePoint: 0,
+    rank: "",
 });
 
 function selectItem(event) {
@@ -33,6 +34,7 @@ onMounted(() => {
     profile.then((getValue) => {
         userProfile.value.nickname = getValue.nickname;
         userProfile.value.experiencePoint = getValue.experiencePoint;
+        userProfile.value.rank = getValue.rank;
 
         if (getValue.profileImage === null) {
             userProfile.value.profileImage = sampleImage;
@@ -44,7 +46,12 @@ onMounted(() => {
 </script>
 
 <template>
-    <v-card width="auto" height="auto" class="d-flex align-center" max-height="700">
+    <v-card
+        width="auto"
+        height="auto"
+        class="d-flex align-center"
+        max-height="700"
+    >
         <v-row class="d-flex flex-column ma-6">
             <v-col class="d-flex justify-end">
                 <v-select
@@ -66,7 +73,7 @@ onMounted(() => {
             <v-col
                 class="d-flex align-center justify-center text-h4 font-weight-bold my-3"
             >
-                신분
+                {{ userProfile.rank }}
             </v-col>
             <v-col class="d-flex align-center justify-center text-h5 my-1">
                 <v-progress-linear
