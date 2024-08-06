@@ -9,11 +9,18 @@ const questions = ref([]);
 const currentQuestion = ref(null);
 const options = ref([]);
 const isCorrect = ref(null);
+const gameRanks = ref([]);
 
 const openviduStore = useOpenviduStore();
 const { session } = openviduStore;
 const { participants } = storeToRefs(openviduStore);
-
+for (const participant of participants.value) {
+  gameRanks.value.push({
+    connectionId: participant.connectionId,
+    userId: participant.userId,
+    score: 0,
+  });
+}
 let answer = null;
 let answerTimeout = null;
 let closeQuestionTimeout = null;
@@ -43,10 +50,22 @@ session.on("signal:checkProblem", (event) => {
 
   // participants에서의 커넥션아이디와
   // event.from.connectionId가 같은 놈을 찾아서
+
   // 점수를 더해주면 된다.
-  console.log("****************participants", participants.value);
-  console.log("****************connectionId", event.from.connectionId);
-  console.log("****************problemResult", problemResult);
+  let lenPar = participants.value.length;
+  for (let i = 0; i < lenPar; i++) {
+    if (gameRanks.value[i].connectionId === event.from.connectionId) {
+      gameRanks.value[i].score += problemResult.score;
+      break;
+    }
+  }
+  // console.log("****************전체 participants", participants.value);
+  console.log(
+    // "****************시그널보낸애 connectionId",
+    event.from.connectionId
+  );
+  // console.log("****************problemResult", problemResult);
+  console.log("***************시그널 보낸애 점수 점수점수", gameRanks.value);
 });
 
 const questionCountDown = ref(5);
@@ -161,4 +180,5 @@ export {
   questions,
   resetQuestionOnExit,
   updateQuestion,
+  gameRanks,
 };
