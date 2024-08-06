@@ -28,13 +28,14 @@ import com.ssafy.a603.lingoland.fairyTale.service.FairyTaleService;
 import com.ssafy.a603.lingoland.global.error.entity.ErrorCode;
 import com.ssafy.a603.lingoland.global.error.exception.BaseException;
 import com.ssafy.a603.lingoland.global.error.exception.InvalidInputException;
-import com.ssafy.a603.lingoland.writingGame.dto.AllamaDTO;
+import com.ssafy.a603.lingoland.writingGame.dto.AllamaStoryDTO;
+import com.ssafy.a603.lingoland.writingGame.dto.AllamaSummaryDTO;
+import com.ssafy.a603.lingoland.writingGame.dto.AllamaSummaryResponseDTO;
 import com.ssafy.a603.lingoland.writingGame.dto.DrawingRequestDTO;
 import com.ssafy.a603.lingoland.writingGame.dto.KarloDTO;
 import com.ssafy.a603.lingoland.writingGame.dto.KarloReturn;
 import com.ssafy.a603.lingoland.writingGame.dto.KoGPTDTO;
 import com.ssafy.a603.lingoland.writingGame.dto.KoGPTReturn;
-import com.ssafy.a603.lingoland.writingGame.dto.Story;
 import com.ssafy.a603.lingoland.writingGame.dto.WritingGameStartRequestDTO;
 
 import lombok.extern.slf4j.Slf4j;
@@ -127,20 +128,33 @@ public class WritingGameServiceImpl implements WritingGameService {
 		log.info("Ending game session with requests: {}", requests);
 		List<FairyTale> fairyTales = new ArrayList<>();
 		List<CompletableFuture<FairyTale>> futures = new ArrayList<>();
+		List<String> writers = new ArrayList<>();
+		for (DrawingRequestDTO request : requests) {
+			writers.add(request.key());
+		}
 		for (DrawingRequestDTO request : requests) {
 			CompletableFuture<FairyTale> future = CompletableFuture.supplyAsync(() -> {
 				String redisStoryKey = "lingoland:fairyTale:" + request.key();
-				List<Story> stories;
+				List<FairyTale.Story> stories;
 				try {
 					String existingJson = (String)redisTemplate.opsForValue().get(redisStoryKey);
-					stories = objectMapper.readValue(existingJson, new TypeReference<List<Story>>() {
+					stories = objectMapper.readValue(existingJson, new TypeReference<List<FairyTale.Story>>() {
 					});
 				} catch (JsonProcessingException e) {
 					log.error("Error processing JSON from Redis for key: {}", redisStoryKey, e);
 					throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
 				}
-				FairyTale fairyTale = FairyTale.builder().build();
-				return fairyTale;
+				StringBuilder allStories = new StringBuilder();
+				for (FairyTale.Story story : stories) {
+					allStories.append(story.getStory()).append("\n");
+				}
+				AllamaSummaryResponseDTO titleWithSummary = makeTitleWithSummary(allStories.toString());
+				log.info("make Title: {}", titleWithSummary.toString());
+				String imgUrl = generateImage(titleWithSummary.toString());
+				log.info("Generated image URL: {}", imgUrl);
+				decodeBase64ToFile(imgUrl, "asdf.png");
+				return fairyTaleService.createFairyTale(titleWithSummary.title(), imgUrl, titleWithSummary.summary(),
+					stories, writers);
 			});
 			futures.add(future);
 		}
@@ -164,23 +178,22 @@ public class WritingGameServiceImpl implements WritingGameService {
 				String imgUrl = generateImage(translated);
 				log.info("Generated image URL: {}", imgUrl);
 				decodeBase64ToFile(imgUrl, "asdf.png");
-				String redisRoomKey = "lingoland:fairyTale:session:" + sessionId;
 				String redisStoryKey = "lingoland:fairyTale:" + request.key();
-				Story node = Story.builder()
+				FairyTale.Story node = FairyTale.Story.builder()
 					.illustration(imgUrl)
 					.story(request.story())
 					.build();
 
 				try {
 					if (request.order() == 1) {
-						List<Story> lists = new ArrayList<>();
+						List<FairyTale.Story> lists = new ArrayList<>();
 						lists.add(node);
 						redisTemplate.opsForValue().set(redisStoryKey, objectMapper.writeValueAsString(lists));
 						log.info("Stored first story in Redis with key: {}", redisStoryKey);
 					} else {
 						String existingJson = (String)redisTemplate.opsForValue().get(redisStoryKey);
-						List<Story> existingStories = objectMapper.readValue(existingJson,
-							new TypeReference<List<Story>>() {
+						List<FairyTale.Story> existingStories = objectMapper.readValue(existingJson,
+							new TypeReference<List<FairyTale.Story>>() {
 							});
 						existingStories.add(node);
 						redisTemplate.opsForValue()
@@ -199,11 +212,30 @@ public class WritingGameServiceImpl implements WritingGameService {
 		log.info("Writing Game One Hop End");
 	}
 
+	private AllamaSummaryResponseDTO makeTitleWithSummary(String story) {
+		log.info("Summary story using Allama3.1 : {}", story);
+		String json = restClient.post()
+			.uri("http://localhost:11434/api/generate")
+			.body(new AllamaSummaryDTO(story))
+			.retrieve()
+			.body(String.class);
+		try {
+			JsonNode jsonNode = objectMapper.readTree(json);
+			String response = jsonNode.get("response").asText();
+			log.info("Summary result: {}", response);
+			return objectMapper.readValue(response, new TypeReference<AllamaSummaryResponseDTO>() {
+			});
+		} catch (JsonProcessingException e) {
+			log.error("Failed to process JSON response from translation API", e);
+			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
+		}
+	}
+
 	private String translate2English3(String story) {
 		log.info("Translating story using Allama3.1 : {}", story);
 		String json = restClient.post()
 			.uri("http://localhost:11434/api/generate")
-			.body(new AllamaDTO(story))
+			.body(new AllamaStoryDTO(story))
 			.retrieve()
 			.body(String.class);
 		try {
