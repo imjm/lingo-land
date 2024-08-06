@@ -3,7 +3,9 @@ package com.ssafy.a603.lingoland.problem.controller;
 import com.ssafy.a603.lingoland.member.security.CurrentUser;
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 import com.ssafy.a603.lingoland.problem.dto.CreateGameResultsDto;
+import com.ssafy.a603.lingoland.problem.dto.GetWrongProblemsDto;
 import com.ssafy.a603.lingoland.problem.service.ProblemService;
+import jakarta.persistence.ManyToOne;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,6 +38,12 @@ public class ProblemController {
     }
 
     // should be revised to find random problem of specific kind.
+
+    @GetMapping("/wrong-problems")
+    public ResponseEntity<?> getWrongProblems(@CurrentUser CustomUserDetails customUserDetails) {
+        List<GetWrongProblemsDto> getWrongProblemsDtos = problemService.getWrongProblems(customUserDetails);
+        return ResponseEntity.status(HttpStatus.OK).body(getWrongProblemsDtos);
+    }
 
     @GetMapping
     public ResponseEntity<?> getProblems() {
