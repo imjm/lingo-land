@@ -2,9 +2,16 @@
 import { useGameStore } from "@/stores/runningGame/gameStore";
 import { storeToRefs } from "pinia";
 import { computed, onMounted } from "vue";
+import { useResultStore } from "@/stores/runningGame/resultStore";
 // 초기 세팅
-import { initDraw } from "@/stores/runningGame/init";
+import { useOpenviduStore } from "@/stores/openvidu";
 
+import { initDraw } from "@/stores/runningGame/init";
+const openviduStore = useOpenviduStore();
+
+const { OV, session } = openviduStore;
+const resultStore = useResultStore();
+const { sortedRanks } = storeToRefs(resultStore)
 // 카운트다운 & 타이머
 import { countdown, startCountdown } from "@/stores/runningGame/time";
 
@@ -25,9 +32,9 @@ const { zCoordinate } = storeToRefs(gameStore);
 // 게임진행률
 const zDivided = computed(() => zCoordinate.value / 90);
 
-const sortedRanks = computed(() => {
-  return [...gameRanks.value].sort((a, b) => b.score - a.score);
-});
+// const sortedRanks = computed(() => {
+//   return [...gameRanks.value].sort((a, b) => b.score - a.score);
+// });
 
 onMounted(() => {
   startCountdown();
@@ -103,7 +110,6 @@ onMounted(() => {
 <style scoped>
 /* 기존 스타일 유지 */
 </style>
-
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap");
