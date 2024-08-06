@@ -4,6 +4,7 @@ import runningImg from "@/assets/달리기.jpg";
 import GameMemberList from "@/components/gameRoom/GameMemberList.vue";
 import { useGameRoomStore } from "@/stores/gameRoom";
 import { useOpenviduStore } from "@/stores/openvidu";
+import { useWritingGameStore } from "@/stores/writingGame";
 import { storeToRefs } from "pinia";
 import { default as swal, default as Swal } from "sweetalert2";
 import { onMounted, ref } from "vue";
@@ -17,6 +18,7 @@ const route = useRoute();
 
 const openviduStore = useOpenviduStore();
 const gameRoomStore = useGameRoomStore();
+const writingGameStore = useWritingGameStore();
 
 const pageCount = ref();
 const { OV, session } = openviduStore;
@@ -55,18 +57,24 @@ const startWritingGame = () => {
 
         return;
     }
+
+    writingGameStore.setWritingGame(route.params.roomId, {
+        numPart: participants.value.length,
+        maxTurn: pageCount.value,
+    });
+
     // 시그널 송신
-    session
-        .signal({
-            type: "gameStart",
-            data: JSON.stringify({ type: 2, data: "writing game" }),
-        })
-        .then(() => {
-            console.log("******************Game start writing signal sent");
-        })
-        .catch((error) => {
-            console.error("****************Error sending signal:", error);
-        });
+    // session
+    //     .signal({
+    //         type: "gameStart",
+    //         data: JSON.stringify({ type: 2, data: "writing game" }),
+    //     })
+    //     .then(() => {
+    //         console.log("******************Game start writing signal sent");
+    //     })
+    //     .catch((error) => {
+    //         console.error("****************Error sending signal:", error);
+    //     });
 };
 
 function joinRoom(sessionId) {
