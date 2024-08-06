@@ -44,6 +44,14 @@ public class Problem extends BaseTimeEntity {
     @Column(columnDefinition = "jsonb")
     private Detail detail;
 
+    public void updateCorrectAnswerCount() {
+        this.correctAnswerCount++;
+    }
+
+    public void updateInCorrectAnswerCount() {
+        this.incorrectAnswerCount++;
+    }
+
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Detail {
