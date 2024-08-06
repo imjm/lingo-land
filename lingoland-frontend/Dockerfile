@@ -13,7 +13,7 @@ RUN npm ci
 
 # 환경 변수 설정
 # ARG VITE_SERVER_URL
-# ENV VITE_SERVER_URL=${VITE_SERVER_URL}
+ENV VITE_SERVER_URL=${VITE_SERVER_URL}
 
 # 소스코드 복사
 COPY . /app

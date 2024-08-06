@@ -17,6 +17,8 @@ public interface GroupService {
 
 	Boolean checkNameDuplication(String groupName);
 
+	Boolean isGroupLeader(int GroupId, CustomUserDetails customUserDetails);
+
 	List<GroupInfoResponseDTO> findMyGroups(String keyword, CustomUserDetails customUserDetails);
 
 	List<GroupInfoResponseDTO> findNotMyGroups(String keyword, CustomUserDetails customUserDetails);
