@@ -8,9 +8,11 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 @Getter
 @Entity
+@Where(clause = "is_deleted = false")
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProblemMember extends BaseTimeEntity {
@@ -21,6 +23,8 @@ public class ProblemMember extends BaseTimeEntity {
     private int submittedAnswer;
 
     private boolean isCorrect;
+
+    private boolean isDeleted = false;
 
     @Builder
     public ProblemMember(int submittedAnswer, ProblemMemberId id) {
@@ -33,4 +37,5 @@ public class ProblemMember extends BaseTimeEntity {
             this.isCorrect = true;
         }
     }
+
 }
