@@ -15,16 +15,12 @@ const props = defineProps({
     type: String,
     data: String,
     variant: String,
-    // value:String,
     hint: String,
+    min: String,
+    max: String,
 });
-// readonly: {
-//   type: Boolean,
-//   default: false
-// }
 </script>
 <template>
-
     <div>
         {{ data }}
         <v-text-field
@@ -35,10 +31,9 @@ const props = defineProps({
             variant="outlined"
             :placeholder="hint"
             @blur="$emit('blurEvent')"
-           
-            ></v-text-field>
-            <!-- :readonly="readonly" -->
-            <!-- :value="value" -->
+            :min="min"
+            :max="max"
+        ></v-text-field>
     </div>
 </template>
 
