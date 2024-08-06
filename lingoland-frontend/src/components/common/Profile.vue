@@ -1,14 +1,19 @@
 <script setup>
 import sampleImage from "@/assets/sampleImg.jpg";
 import { useUserStore } from "@/stores/user";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, defineProps } from "vue";
 import ImageBox from "./ImageBox.vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 const userStore = useUserStore();
 
 const router = useRouter();
+const route = useRoute();
 
+const props = defineProps({
+    others: Boolean,
+    id: String,
+});
 const userProfile = ref({
     nickname: "",
     profileImage: null,
@@ -29,7 +34,19 @@ function selectItem(event) {
 }
 
 onMounted(() => {
-    const profile = userStore.getProfile();
+    let profile;
+
+    if (props.others) {
+        profile = userStore.getProfileById(props.id);
+        console.log("니 프로필");
+    }
+    else if (route.params.memberId) {
+        profile = userStore.getProfileById(route.params.memberId);
+        console.log("니 프로필");
+    } else {
+        profile = userStore.getProfile();
+        console.log("내 프로필");
+    }
 
     profile.then((getValue) => {
         userProfile.value.nickname = getValue.nickname;
