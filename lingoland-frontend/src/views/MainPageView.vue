@@ -37,7 +37,7 @@ function joinRoom() {
         <v-container>
             <v-row>
                 <v-col cols="5" class="d-flex justify-center" height="100vh">
-                    <Profile source="src\\assets\\sampleImg.jpg" />
+                    <Profile />
                 </v-col>
 
                 <v-col cols="7">
@@ -45,13 +45,12 @@ function joinRoom() {
                         <v-col
                             cols="6"
                             class="d-flex flex-column align-content-space-between"
-                        >   
+                        >
                             <div>
-
                                 <PageNavigationButton
-                                background-color="#CCCBFF"
-                                data="방 만들기"
-                                @click-event="makeRoom"
+                                    background-color="#CCCBFF"
+                                    data="방 만들기"
+                                    @click-event="makeRoom"
                                 />
                             </div>
 

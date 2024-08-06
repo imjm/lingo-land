@@ -6,9 +6,8 @@ import incorrectDialog from "@/components/incorrect/IncorrectDialog.vue";
 import { useGroupStore } from "@/stores/groups";
 import GroupList from "../group/GroupList.vue";
 
-import { useTaleStore } from "@/stores/tales";
-import { ref } from "vue";
 import router from "@/router";
+import { ref } from "vue";
 
 const groupStore = useGroupStore();
 
@@ -26,7 +25,6 @@ const incorrectList = ref([
     // 데이터 받아오기
 ]);
 
-const taleStore = useTaleStore();
 
 function clickTales() {
     router.push({ name: "bookList" });
@@ -38,7 +36,7 @@ function clickTales() {
         <v-container>
             <v-row>
                 <v-col cols="5" class="d-flex justify-center" height="100vh">
-                    <Profile source="src\\assets\\sampleImg.jpg" />
+                    <Profile />
                 </v-col>
 
                 <v-col cols="7">
