@@ -39,7 +39,6 @@ onMounted(async () => {
 function modify() {
     // 그룹장인 경우만 수정되도록
     groupStore.checkGroupLeader(groupInfo.value.id)
-    // router.push({ name: "groupModify" });
 }
 </script>
 
@@ -72,7 +71,7 @@ function modify() {
                         </v-col>
                     </v-row>
 
-                    <GroupMemberList :groupMemberList="groupMemberList" />
+                    <GroupMemberList :groupMemberList="groupMemberList" :group-leader="groupInfo.leaderNickname"/>
 
                     <v-row>
                         <v-col>

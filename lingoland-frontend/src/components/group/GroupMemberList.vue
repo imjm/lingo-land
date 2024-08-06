@@ -5,6 +5,8 @@ import GroupMemberListItem from "./GroupMemberListItem.vue";
 
 const props = defineProps({
     groupMemberList: Object,
+    groupLeader : String,
+
 });
 
 
@@ -17,7 +19,7 @@ const props = defineProps({
             :key="i"
             hide-actions
         >
-            <GroupMemberListItem :groupMember="groupMember" />
+            <GroupMemberListItem :groupMember="groupMember" :group-leader="groupLeader"/>
         </v-expansion-panel>
     </v-expansion-panels>
 

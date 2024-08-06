@@ -1,32 +1,25 @@
 <script setup>
 import { useGroupStore } from "@/stores/groups";
-import GenericButton from "../common/GenericButton.vue";
 import GenericInput from "../common/GenericInput.vue";
 import GenericInputArea from "../common/GenericInputArea.vue";
 import ImageBox from "../common/ImageBox.vue";
 import SubmitButton from "../common/SubmitButton.vue";
 import NameTag from "../common/NameTag.vue";
 import { onMounted, ref } from "vue";
-import { storeToRefs } from "pinia";
+import { useRoute } from "vue-router";
 
 const groupStore = useGroupStore();
-const { myGroup } = storeToRefs(groupStore);
+const route = useRoute()
 
 //보낼 DTO
-const groupImage = ref(); // 기본은 원래 적용되어 있는 것으로
-const updateGroup = ref({
-    id:0,
-    name:'',
-    password:'',
-    description:''
-});
+const updateGroup = ref(null);
 
 let imageSource = ref();
 function handleFileChange(event) {
     const file = event.target.files[0];
     // console.log('file', file)
     if (file) {
-        groupImage.value = file;
+        updateGroup.value.groupImage = file;
         const reader = new FileReader();
         reader.onload = (e) => {
             imageSource.value = e.target.result;
@@ -36,24 +29,24 @@ function handleFileChange(event) {
     }
 }
 
-function modifyGroup() {
-    updateGroup.value.id=groupStore.myGroup.value.id
-    updateGroup.value.name=groupStore.myGroup.value.name
-    updateGroup.value.password=groupStore.myGroup.value.password
-    updateGroup.value.description=groupStore.myGroup.value.description  
-    groupStore.modifyGroup(updateGroup.value, groupImage.value);
+function modifyGroup() { 
+    groupStore.modifyGroup(updateGroup.value, updateGroup.value.groupImage);
     
 }
 
-console.log(groupStore.myGroup.value.name);
 
 onMounted(() => {
-    console.log(groupStore.myGroup.value);
+    groupStore.getGroup(route.params.groupId).then((responseValue)=> {
+        updateGroup.value=responseValue;
+        console.log(updateGroup.value)
+        
+    })
+
 });
 </script>
 
 <template>
-    <v-main class="d-flex align-center justify-center">
+    <v-main v-if="updateGroup" class="d-flex align-center justify-center">
         <br />
         <div>
             <NameTag data="그룹 수정하기" :style="{ width: '220px' }" />
@@ -77,7 +70,7 @@ onMounted(() => {
                             <div>그룹 명</div>
                             <v-text-field
                                 variant="outlined"
-                                :placeholder="myGroup.value.name"
+                                :placeholder="updateGroup.name"
                                 readonly="true"
                             ></v-text-field>
 
@@ -85,14 +78,14 @@ onMounted(() => {
                             <GenericInputArea
                                 data="그룹 소개"
                                 placeholder="그룹 소개를 입력하세요"
-                                v-model="myGroup.value.description"
+                                v-model="updateGroup.description"
                             />
 
                             <GenericInput   
                                 type="password"
                                 data="비밀번호 변경"
                                 id="groupPassword"
-                                v-model="myGroup.value.password"
+                                v-model="updateGroup.password"
                             />
                             <GenericInput
                                 type="password"
