@@ -76,7 +76,7 @@ function modify() {
                         </v-col>
                     </v-row>
 
-                    <GroupMemberList :groupMemberList="groupMemberList" />
+                    <GroupMemberList :groupMemberList="groupMemberList" :group-leader="groupInfo.leaderNickname"/>
 
                     <v-row>
                         <v-col>
