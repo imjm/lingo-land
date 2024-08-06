@@ -1,15 +1,17 @@
 package com.ssafy.a603.lingoland.member.service;
 
 
-import java.util.NoSuchElementException;
-
-import com.ssafy.a603.lingoland.member.dto.*;
-import com.ssafy.a603.lingoland.member.entity.Role;
-import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
-import com.ssafy.a603.lingoland.member.repository.MemberRepository;
+import com.ssafy.a603.lingoland.member.dto.GetMemberInfoDto;
+import com.ssafy.a603.lingoland.member.dto.SignUpDto;
+import com.ssafy.a603.lingoland.member.dto.UpdateNicknameDto;
+import com.ssafy.a603.lingoland.member.dto.UpdatePasswordDto;
+import com.ssafy.a603.lingoland.member.dto.UpdateProfileImageDto;
 import com.ssafy.a603.lingoland.member.entity.Member;
+import com.ssafy.a603.lingoland.member.entity.Rank;
+import com.ssafy.a603.lingoland.member.entity.Role;
+import com.ssafy.a603.lingoland.member.repository.MemberRepository;
+import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,16 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ssafy.a603.lingoland.member.dto.GetMemberInfoDto;
-import com.ssafy.a603.lingoland.member.dto.SignUpDto;
-import com.ssafy.a603.lingoland.member.dto.UpdateNicknameDto;
-import com.ssafy.a603.lingoland.member.dto.UpdatePasswordDto;
-import com.ssafy.a603.lingoland.member.entity.Member;
-import com.ssafy.a603.lingoland.member.entity.Role;
-import com.ssafy.a603.lingoland.member.repository.MemberRepository;
-import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
-
-import lombok.RequiredArgsConstructor;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -42,8 +35,7 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
 			.loginId(signUpRequest.getLoginId())
 			.nickname(signUpRequest.getNickname())
 			.password(passwordEncoder.encode(signUpRequest.getPassword()))
-			// .createdAt(LocalDateTime.now())
-			.rank("temp")
+			.rank(Rank.CHAMBONG)
 			.role(Role.ROLE_USER)
 			.build();
 		return memberRepository.save(member);
@@ -74,11 +66,16 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
 
 	public GetMemberInfoDto getMemberInfo(CustomUserDetails customUserDetails) {
 		Member member = getMember(customUserDetails.getUsername());
+		return createMemberInfoDto(member);
+	}
+
+	private static GetMemberInfoDto createMemberInfoDto(Member member) {
 		return GetMemberInfoDto.builder()
-			.nickname(member.getNickname())
-			.profileImage(member.getProfileImage())
-			.experiencePoint(member.getExperiencePoint())
-			.build();
+				.nickname(member.getNickname())
+				.profileImage(member.getProfileImage())
+				.experiencePoint(member.getExperiencePoint())
+				.rank(member.getRank().getGrade())
+				.build();
 	}
 
 	@Override
@@ -88,6 +85,7 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
 				.nickname(member.getNickname())
 				.profileImage(member.getProfileImage())
 				.experiencePoint(member.getExperiencePoint())
+				.rank(member.getRank().getGrade())
 				.build();
 	}
 

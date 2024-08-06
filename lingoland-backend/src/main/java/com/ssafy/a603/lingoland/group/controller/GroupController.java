@@ -77,6 +77,12 @@ public class GroupController {
 		}
 	}
 
+	@GetMapping("/{groupId}/check-leader")
+	public ResponseEntity<?> checkGroupLeader(@PathVariable("groupId") Integer groupId,
+		@CurrentUser CustomUserDetails customUserDetails) {
+		return ResponseEntity.status(HttpStatus.OK).body(groupService.isGroupLeader(groupId, customUserDetails));
+	}
+
 	@GetMapping("/{groupId}")
 	public ResponseEntity<?> getGroupById(@PathVariable("groupId") Integer groupId) {
 		GroupInfoResponseDTO groupInfo = groupService.findById(groupId);

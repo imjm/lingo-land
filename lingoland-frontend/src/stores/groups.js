@@ -192,6 +192,28 @@ export const useGroupStore = defineStore("group", () => {
         return joinGroupResult;
     };
 
+    const checkGroupLeader = async (groupId) => {
+        await axios
+            .get(`/groups/${groupId}/check-leader`, {
+                withCredentials: true,
+            })
+            .then((response) => {
+                if (response.status === httpStatus.OK) {
+                    if (response.data) {
+                        router.push({ name: "groupModify", params: groupId });
+                    } else{
+                        Swal.fire({
+                            title: "그룹장이 아닙니다.",
+                            icon: "error",
+                        });
+                    }
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
     return {
         modifyGroup,
         createGroup,
@@ -200,5 +222,6 @@ export const useGroupStore = defineStore("group", () => {
         getGroup,
         getMyGroups,
         joinGroup,
+        checkGroupLeader,
     };
 });

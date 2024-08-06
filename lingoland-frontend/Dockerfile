@@ -11,8 +11,14 @@ COPY package-lock.json .
 # 라이브러리 설치
 RUN npm ci
 
+# 환경 변수 설정
+# ARG VITE_SERVER_URL
+ENV VITE_SERVER_URL=${VITE_SERVER_URL}
+
 # 소스코드 복사
 COPY . /app
+
+# .env => 얘를 그냥 내용을 바꿈
 
 # 소스 코드 빌드
 RUN npm run build
