@@ -1,18 +1,72 @@
-import { inject, ref } from "vue";
-import { useRouter } from "vue-router";
 import axios from "axios";
-const { VITE_SERVER_URL, VITE_LOCAL_URL } = import.meta.env;
+import { storeToRefs } from "pinia";
+import { ref } from "vue";
+import { useOpenviduStore } from "../openvidu";
 
-const router = useRouter();
+const { VITE_SERVER_URL } = import.meta.env;
+
 const questions = ref([]);
 const currentQuestion = ref(null);
 const options = ref([]);
 const isCorrect = ref(null);
+const gameRanks = ref([]);
+
+const openviduStore = useOpenviduStore();
+const { session } = openviduStore;
+const { participants } = storeToRefs(openviduStore);
+for (const participant of participants.value) {
+  gameRanks.value.push({
+    connectionId: participant.connectionId,
+    userId: participant.userId,
+    score: 0,
+  });
+}
 let answer = null;
 let answerTimeout = null;
 let closeQuestionTimeout = null;
 const shownQuestions = new Set(); // 이미 표시된 문제를 추적
 let index = 0;
+
+// **openvidu signal
+// 문제를 정답을 확인했다. -> 시그널을 보낸다.
+const checkProblem = () => {
+  session
+    .signal({
+      type: "checkProblem",
+      data: JSON.stringify({
+        score: isCorrect.value ? 1 : 0, // 점수
+        isCorrect: isCorrect.value, // 문제를 맞췄다. 틀렸다. (T/F)
+        answer: answer, // 내가 작성한 답
+      }),
+    })
+    .then(() => {
+      // console.log("**********************문제를 풀었다 시그널");
+    });
+};
+
+// 문제 정답 확인에 대한 시그널을 수신하는 함수
+session.on("signal:checkProblem", (event) => {
+  const problemResult = JSON.parse(event.data);
+
+  // participants에서의 커넥션아이디와
+  // event.from.connectionId가 같은 놈을 찾아서
+
+  // 점수를 더해주면 된다.
+  let lenPar = participants.value.length;
+  for (let i = 0; i < lenPar; i++) {
+    if (gameRanks.value[i].connectionId === event.from.connectionId) {
+      gameRanks.value[i].score += problemResult.score;
+      break;
+    }
+  }
+  // console.log("****************전체 participants", participants.value);
+  console.log(
+    // "****************시그널보낸애 connectionId",
+    event.from.connectionId
+  );
+  // console.log("****************problemResult", problemResult);
+  console.log("***************시그널 보낸애 점수 점수점수", gameRanks.value);
+});
 
 const questionCountDown = ref(5);
 
@@ -30,7 +84,7 @@ function qcountdown() {
 
 async function loadQuestions() {
   await axios({
-    url: `${VITE_LOCAL_URL}/problems`,
+    url: `${VITE_SERVER_URL}/problems`,
     method: "get",
     withCredentials: true,
   })
@@ -38,7 +92,7 @@ async function loadQuestions() {
       console.log(response.data.problems);
 
       questions.value = response.data.problems;
-    //   console.log(22222, questions.value);
+      //   console.log(22222, questions.value);
     })
     .catch((error) => {
       console.error("문제 로드 실패:", error);
@@ -92,8 +146,8 @@ function loadQuestion() {
 function checkAnswer(selected) {
   if (currentQuestion.value === null) return;
 
-  console.log("정답 : ", currentQuestion.value.answer);
-  console.log("내가 고른 거 : ", selected);
+  // console.log("정답 : ", currentQuestion.value.answer);
+  // console.log("내가 고른 거 : ", selected);
   //정답 여부를 표시
   answer = selected;
 }
@@ -103,6 +157,7 @@ function checkAnswerAndTime() {
   isCorrect.value = answer == currentQuestion.value.answer;
   currentQuestion.value = null; // 문제 창 닫기
   closeQuestionTimeout = setTimeout(() => {
+    checkProblem(); // 문제를 풀었을 때 시그널을 보낸다.
     isCorrect.value = null; // 정답 여부 초기화
     resetQuestionOnExit();
   }, 2000);
@@ -125,4 +180,5 @@ export {
   questions,
   resetQuestionOnExit,
   updateQuestion,
+  gameRanks,
 };

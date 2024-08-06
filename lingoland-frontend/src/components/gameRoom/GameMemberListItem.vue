@@ -25,7 +25,7 @@ const userStore = useUserStore();
                 </v-col>
                 <v-col cols="8">
                     <h3 class="align-center">
-                        {{ userStore.getstatue(member.experiencePoint) }}
+                        {{ member.rank }}
                     </h3>
                     <v-progress-linear
                         rounded

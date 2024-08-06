@@ -4,7 +4,25 @@ import { scene, renderer, mixer, chickModel, moveSide } from "./init";
 import { countdown } from "./time";
 import { checkAnswer } from "./question";
 import { useGameStore } from "./gameStore";
+import { useOpenviduStore } from "@/stores/openvidu";
 
+const openviduStore = useOpenviduStore();
+const { OV, session } = openviduStore;
+
+const showRunningGameResult = () => {
+    //시그널 송신
+    session.signal({
+        type: "gameEnd",
+        data: JSON.stringify({type:1, data:"running game result"})
+    })
+    .then(() => {
+        console.log("***************************달리기 게임 결과화면 ㄱㄱ")
+
+    })
+    .catch((error) => {
+        console.log("************ERROR 결과로 못가",error)
+    })
+}
 // function loadChickModel() {
 //     let loader = new GLTFLoader();
 //     loader.load("/cute_chick/scene.gltf", function (gltf) {
@@ -77,6 +95,10 @@ function handleChickMovement(keysPressed, coordinatesElement) {
         if (z >= 9000) {
             gameStore.endGame(); // 경기 종료 함수 호출
             alert("경기 종료!");
+            setInterval(() => {
+                showRunningGameResult()
+              }, 9000);
+            
         }
     }
 }
