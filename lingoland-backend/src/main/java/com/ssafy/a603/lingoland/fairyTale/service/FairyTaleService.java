@@ -10,7 +10,7 @@ public interface FairyTaleService {
 	public FairyTale createFairyTale(String title, String cover, String summary, List<FairyTale.Story> content,
 		List<String> writers);
 
-	public List<FairyTaleListResponseDTO> findFairyTaleListByLoginId(CustomUserDetails customUserDetails);
+	public List<FairyTaleListResponseDTO> findFairyTaleListByLoginId(String loginId);
 
 	public FairyTale findFairyTaleById(Integer fairyTaleId);
 

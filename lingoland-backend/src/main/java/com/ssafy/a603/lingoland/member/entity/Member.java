@@ -57,11 +57,8 @@ public class Member extends BaseEntity {
 	@Column(nullable = false)
 	private long experiencePoint;
 
-	@Column(nullable = false)
-	private String rank;
-
-	// @Column(nullable = false)
-	// private LocalDateTime createdAt;
+	@Enumerated(EnumType.STRING)
+	private Rank rank;
 
 	private LocalDateTime deletedAt;
 
@@ -102,5 +99,20 @@ public class Member extends BaseEntity {
 
 	public void updateProfileImage(String profileImage) {
 		this.profileImage = profileImage;
+	}
+
+	public void updateExperiencePoint(long points) {
+		this.experiencePoint += points;
+		checkRankUp(points);
+	}
+
+	private void checkRankUp(long points) {
+		long currentLevel = this.experiencePoint / 1000;
+		long previousLevel = (this.experiencePoint - points) / 1000;
+		if(currentLevel > previousLevel) {
+			for(long i = previousLevel; i < currentLevel; i++) {
+				this.rank = this.rank.nextRank();
+			}
+		}
 	}
 }

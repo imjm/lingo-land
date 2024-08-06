@@ -33,9 +33,9 @@ public class FairyTaleController {
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
-	@GetMapping("/members")
-	public ResponseEntity<?> findListByLoginId(@CurrentUser CustomUserDetails customUserDetails) {
-		List<FairyTaleListResponseDTO> fairyTales = fairyTaleService.findFairyTaleListByLoginId(customUserDetails);
+	@GetMapping("/members/{loginId}")
+	public ResponseEntity<?> findListByLoginId(String loginId) {
+		List<FairyTaleListResponseDTO> fairyTales = fairyTaleService.findFairyTaleListByLoginId(loginId);
 		return ResponseEntity.status(HttpStatus.OK).body(fairyTales);
 	}
 
