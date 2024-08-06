@@ -105,7 +105,7 @@ public class GroupServiceImpl implements GroupService {
 			throw new InvalidInputException(ErrorCode.GROUP_INVALID_INPUT);
 		}
 
-		if (isGroupLeader(group, customUserDetails.getMemberId())) {
+		if (!isGroupLeader(group, customUserDetails.getMemberId())) {
 			log.error("Member with ID: {} is not the leader of group ID: {}", customUserDetails.getMemberId(),
 				groupId);
 			throw new ForbiddenException(ErrorCode.GROUP_NOT_LEADER);
@@ -125,7 +125,7 @@ public class GroupServiceImpl implements GroupService {
 		Group group = groupRepository.findById(groupId).orElseThrow(
 			() -> new InvalidInputException(ErrorCode.GROUP_INVALID_INPUT)
 		);
-		if (isGroupLeader(group, customUserDetails.getMemberId())) {
+		if (!isGroupLeader(group, customUserDetails.getMemberId())) {
 			log.error("Member with ID: {} is not the leader of group ID: {}", customUserDetails.getMemberId(), groupId);
 			throw new ForbiddenException(ErrorCode.GROUP_NOT_LEADER);
 		}
