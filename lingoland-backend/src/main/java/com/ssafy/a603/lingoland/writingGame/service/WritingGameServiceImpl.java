@@ -52,7 +52,6 @@ public class WritingGameServiceImpl implements WritingGameService {
 		this.redisTemplate = redisTemplate;
 		this.requestMap = new ConcurrentHashMap<>();
 		this.restClient = RestClient.builder()
-			.baseUrl("https://api.kakaobrain.com")
 			.defaultStatusHandler(HttpStatusCode::is4xxClientError,
 				(request, response) -> {
 					log.error("Client Error Code={}", response.getStatusCode());
@@ -63,8 +62,6 @@ public class WritingGameServiceImpl implements WritingGameService {
 					log.error("Server Error Code={}", response.getStatusCode());
 					log.error("Server Error Message={}", new String(response.getBody().readAllBytes()));
 				})
-			.defaultHeader("Authorization", "KakaoAK " + restApiKey)
-			.defaultHeader("Content-Type", "application/json")
 			.build();
 		this.restApiKey = restApiKey;
 		this.translator = new Translator(deepLApiKey);
@@ -72,15 +69,14 @@ public class WritingGameServiceImpl implements WritingGameService {
 
 	@Override
 	public int[] start(String sessionId, WritingGameStartRequestDTO request) {
-		// TODO : 시작할 때 정보 제공하기, 어떤정보 받아? (우리 몇번 할거야, lingoland:fairyTale:session:{xxx} 10..)
 		String redisKey = "lingoland:fairyTale:session:" + sessionId;
+		log.info("Starting game for session: {}", sessionId);
 		try {
 			redisTemplate.opsForValue().set(redisKey, objectMapper.writeValueAsString(request));
 		} catch (JsonProcessingException e) {
+			log.error("Failed to serialize WritingGameStartRequestDTO", e);
 			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
 		}
-
-		// TODO : 줘야할 정보 있나? 백엔드에서 순서 결정해?
 		return randomNumList(request.numPart());
 	}
 
@@ -89,12 +85,19 @@ public class WritingGameServiceImpl implements WritingGameService {
 		log.info("Submitting story for session: {}", sessionId);
 		requestMap.putIfAbsent(sessionId, new ArrayList<>());
 		List<DrawingRequestDTO> requests = requestMap.get(sessionId);
-
-		// TODO : dto에서 numpart 받지 말고 redis 에 저장된 numpart 꺼내오기
-
 		requests.add(dto);
-		if (requests.size() == dto.numPart()) {
-			log.info("All Member Submit Story!!!");
+		log.debug("Added DrawingRequestDTO to session: {}, current size: {}", sessionId, requests.size());
+
+		String sessionInfoJson = (String)redisTemplate.opsForValue().get("lingoland:fairyTale:session:" + sessionId);
+		WritingGameStartRequestDTO sessionInfo;
+		try {
+			sessionInfo = objectMapper.readValue(sessionInfoJson, WritingGameStartRequestDTO.class);
+		} catch (JsonProcessingException e) {
+			log.error("Failed to deserialize WritingGameStartRequestDTO", e);
+			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
+		}
+		if (requests.size() == sessionInfo.numPart()) {
+			log.info("All members have submitted stories for session: {}", sessionId);
 			List<DrawingRequestDTO> collected = new ArrayList<>(requests);
 			requestMap.remove(sessionId);
 			CompletableFuture.runAsync(() -> processStoriesAsync(sessionId, collected));
@@ -103,12 +106,12 @@ public class WritingGameServiceImpl implements WritingGameService {
 
 	@Override
 	public void end() {
-		// TODO : 끝날 때 뭐할거야? redis 정보 postgresql에 넣기,
+		// TODO : 끝날 때 뭐할거야? redis 정보 postgresql에 넣기, redis에
 	}
 
 	@Async("sampleExecutor")
 	public void processStoriesAsync(String sessionId, List<DrawingRequestDTO> requests) {
-		log.info("Processing stories asynchronously");
+		log.info("Processing stories asynchronously for session: {}", sessionId);
 		List<CompletableFuture<Void>> futures = new ArrayList<>();
 		for (DrawingRequestDTO request : requests) {
 			CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
@@ -117,10 +120,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 				log.info("Translated story: {}", translated);
 				String imgUrl = generateImage(translated);
 				log.info("Generated image URL: {}", imgUrl);
-
-				// TODO : 넘어온 base64를 저장을 어디에? 일단 저장해...
 				decodeBase64ToFile(imgUrl, "asdf.png");
-
 				String redisRoomKey = "lingoland:fairyTale:session:" + sessionId;
 				String redisStoryKey = "lingoland:fairyTale:" + request.key();
 				Story node = Story.builder()
@@ -129,11 +129,11 @@ public class WritingGameServiceImpl implements WritingGameService {
 					.build();
 
 				try {
-					String sessionInfoJson = (String)redisTemplate.opsForValue().get(sessionId);
+					String sessionInfoJson = (String)redisTemplate.opsForValue()
+						.get("lingoland:fairyTale:session:" + sessionId);
 					WritingGameStartRequestDTO sessionInfo = objectMapper.readValue(sessionInfoJson,
 						WritingGameStartRequestDTO.class);
-					// TODO : 이사람이 첫번째인지 아는 방법
-					if (request.isFirst()) {
+					if (request.order() == 1) {
 						List<Story> lists = new ArrayList<>();
 						lists.add(node);
 						redisTemplate.opsForValue().set(redisStoryKey, objectMapper.writeValueAsString(lists));
@@ -148,6 +148,9 @@ public class WritingGameServiceImpl implements WritingGameService {
 							.set(redisStoryKey, objectMapper.writeValueAsString(existingStories));
 						log.info("Updated story list in Redis with key: {}", redisStoryKey);
 					}
+					if (request.order() == sessionInfo.maxTurn()) {
+						end();
+					}
 				} catch (JsonProcessingException e) {
 					log.error("Error processing JSON", e);
 					throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
@@ -161,8 +164,8 @@ public class WritingGameServiceImpl implements WritingGameService {
 	}
 
 	private String translate2English3(String story) {
-		RestClient myRestClient = RestClient.create();
-		String json = myRestClient.post()
+		log.info("Translating story using Allama3.1");
+		String json = restClient.post()
 			.uri("http://localhost:11434/api/generate")
 			.body(new AllamaDTO(story))
 			.retrieve()
@@ -170,17 +173,21 @@ public class WritingGameServiceImpl implements WritingGameService {
 		try {
 			JsonNode jsonNode = objectMapper.readTree(json);
 			String response = jsonNode.get("response").asText();
+			log.info("Translation result: {}", response);
 			return response;
 		} catch (JsonProcessingException e) {
+			log.error("Failed to process JSON response from translation API", e);
 			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
 		}
 	}
 
 	private String translate2English2(String story) {
+		log.info("Translating story using DeepL");
 		try {
 			TextResult result = translator.translateText(story, "KO", "EN-US");
 			return result.getText();
 		} catch (Exception e) {
+			log.error("Translation failed with DeepL", e);
 			throw new InvalidInputException(ErrorCode.INVALID_INPUT_VALUE);
 		}
 	}
@@ -196,7 +203,9 @@ public class WritingGameServiceImpl implements WritingGameService {
 		}
 
 		KoGPTReturn koGPTReturn = restClient.post()
-			.uri("v1/inference/kogpt/generation")
+			.uri("https://api.kakaobrain.com/v1/inference/kogpt/generation")
+			.header("Authorization", "KakaoAK " + restApiKey)
+			.header("Content-Type", "application/json")
 			.body(new KoGPTDTO(story))
 			.retrieve()
 			.body(KoGPTReturn.class);
@@ -217,7 +226,9 @@ public class WritingGameServiceImpl implements WritingGameService {
 		log.info("generate image using text {}", translated);
 		KarloReturn karloReturn = null;
 		karloReturn = restClient.post()
-			.uri("v2/inference/karlo/t2i")
+			.uri("https://api.kakaobrain.com/v2/inference/karlo/t2i")
+			.header("Authorization", "KakaoAK " + restApiKey)
+			.header("Content-Type", "application/json")
 			.body(new KarloDTO(translated))
 			.retrieve()
 			.body(KarloReturn.class);

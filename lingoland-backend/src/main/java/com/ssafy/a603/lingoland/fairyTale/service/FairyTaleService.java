@@ -7,12 +7,14 @@ import com.ssafy.a603.lingoland.fairyTale.entity.FairyTale;
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 
 public interface FairyTaleService {
-	public FairyTale createFairyTale(String title, String cover, String summary, List<FairyTale.Story> content,
+	FairyTale createFairyTale(String title, String cover, String summary, List<FairyTale.Story> content,
 		List<String> writers);
 
-	public List<FairyTaleListResponseDTO> findFairyTaleListByLoginId(CustomUserDetails customUserDetails);
+	List<FairyTaleListResponseDTO> findFairyTaleListByLoginId(String loginId);
 
-	public FairyTale findFairyTaleById(Integer fairyTaleId);
+	List<FairyTaleListResponseDTO> findFairyTaleListByLoginId(CustomUserDetails customUserDetails);
 
-	public void fairyTaleInvisible(Integer fairyTaleId, CustomUserDetails customUserDetails);
+	FairyTale findFairyTaleById(Integer fairyTaleId);
+
+	void fairyTaleInvisible(Integer fairyTaleId, CustomUserDetails customUserDetails);
 }

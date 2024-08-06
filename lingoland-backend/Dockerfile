@@ -22,6 +22,13 @@ WORKDIR /app
 
 COPY --from=build /app/build/libs/*.jar /app/lingoland-backend.jar
 
+# 프로덕션 설정 파일 복사
+COPY src/main/resources/application-prod.yml /app/config/application-prod.yml
+
+# 환경 변수 설정
+ENV SPRING_PROFILES_ACTIVE=prod
+
+
 EXPOSE 8080
 ENTRYPOINT [ "java" ]
 CMD [ "-jar", "lingoland-backend.jar" ]

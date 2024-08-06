@@ -51,12 +51,20 @@ public class FairyTaleServiceImpl implements FairyTaleService {
 	}
 
 	@Override
-	public List<FairyTaleListResponseDTO> findFairyTaleListByLoginId(CustomUserDetails customUserDetails) {
-		Member member = getMemberFromUserDetails(customUserDetails);
+	@Transactional(readOnly = true)
+	public List<FairyTaleListResponseDTO> findFairyTaleListByLoginId(String loginId) {
+		Member member = memberRepository.findByLoginId(loginId)
+			.orElseThrow(() -> new NoSuchElementException("no such member"));
 		return fairyTaleRepository.findAllFairyTalesByMemberId(member.getId());
 	}
 
 	@Override
+	public List<FairyTaleListResponseDTO> findFairyTaleListByLoginId(CustomUserDetails customUserDetails) {
+		return fairyTaleRepository.findAllFairyTalesByMemberId(customUserDetails.getMemberId());
+	}
+
+	@Override
+	@Transactional(readOnly = true)
 	public FairyTale findFairyTaleById(Integer fairyTaleId) {
 		FairyTale fairyTale = fairyTaleRepository.findById(fairyTaleId)
 			.orElseThrow(() -> new NoSuchElementException("no such fairyTale"));

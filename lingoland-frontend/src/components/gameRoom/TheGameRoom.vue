@@ -3,79 +3,24 @@ import sampleImg from "@/assets/sampleImg.jpg";
 import runningImg from "@/assets/달리기.jpg";
 import GameMemberList from "@/components/gameRoom/GameMemberList.vue";
 import { useGameRoomStore } from "@/stores/gameRoom";
-import { useUserStore } from "@/stores/user";
-import { OpenVidu } from "openvidu-browser";
+import { useOpenviduStore } from "@/stores/openvidu";
+import { storeToRefs } from "pinia";
 import { default as swal, default as Swal } from "sweetalert2";
 import { onMounted, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import GenericButton from "../common/GenericButton.vue";
 import GenericInput from "../common/GenericInput.vue";
 
 window.Swal = swal;
 
 const route = useRoute();
-const router = useRouter();
-const userStore = useUserStore();
 
+const openviduStore = useOpenviduStore();
 const gameRoomStore = useGameRoomStore();
 
 const pageCount = ref();
-
-const OV = new OpenVidu();
-const session = OV.initSession();
-
-const participants = ref([]);
-
-// 세션에 스트림이 생성될 때 호출되는 콜백 함수
-session.on("streamCreated", function (event) {
-    session.subscribe(event.stream, "subscriber");
-});
-
-// 세션에 새로운 유저가 참가하면 호출되는 콜백함수
-session.on("connectionCreated", (event) => {
-    userStore.getProfileById(event.connection.data).then((info) => {
-        // 참가자 배열에 이미 있는 사람인지 확인 필요
-        // 배열에서 userId 중복되는지 확인
-        const exists = participants.value.some(
-            (participant) => participant.userId === event.connection.data
-        );
-
-        // 중복되지 않으면 배열에 추가
-        if (!exists) {
-            // 프로필 이미지가 없으면 기본 이미지를 넣어준다.
-            if (!info.profileImage) {
-                info.profileImage = sampleImg;
-            }
-
-            participants.value.push({
-                connectionId: event.connection.connectionId,
-                userId: event.connection.data,
-                userProfile: info,
-            });
-        }
-    });
-});
-
-session.on("connectionDestroyed", (event) => {
-    const connectionId = event.connection.connectionId;
-
-    participants.value = participants.value.filter(
-        (participant) => participant.connectionId !== connectionId
-    );
-});
-
-// Signal 수신 처리
-session.on("signal:gameStart", function (event) {
-    const gameType = JSON.parse(event.data);
-
-    if (gameType.type === 1) {
-        // 달리기 게임으로
-        router.replace({ name: "runningGame" });
-    } else if (gameType.type === 2) {
-        // 글쓰기 게임으로
-        router.replace({ name: "writingGame" });
-    }
-});
+const { OV, session } = openviduStore;
+const { participants } = storeToRefs(openviduStore);
 
 const startRunningGame = () => {
     // 시그널 송신
@@ -95,16 +40,22 @@ const startRunningGame = () => {
 const startWritingGame = () => {
     if (!pageCount.value || pageCount.value <= 0) {
         Swal.fire({
-            title: "한 페이지 이상 입력하세요",
+            title: "한 페이지 이상으로 입력하세요",
             icon: "error",
         });
 
         return;
     }
+    if (pageCount.value > 10) {
+        Swal.fire({
+            title: "10 페이지 이하로 입력하세요",
+            icon: "error",
+        });
+        pageCount.value = 10;
 
-    
-
-    // 시그널 수신
+        return;
+    }
+    // 시그널 송신
     session
         .signal({
             type: "gameStart",

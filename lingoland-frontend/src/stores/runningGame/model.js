@@ -5,34 +5,34 @@ import { countdown } from "./time";
 import { checkAnswer } from "./question";
 import { useGameStore } from "./gameStore";
 
-function loadChickModel() {
-    let loader = new GLTFLoader();
-    loader.load("/cute_chick/scene.gltf", function (gltf) {
-        gltf.scene.traverse((child) => {
-            if (child.isMesh) {
-                child.material.needsUpdate = true;
-                if (child.material.map) {
-                    child.material.map.anisotropy =
-                        renderer.capabilities.getMaxAnisotropy();
-                    child.material.map.needsUpdate = true;
-                }
-            }
-        });
+// function loadChickModel() {
+//     let loader = new GLTFLoader();
+//     loader.load("/cute_chick/scene.gltf", function (gltf) {
+//         gltf.scene.traverse((child) => {
+//             if (child.isMesh) {
+//                 child.material.needsUpdate = true;
+//                 if (child.material.map) {
+//                     child.material.map.anisotropy =
+//                         renderer.capabilities.getMaxAnisotropy();
+//                     child.material.map.needsUpdate = true;
+//                 }
+//             }
+//         });
 
-        chickModel = gltf.scene; // 병아리 모델을 저장
-        chickModel.scale.set(1, 1, 1); // 크기 1배
-        scene.add(chickModel);
-        mixer = new THREE.AnimationMixer(chickModel);
-        const action = mixer.clipAction(gltf.animations[0]);
-        action.play();
+//         chickModel = gltf.scene; // 병아리 모델을 저장
+//         chickModel.scale.set(1, 1, 1); // 크기 1배
+//         scene.add(chickModel);
+//         mixer = new THREE.AnimationMixer(chickModel);
+//         const action = mixer.clipAction(gltf.animations[0]);
+//         action.play();
 
-        chickModel.rotation.y = -Math.PI / 2; // 90도 회전 (왼쪽을 보던 방향을 정면으로 조정)
+//         chickModel.rotation.y = -Math.PI / 2; // 90도 회전 (왼쪽을 보던 방향을 정면으로 조정)
 
-        const chickBoundingBox = new THREE.Box3().setFromObject(chickModel);
-        const chickHeight = chickBoundingBox.max.y - chickBoundingBox.min.y;
-        chickModel.position.y = chickHeight / 2; // 맵 바닥 위로 위치 조정
-    });
-}
+//         const chickBoundingBox = new THREE.Box3().setFromObject(chickModel);
+//         const chickHeight = chickBoundingBox.max.y - chickBoundingBox.min.y;
+//         chickModel.position.y = chickHeight / 2; // 맵 바닥 위로 위치 조정
+//     });
+// }
 
 function handleChickMovement(keysPressed, coordinatesElement) {
     const moveSpeed = 10;
@@ -73,12 +73,12 @@ function handleChickMovement(keysPressed, coordinatesElement) {
             checkAnswer(1);
         }
 
-        // z 좌표가 13000이 되면 경기 종료
-        if (z >= 13000) {
+        // z 좌표가 9000이 되면 경기 종료
+        if (z >= 9000) {
             gameStore.endGame(); // 경기 종료 함수 호출
             alert("경기 종료!");
         }
     }
 }
 
-export { loadChickModel, handleChickMovement };
+export {  handleChickMovement };
