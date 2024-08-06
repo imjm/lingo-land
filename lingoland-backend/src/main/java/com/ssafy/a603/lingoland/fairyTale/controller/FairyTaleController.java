@@ -39,6 +39,12 @@ public class FairyTaleController {
 		return ResponseEntity.status(HttpStatus.OK).body(fairyTales);
 	}
 
+	@GetMapping("/members")
+	public ResponseEntity<?> findListByLoginId(@CurrentUser CustomUserDetails customUserDetails) {
+		List<FairyTaleListResponseDTO> fairyTales = fairyTaleService.findFairyTaleListByLoginId(customUserDetails);
+		return ResponseEntity.status(HttpStatus.OK).body(fairyTales);
+	}
+
 	@GetMapping("/{fairyTaleId}")
 	public ResponseEntity<?> findFairyTaleById(@PathVariable("fairyTaleId") Integer fairyTaleId) {
 		FairyTale fairyTale = fairyTaleService.findFairyTaleById(fairyTaleId);
