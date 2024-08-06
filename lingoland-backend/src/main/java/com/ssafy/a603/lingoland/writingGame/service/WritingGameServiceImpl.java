@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,6 +24,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.a603.lingoland.fairyTale.entity.FairyTale;
+import com.ssafy.a603.lingoland.fairyTale.service.FairyTaleService;
 import com.ssafy.a603.lingoland.global.error.entity.ErrorCode;
 import com.ssafy.a603.lingoland.global.error.exception.BaseException;
 import com.ssafy.a603.lingoland.global.error.exception.InvalidInputException;
@@ -46,9 +48,11 @@ public class WritingGameServiceImpl implements WritingGameService {
 	private final RestClient restClient;
 	private final String restApiKey;
 	private final Translator translator;
+	private final FairyTaleService fairyTaleService;
 
 	public WritingGameServiceImpl(ObjectMapper objectMapper, RedisTemplate<String, Object> redisTemplate,
-		@Value("${kakao.api.key}") String restApiKey, @Value("${deepL.api.key}") String deepLApiKey) {
+		@Value("${kakao.api.key}") String restApiKey, @Value("${deepL.api.key}") String deepLApiKey,
+		FairyTaleService fairyTaleService) {
 		this.objectMapper = objectMapper;
 		this.redisTemplate = redisTemplate;
 		this.requestMap = new ConcurrentHashMap<>();
@@ -66,6 +70,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 			.build();
 		this.restApiKey = restApiKey;
 		this.translator = new Translator(deepLApiKey);
+		this.fairyTaleService = fairyTaleService;
 	}
 
 	@Override
@@ -104,25 +109,46 @@ public class WritingGameServiceImpl implements WritingGameService {
 
 			CompletableFuture<List<FairyTale>> future = CompletableFuture.runAsync(
 					() -> processStoriesAsync(sessionId, collected, sessionInfo))
-				.thenApply(voidResult -> {
+				.thenCompose(voidResult -> {
 					if (requests.get(0).order() == sessionInfo.maxTurn()) {
 						log.info("Final tasks after all stories are processed for session: {}", sessionId);
-						return end(collected);
+						return CompletableFuture.supplyAsync(() -> end(collected));
 					} else {
-						return new ArrayList<FairyTale>();
+						return CompletableFuture.completedFuture(Collections.emptyList());
 					}
 				});
-
 			return future.join();
-		} else {
-			return new ArrayList<>();
 		}
+		return Collections.emptyList();
 	}
 
 	@Async("sampleExecutor")
 	private List<FairyTale> end(List<DrawingRequestDTO> requests) {
-		// TODO : 끝날 때 뭐할거야? redis 정보 postgresql에 넣기, redis에
-		return List.of();
+		log.info("Ending game session with requests: {}", requests);
+		List<FairyTale> fairyTales = new ArrayList<>();
+		List<CompletableFuture<FairyTale>> futures = new ArrayList<>();
+		for (DrawingRequestDTO request : requests) {
+			CompletableFuture<FairyTale> future = CompletableFuture.supplyAsync(() -> {
+				String redisStoryKey = "lingoland:fairyTale:" + request.key();
+				List<Story> stories;
+				try {
+					String existingJson = (String)redisTemplate.opsForValue().get(redisStoryKey);
+					stories = objectMapper.readValue(existingJson, new TypeReference<List<Story>>() {
+					});
+				} catch (JsonProcessingException e) {
+					log.error("Error processing JSON from Redis for key: {}", redisStoryKey, e);
+					throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
+				}
+				FairyTale fairyTale = FairyTale.builder().build();
+				return fairyTale;
+			});
+			futures.add(future);
+		}
+		CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+		for (CompletableFuture<FairyTale> future : futures) {
+			fairyTales.add(future.join());
+		}
+		return fairyTales;
 	}
 
 	@Async("sampleExecutor")
@@ -174,7 +200,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 	}
 
 	private String translate2English3(String story) {
-		log.info("Translating story using Allama3.1");
+		log.info("Translating story using Allama3.1 : {}", story);
 		String json = restClient.post()
 			.uri("http://localhost:11434/api/generate")
 			.body(new AllamaDTO(story))
@@ -192,7 +218,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 	}
 
 	private String translate2English2(String story) {
-		log.info("Translating story using DeepL");
+		log.info("Translating story using DeepL : {}", story);
 		try {
 			TextResult result = translator.translateText(story, "KO", "EN-US");
 			return result.getText();
@@ -203,15 +229,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 	}
 
 	private String translate2English(String story) {
-		// TODO : 카카오 koGPT에 올라온 글들 중에서 핵심 키워드 목록을 영어로 정리해 뽑아달라고 하자.
-		// TODO : 카카오 말고 DeepL 사용해보자?
-
-		try {
-			log.info("return : {}", objectMapper.writeValueAsString(new KoGPTDTO(story)));
-		} catch (JsonProcessingException e) {
-			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
-		}
-
+		log.info("Translating story using KoGPT : {}", story);
 		KoGPTReturn koGPTReturn = restClient.post()
 			.uri("https://api.kakaobrain.com/v1/inference/kogpt/generation")
 			.header("Authorization", "KakaoAK " + restApiKey)
