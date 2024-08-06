@@ -34,7 +34,7 @@ public class FairyTaleController {
 	}
 
 	@GetMapping("/members/{loginId}")
-	public ResponseEntity<?> findListByLoginId(String loginId) {
+	public ResponseEntity<?> findListByLoginId(@PathVariable("loginId") String loginId) {
 		List<FairyTaleListResponseDTO> fairyTales = fairyTaleService.findFairyTaleListByLoginId(loginId);
 		return ResponseEntity.status(HttpStatus.OK).body(fairyTales);
 	}
