@@ -1,10 +1,11 @@
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import TaleListItem from "./Not-use-TaleListItem.vue";
 import { useTaleStore } from "@/stores/tales";
-
+import { useRoute } from "vue-router";
+const route = useRoute()
 const taleStore = useTaleStore();
-const items = taleStore.tales;
+const items = ref([]);
 
 const search = ref("");
 const headers = ref([
@@ -20,6 +21,24 @@ const rowClick = (event, { item }) => {
     // console.log();
     taleStore.oneTaleById(item.id);
 };
+
+
+onMounted(() => {
+    let talesListPromise;
+    if(route.params.userId) {
+        console.log('다른 유저 동화')
+        talesListPromise=taleStore.otherTalesList(route.params.userId);
+        
+    }else {
+        console.log('내 동화')
+        talesListPromise=taleStore.myTalesList();
+    }
+
+    talesListPromise.then((promiseValue) => {
+        items.value=promiseValue;
+    })
+
+});
 </script>
 
 <template>
