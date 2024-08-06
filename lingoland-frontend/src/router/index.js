@@ -2,8 +2,8 @@ import GroupMemberDetail from "@/components/group/GroupMemberDetail.vue";
 import GroupMemberDetailByAdmin from "@/components/group/GroupMemberDetailByAdmin.vue";
 import MyPage from "@/components/user/MyPage.vue";
 import GameRoomView from "@/views/GameRoomView.vue";
-import GroupListView from "@/views/GroupListView.vue";
-import GroupView from "@/views/GroupView.vue";
+import GroupListView from "@/views/group/GroupListView.vue";
+import GroupView from "@/views/group/GroupView.vue";
 import LoginView from "@/views/LoginView.vue";
 import MainPageView from "@/views/MainPageView.vue";
 import MyPageView from "@/views/MyPageView.vue";
@@ -109,7 +109,7 @@ const router = createRouter({
         {
           path: "list/:groupId",
           name: "groupDetail",
-          component: () => import("@/views/GroupDetailView.vue"),
+          component: () => import("@/views/group/GroupDetailView.vue"),
         },
         {
           path: "create",

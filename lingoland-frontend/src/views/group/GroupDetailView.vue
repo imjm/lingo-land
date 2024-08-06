@@ -1,7 +1,6 @@
 <script setup>
 import GenericButton from "@/components/common/GenericButton.vue";
 import GroupMemberList from "@/components/group/GroupMemberList.vue";
-import router from "@/router";
 import { useGroupMemberStore } from "@/stores/groupMember";
 import { useGroupStore } from "@/stores/groups";
 import { onMounted, ref } from "vue";
@@ -39,11 +38,7 @@ onMounted(async () => {
 
 function modify() {
     // 그룹장인 경우만 수정되도록
-    router.push({
-        name: "groupModify",
-        params: { groupId: route.params.groupId },
-    });
-    console.log('나는 잘됨')
+    groupStore.checkGroupLeader(groupInfo.value.id)
 }
 </script>
 
