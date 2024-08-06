@@ -1,6 +1,7 @@
 <script setup>
 import { defineProps, onMounted } from "vue";
 import sampleImage from "@/assets/sampleImg.jpg";
+import router from "@/router";
 
 const props = defineProps({
     groupMember: {
@@ -15,10 +16,17 @@ onMounted(() => {
         props.groupMember.profileImage = sampleImage;
     }
 });
+
+function memberDetail() {
+    router.push({
+        name: "groupMemberDetail",
+        params: { memberId: props.groupMember.loginId },
+    });
+}
 </script>
 
 <template>
-    <v-expansion-panel-title>
+    <v-expansion-panel-title @click="memberDetail">
         <v-row class="spacer" no-gutters>
             <v-col cols="4" md="1" sm="2">
                 <v-avatar size="36px">
@@ -39,7 +47,9 @@ onMounted(() => {
                 class="text-no-wrap text-right text-grey"
                 sm="auto"
             >
-                <span class="material-symbols-outlined" style="color : #D1B041"> verified </span>
+                <span class="material-symbols-outlined" style="color: #d1b041">
+                    verified
+                </span>
             </v-col>
         </v-row>
     </v-expansion-panel-title>
