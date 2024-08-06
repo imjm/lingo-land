@@ -5,13 +5,15 @@ import { OpenVidu } from "openvidu-browser";
 // 초기 세팅
 import { initDraw } from "@/stores/runningGame/resultinit";
 import { useGroupMemberStore } from "@/stores/groupMember";
-import RankListItem from "@/components/rank/RankListItem.vue";
-
+import RankListItem from "./RankListItem.vue";
+// import { sortedRanks } from "./RunningGameView.vue";
+import { useResultStore } from "@/stores/runningGame/resultStore";
 const groupMemberStore = useGroupMemberStore();
 // 카운트다운 & 타이머
-
+// const result = sortedRanks
 // 문제
-
+const resultStore = useResultStore();
+const {sortedRanks} = storeToRefs(resultStore)
 const OV = new OpenVidu();
 const session = OV.initSession();
 
@@ -38,12 +40,12 @@ onMounted(() => {
           width="100"
         >
           <v-expansion-panel
-            v-for="(member, i) in groupMemberStore.members"
+            v-for="(rank, i) in sortedRanks"
             :key="i"
             hide-actions
           >
             <!-- 아직 변수 값을 몰라 임의로 작성하였습니다. 데이터는 store에 임의로 작성하여 구성했습니다. -->
-            {{ i + 1 }}등<RankListItem :member="member" />
+            {{ i + 1 }}등<RankListItem :rank="rank" />
           </v-expansion-panel>
         </v-expansion-panels>
       </v-card>
