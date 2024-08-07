@@ -13,9 +13,62 @@ export const useGroupStore = defineStore("group", () => {
     const router = useRouter();
     const axios = inject("axios");
 
+    const groupNameFormat = ref(false);
+    const passwordFormat = ref(false);
+    const nameDuplicate = ref(false);
+    const passwordCheck = ref(false);
+    const groupDiscriptionFormat = ref(false);
+
     /**
      * actions
      */
+    function checkPassword(
+        checkPassword,
+        originPassword
+    ) {
+        if (originPassword === checkPassword) {
+            passwordCheck.value = false;
+        } else {
+            passwordCheck.value = true;
+        }
+    }
+
+    // 비밀번호 포멧체크
+    function validatePasswordFormat(password) {
+        // 비밀번호 최대길이 4
+
+        // 형식이 일치함
+        if (password.length === 4) {
+            passwordFormat.value = false;
+        } else {
+            passwordFormat.value = true;
+        }
+    }
+
+    // 그룹 이름 포맷 체크
+    function validateGroupNameFormat(groupName) {
+        // 그룹 이름 길이 3- 20 한글,영어,숫자/-/_
+        const groupNameRegex = /^[ㄱ-ㅎ가-힣a-z0-9_-]{3,20}$/;
+
+        // 형식이 일치함
+        if (groupNameRegex.test(groupName)) {
+            groupNameFormat.value = false;
+        } else {
+            groupNameFormat.value = true;
+        }
+    }
+
+    // 그룹 소개 포맷 체크
+    function validateGroupDiscriptionFormat(groupDiscription) {
+        // 그룹 소개 길이 최대 200자
+
+        // 형식이 일치함
+        if (groupDiscription.length <= 200) {
+            groupDiscriptionFormat.value = false;
+        } else {
+            groupDiscriptionFormat.value = true;
+        }
+    }
 
     //그룹명 중복체크
     const checkDuplicate = async (groupName) => {
@@ -25,7 +78,18 @@ export const useGroupStore = defineStore("group", () => {
             .get(`/groups/check/${groupName}`, { withCredentials: true })
             .then((response) => {
                 if (response.status === httpStatus.OK) {
-                    return_value = true;
+                    nameDuplicate.value = false;
+                    Swal.fire({
+                        title: "중복확인 완료",
+                        icon: "success",
+                        confirmButtonText: "완료",
+                    });
+                } else {
+                    nameDuplicate.value = true;
+                    Swal.fire({
+                        title: "중복된 그룹 이름이 있어요",
+                        icon: "error",
+                    });
                 }
             })
             .catch((error) => {
@@ -117,6 +181,7 @@ export const useGroupStore = defineStore("group", () => {
             });
     };
 
+    // 그룹 리스트 조회
     const getGroups = async () => {
         const groupList = await axios
             .get("/groups", { withCredentials: true })
@@ -133,6 +198,7 @@ export const useGroupStore = defineStore("group", () => {
         return groupList;
     };
 
+    // 단일 그룹 조회
     const getGroup = async (groupId) => {
         const group = await axios
             .get(`/groups/${groupId}`, { withCredentials: true })
@@ -148,6 +214,7 @@ export const useGroupStore = defineStore("group", () => {
         return group;
     };
 
+    // 내가 속한 그룹 조회
     const getMyGroups = async () => {
         const myGroupList = await axios
             .get("/groups/users", { withCredentials: true })
@@ -164,6 +231,7 @@ export const useGroupStore = defineStore("group", () => {
         return myGroupList;
     };
 
+    // 그룹 가입하기
     const joinGroup = async (groupId, joinInfo) => {
         const joinGroupResult = await axios
             .post(`/groups/${groupId}/users`, joinInfo, {
@@ -192,6 +260,7 @@ export const useGroupStore = defineStore("group", () => {
         return joinGroupResult;
     };
 
+    // 그룹장 확인
     const checkGroupLeader = async (groupId) => {
         await axios
             .get(`/groups/${groupId}/check-leader`, {
@@ -201,7 +270,7 @@ export const useGroupStore = defineStore("group", () => {
                 if (response.status === httpStatus.OK) {
                     if (response.data) {
                         router.push({ name: "groupModify", params: groupId });
-                    } else{
+                    } else {
                         Swal.fire({
                             title: "그룹장이 아닙니다.",
                             icon: "error",
@@ -215,6 +284,15 @@ export const useGroupStore = defineStore("group", () => {
     };
 
     return {
+        groupNameFormat,
+        passwordFormat,
+        passwordCheck,
+        nameDuplicate,
+        groupDiscriptionFormat,
+        checkPassword,
+        validatePasswordFormat,
+        validateGroupDiscriptionFormat,
+        validateGroupNameFormat,
         modifyGroup,
         createGroup,
         checkDuplicate,
