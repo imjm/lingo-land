@@ -1,9 +1,5 @@
 <script setup>
-import GenericButton from "@/components/common/GenericButton.vue";
-import GenericInput from "@/components/common/GenericInput.vue";
-import PageNavigationButton from "@/components/common/PageNavigationButton.vue";
 import Profile from "@/components/common/Profile.vue";
-import RankList from "@/components/rank/RankList.vue";
 import TaleList from "../tale/TaleList.vue";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
