@@ -1,16 +1,26 @@
 <script setup>
-import IncorrectList from "@/components/incorrect/IncorrectList.vue";
 import PageNavigationButton from "@/components/common/PageNavigationButton.vue";
-import GenericButton from "../common/GenericButton.vue";
-
+import IncorrectList from "@/components/incorrect/IncorrectList.vue";
+import Swal from "sweetalert2";
 import { ref } from "vue";
-import { defineProps } from "vue";
+import GenericButton from "../common/GenericButton.vue";
 import NameTag from "../common/NameTag.vue";
 
-const props = defineProps({
-    incorrects: String,
-});
 const dialog = ref(false);
+
+function completeProblem() {
+    // 다이얼로그 닫기
+    dialog.value = false;
+
+    Swal.fire({
+        title: "학습을 완료했어요!!!",
+        icon: "success",
+        confirmButtonText: "완료",
+    }).then(() => {
+        // 학습 완료 버튼을 누르면 다시 다이얼로그 열기
+        dialog.value = true;
+    });
+}
 </script>
 
 <template>
@@ -24,9 +34,10 @@ const dialog = ref(false);
             }
         "
     />
-    <v-dialog v-model="dialog" width="50%" >
-        <NameTag data="오답노트"/>
-        <IncorrectList :incorrects="incorrects" />
+    <v-dialog v-model="dialog" width="50%">
+        <NameTag data="오답노트" />
+        <IncorrectList @click-event="completeProblem" />
+
         <div class="d-flex justify-end bg-white">
             <GenericButton
                 class="ma-3"
@@ -46,8 +57,4 @@ const dialog = ref(false);
     </v-dialog>
 </template>
 
-<style scoped>
-
-
-
-</style>
+<style scoped></style>
