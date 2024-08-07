@@ -56,6 +56,7 @@ onMounted(() => {
         >
             <GroupListItem
                 :group="group"
+                :check-my-group="props.checkMyGroup"
                 @click-event="clickFunction(group, group.id)"
             />
         </v-expansion-panel>

@@ -1,6 +1,8 @@
 <script setup>
 import { defineModel, defineProps } from "vue";
 
+const emit = defineEmits(["blurEvent"]);
+
 const model = defineModel();
 
 const props = defineProps({
@@ -16,6 +18,7 @@ const props = defineProps({
             v-model="model"
             variant="outlined"
             :placeholder="placeholder"
+            @blur="$emit('blurEvent')"
         ></v-textarea>
     </div>
 </template>
