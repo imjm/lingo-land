@@ -4,6 +4,7 @@ import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { useUserStore } from "./user";
 import { ref } from "vue";
+// import { l } from "vite/dist/node/types.d-aGj9QkWt";
 
 export const useOpenviduStore = defineStore("openvidu", () => {
   const OV = new OpenVidu();
@@ -63,5 +64,11 @@ export const useOpenviduStore = defineStore("openvidu", () => {
     }
   });
 
+  session.on("signal:gameEnd", function (event) {
+    const resultType = JSON.parse(event.data);
+    if (resultType.type === 1) {
+      router.replace({ name: "runningGameResult" });
+    }
+  });
   return { OV, session, participants };
 });

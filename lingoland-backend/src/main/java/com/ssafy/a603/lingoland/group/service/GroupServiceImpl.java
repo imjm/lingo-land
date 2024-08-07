@@ -67,6 +67,12 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
+	public Boolean isGroupLeader(int groupId, CustomUserDetails customUserDetails) {
+		Group group = getGroupById(groupId);
+		return isGroupLeader(group, customUserDetails.getMemberId());
+	}
+
+	@Override
 	@Transactional(readOnly = true)
 	public List<GroupInfoResponseDTO> findMyGroups(String keyword, CustomUserDetails customUserDetails) {
 		log.info("Finding my groups with keyword: {}", keyword);
@@ -92,19 +98,14 @@ public class GroupServiceImpl implements GroupService {
 	public void update(Integer groupId, UpdateGroupDTO request, MultipartFile groupImage,
 		CustomUserDetails customUserDetails) {
 		log.info("Updating group with ID: {}", groupId);
-		Group group = groupRepository.findById(request.id()).orElseThrow(
-			() -> {
-				log.error("Group cannot found with ID {}", request.id());
-				return new InvalidInputException(ErrorCode.GROUP_INVALID_INPUT);
-			}
-		);
+		Group group = getGroupById(request.id());
 
 		if (group.isDeleted()) {
 			log.error("Attempt to update a deleted group with ID: {}", groupId);
 			throw new InvalidInputException(ErrorCode.GROUP_INVALID_INPUT);
 		}
 
-		if (group.getLeader().getId() != customUserDetails.getMemberId()) {
+		if (!isGroupLeader(group, customUserDetails.getMemberId())) {
 			log.error("Member with ID: {} is not the leader of group ID: {}", customUserDetails.getMemberId(),
 				groupId);
 			throw new ForbiddenException(ErrorCode.GROUP_NOT_LEADER);
@@ -124,7 +125,7 @@ public class GroupServiceImpl implements GroupService {
 		Group group = groupRepository.findById(groupId).orElseThrow(
 			() -> new InvalidInputException(ErrorCode.GROUP_INVALID_INPUT)
 		);
-		if (group.getLeader().getId() != customUserDetails.getMemberId()) {
+		if (!isGroupLeader(group, customUserDetails.getMemberId())) {
 			log.error("Member with ID: {} is not the leader of group ID: {}", customUserDetails.getMemberId(), groupId);
 			throw new ForbiddenException(ErrorCode.GROUP_NOT_LEADER);
 		}
@@ -181,9 +182,7 @@ public class GroupServiceImpl implements GroupService {
 				return new NotFoundException(ErrorCode.NOT_FOUND);
 			});
 		groupMember.quit();
-		Group group = groupRepository.findById(groupId).orElseThrow(
-			() -> new InvalidInputException(ErrorCode.GROUP_INVALID_INPUT)
-		);
+		Group group = getGroupById(groupId);
 		group.quit();
 
 		log.info("Member removed from group ID: {}", groupId);
@@ -230,4 +229,13 @@ public class GroupServiceImpl implements GroupService {
 			});
 	}
 
+	private Group getGroupById(int groupId) {
+		return groupRepository.findById(groupId).orElseThrow(
+			() -> new InvalidInputException(ErrorCode.GROUP_INVALID_INPUT)
+		);
+	}
+
+	private boolean isGroupLeader(Group group, Integer memberId) {
+		return group.getLeader().getId() == memberId;
+	}
 }

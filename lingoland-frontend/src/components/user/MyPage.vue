@@ -3,32 +3,11 @@ import GenericButton from "@/components/common/GenericButton.vue";
 import PageNavigationButton from "@/components/common/PageNavigationButton.vue";
 import Profile from "@/components/common/Profile.vue";
 import incorrectDialog from "@/components/incorrect/IncorrectDialog.vue";
-import { useGroupStore } from "@/stores/groups";
+import router from "@/router";
 import GroupList from "../group/GroupList.vue";
 
-import { useTaleStore } from "@/stores/tales";
-import { ref } from "vue";
-
-const groupStore = useGroupStore();
-
-const incorrectList = ref([
-    "문제 1",
-    "문제 2",
-    "문제 3",
-    "문제 4",
-    "문제 5",
-    "문제 6",
-    "문제 7",
-    "문제 8",
-    "문제 9",
-    "문제 10",
-    // 데이터 받아오기
-]);
-
-const taleStore = useTaleStore();
-
 function clickTales() {
-    taleStore.myTalesList();
+    router.push({ name: "bookList" });
 }
 </script>
 
@@ -37,7 +16,7 @@ function clickTales() {
         <v-container>
             <v-row>
                 <v-col cols="5" class="d-flex justify-center" height="100vh">
-                    <Profile source="src\\assets\\sampleImg.jpg" />
+                    <Profile />
                 </v-col>
 
                 <v-col cols="7">
@@ -51,7 +30,12 @@ function clickTales() {
                         >
                             <v-row class="d-flex align-center justify-center">
                                 <v-col cols="4">
-                                    <h2 class="mx-10" style="font-size: xx-large; width :70%">내 그룹 목록</h2>
+                                    <h2
+                                        class="mx-10"
+                                        style="font-size: xx-large; width: 70%"
+                                    >
+                                        내 그룹 목록
+                                    </h2>
                                 </v-col>
                                 <v-col cols="8">
                                     <div class="mr-5 mt-4">
@@ -96,7 +80,7 @@ function clickTales() {
                     </v-row>
                     <v-row>
                         <v-col cols="6">
-                            <incorrectDialog :incorrects="incorrectList" />
+                            <incorrectDialog />
                         </v-col>
 
                         <v-col cols="6">
@@ -122,5 +106,4 @@ function clickTales() {
     border-radius: 4px;
     font-size: x-large;
 }
-
 </style>

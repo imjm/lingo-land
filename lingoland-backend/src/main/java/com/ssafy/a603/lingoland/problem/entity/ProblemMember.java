@@ -1,7 +1,6 @@
 package com.ssafy.a603.lingoland.problem.entity;
 
 import com.ssafy.a603.lingoland.global.entity.BaseTimeEntity;
-import com.ssafy.a603.lingoland.member.entity.Member;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import lombok.AccessLevel;
@@ -9,12 +8,11 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-
-import java.time.LocalDateTime;
+import org.hibernate.annotations.Where;
 
 @Getter
 @Entity
+@Where(clause = "is_deleted = false")
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProblemMember extends BaseTimeEntity {
@@ -24,10 +22,25 @@ public class ProblemMember extends BaseTimeEntity {
 
     private int submittedAnswer;
 
+    private boolean isCorrect;
+
+    private boolean isDeleted = false;
+
+    private int inCorrectCount;
+
     @Builder
     public ProblemMember(int submittedAnswer, ProblemMemberId id) {
         this.submittedAnswer = submittedAnswer;
         this.id = id;
+    }
+
+    public void updateCorrectAnswer() {
+        this.isCorrect = true;
+    }
+
+    public void updateInCorrectAnswer() {
+        this.isCorrect = false;
+        this.inCorrectCount++;
     }
 
 }

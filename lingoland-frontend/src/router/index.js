@@ -143,6 +143,16 @@ const router = createRouter({
                 },
             ],
         },
+        {
+            path: "book",
+            name: "bookList",
+            component: () => import("@/views/TaleListView.vue"),
+        },
+        {
+            path: "book/:bookId",
+            name: "bookDetail",
+            component: () => import("@/views/TalesDetailView.vue"),
+        },
     ],
 });
 

@@ -1,7 +1,7 @@
 spring:
 
   datasource:
-    url: jdbc:postgresql://postgres/lingoland
+    url: jdbc:postgresql://postgres:5432/lingoland
     username: postgres
     password: ssafy
     driver-class-name: org.postgresql.Driver
@@ -22,15 +22,11 @@ spring:
 
 logging:
   level:
-    org:
-      hibernate:
-        type:
-          descriptor:
-            sql: trace
-openvidu:
-  url: http://localhost:4443
-  secret: ssafy
+    root: debug
 
+openvidu:
+  url: ${OPENVIDU_URL}
+  secret: ${OPENVIDU_SECRET}
 # 이미지 저장 시 요청 크기 조절
 server:
   tomcat:

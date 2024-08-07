@@ -16,17 +16,19 @@ COPY . /app
 RUN gradle clean build --no-daemon -x test
 
 # JRE 이미지로 런타임 이미지 생성
-FROM openjdk:21-jdk-slim
+FROM openjdk:21-jdk
 
 WORKDIR /app
 
 COPY --from=build /app/build/libs/*.jar /app/lingoland-backend.jar
 
 # 프로덕션 설정 파일 복사
-COPY src/main/resources/application-prod.yml /app/config/application-prod.yml
+# COPY src/main/resources/application-prod.yml /app/config/application-prod.yml
+
+
 
 # 환경 변수 설정
-ENV SPRING_PROFILES_ACTIVE=prod
+# ENV SPRING_PROFILES_ACTIVE=prod
 
 
 EXPOSE 8080

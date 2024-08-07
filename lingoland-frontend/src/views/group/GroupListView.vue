@@ -5,7 +5,7 @@ import GroupList from "@/components/group/GroupList.vue";
 <template>
     <main class="mt-10">
         <div class="d-flex justify-center">
-            <v-sheet rounded class="ma-10" width="1000">
+            <v-sheet rounded class="ma-10" width="1000" height="800">
                 <v-row>
                     <h1 class="mt-7 mx-10">그룹 목록</h1>
                     <v-col class="mt-7 mb-0 pa-0">

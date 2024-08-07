@@ -15,7 +15,7 @@ const router = useRouter();
 const groupList = ref();
 const dialog = ref({
     groupInfo: Object,
-    isOpen: false,  
+    isOpen: false,
 });
 
 function clickFunction(groupInfo, groupId) {
@@ -56,6 +56,7 @@ onMounted(() => {
         >
             <GroupListItem
                 :group="group"
+                :check-my-group="props.checkMyGroup"
                 @click-event="clickFunction(group, group.id)"
             />
         </v-expansion-panel>

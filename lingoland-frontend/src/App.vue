@@ -33,7 +33,6 @@ import { RouterView } from "vue-router";
     >myGroupDetail</RouterLink
   >
   | <RouterLink :to="{ name: 'groupCreate' }">groupCreate</RouterLink> |
-  <RouterLink :to="{ name: 'groupModify' }">groupModify</RouterLink> |
   <RouterLink :to="{ name: 'groupMemberDetail', params: { memberId: '1' } }"
     >groupMemberDetail</RouterLink
   >
