@@ -1,7 +1,7 @@
 spring:
 
   datasource:
-    url: jdbc:postgresql://postgres/lingoland
+    url: jdbc:postgresql://postgres:5432/lingoland
     username: postgres
     password: ssafy
     driver-class-name: org.postgresql.Driver
