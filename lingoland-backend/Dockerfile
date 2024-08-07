@@ -16,7 +16,7 @@ COPY . /app
 RUN gradle clean build --no-daemon -x test
 
 # JRE 이미지로 런타임 이미지 생성
-FROM openjdk:21-jdk-slim
+FROM zulu-openjdk:21
 
 WORKDIR /app
 
