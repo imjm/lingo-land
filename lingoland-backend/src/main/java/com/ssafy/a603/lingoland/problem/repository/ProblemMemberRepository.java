@@ -1,7 +1,5 @@
 package com.ssafy.a603.lingoland.problem.repository;
 
-import com.ssafy.a603.lingoland.member.entity.Member;
-import com.ssafy.a603.lingoland.problem.entity.Problem;
 import com.ssafy.a603.lingoland.problem.entity.ProblemMember;
 import com.ssafy.a603.lingoland.problem.entity.ProblemMemberId;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,6 +21,6 @@ public interface ProblemMemberRepository extends JpaRepository<ProblemMember, Pr
     @Query("UPDATE ProblemMember pm SET pm.isDeleted = true WHERE pm.id.member.id = :memberId AND pm.id.problem.id = :problemId")
     void deleteByMemberIdAndProblemId(@Param("problemId") Integer problemId, @Param("memberId") Integer memberId);
 
-    @Query("SELECT pm FROM ProblemMember pm WHERE pm.id.problem = :problem AND pm.id.member = :member")
-    Optional<ProblemMember> findByProblemAndMember(@Param("problem") Problem problem, @Param("member") Member member);
+    @Query(value = "SELECT * FROM problem_member pm WHERE pm.problem_id = :problemId AND pm.member_id = :memberId", nativeQuery = true)
+    Optional<ProblemMember> findByProblemIdAndMemberIdIncludingDeleted(@Param("problemId") Integer problemId, @Param("memberId") Integer memberId);
 }

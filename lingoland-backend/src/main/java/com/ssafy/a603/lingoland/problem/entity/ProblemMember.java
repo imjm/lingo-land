@@ -41,6 +41,9 @@ public class ProblemMember extends BaseTimeEntity {
     public void updateInCorrectAnswer() {
         this.isCorrect = false;
         this.inCorrectCount++;
+        if(this.isDeleted == true) {
+            this.isDeleted = false;
+        }
     }
 
 }
