@@ -43,7 +43,7 @@ public class ProblemServiceImpl implements ProblemService {
             Problem problem = problemRepository.findById(problemDto.getProblemId())
                     .orElseThrow(() -> new IllegalArgumentException("Invalid problem id: " + problemDto.getProblemId()));
 
-            Optional<ProblemMember> optionalProblemMember = problemMemberRepository.findByProblemAndMember(problem, member);
+            Optional<ProblemMember> optionalProblemMember = problemMemberRepository.findByProblemIdAndMemberIdIncludingDeleted(problem.getId(), member.getId());
             ProblemMember problemMember;
             if(optionalProblemMember.isPresent()) {
                 problemMember = optionalProblemMember.get();
