@@ -6,4 +6,5 @@ import com.ssafy.a603.lingoland.group.entity.GroupMember;
 import com.ssafy.a603.lingoland.group.entity.GroupMemberId;
 
 public interface GroupMemberRepository extends JpaRepository<GroupMember, GroupMemberId> {
+    boolean existsByGroupIdAndMemberId(Integer groupId, Integer memberId);
 }
