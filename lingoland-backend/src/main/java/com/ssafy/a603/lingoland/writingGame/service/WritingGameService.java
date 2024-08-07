@@ -10,4 +10,6 @@ public interface WritingGameService {
 	int[] start(String sessionId, WritingGameStartRequestDTO request);
 
 	List<FairyTale> submitStory(String sessionId, DrawingRequestDTO dto);
+
+	void test(String sessionId, DrawingRequestDTO dto);
 }
