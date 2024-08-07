@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import CountdownTimer from "./CountdownTimer.vue";
 import SubmitButton from "../common/SubmitButton.vue";
+import GenericInputArea from "../common/GenericInputArea.vue";
 
 const textareaValue = ref("");
 
@@ -11,13 +12,11 @@ const handleTimesUp = () => {
 </script>
 
 <template>
-    <v-card width="400">
+    <v-card width="600">
         <CountdownTimer @timesUp="handleTimesUp" />
-        <v-textarea
-            v-model="textareaValue"
-            font-size="1.2em"
-            variant="outlined"
-        ></v-textarea>
+
+        <GenericInputArea v-model="textareaValue" />
+
         <div class="d-flex justify-end">
             <SubmitButton width="100" data="제출" />
         </div>

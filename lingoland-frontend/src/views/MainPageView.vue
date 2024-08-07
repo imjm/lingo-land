@@ -5,31 +5,64 @@ import PageNavigationButton from "@/components/common/PageNavigationButton.vue";
 import Profile from "@/components/common/Profile.vue";
 import RankList from "@/components/rank/RankList.vue";
 import { useGameRoomStore } from "@/stores/gameRoom";
+import { useOpenviduStore } from "@/stores/openvidu";
 import { useGameStore } from "@/stores/runningGame/gameStore";
-import { ref, onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
-const gameStore = useGameStore();
-const gameRoomStore = useGameRoomStore();
 const router = useRouter();
 
+const gameStore = useGameStore(); // 지울 예정
+const gameRoomStore = useGameRoomStore();
+const openviduStore = useOpenviduStore();
+
+const { OV, session } = openviduStore;
 const roomCode = ref("");
 
 function makeRoom() {
     const sessionPromise = gameRoomStore.getSession();
 
-    sessionPromise.then((sessionId) => {
-        router.push({
-            name: "gameRoom",
-            params: { roomId: sessionId },
-        });
+    sessionPromise.then((customToken) => {
+        session
+            .connect(customToken.token)
+            .then(() => {
+                const publisher = OV.initPublisher("publisher");
+                session.publish(publisher);
+
+                router.push({
+                    name: "gameRoom",
+                    params: { roomId: customToken.sessionId },
+                });
+            })
+            .catch((error) => {
+                console.error(
+                    "There was an error connecting to the session:",
+                    error
+                );
+            });
     });
 }
 
 function joinRoom() {
-    router.push({
-        name: "gameRoom",
-        params: { roomId: roomCode.value },
+    gameRoomStore.getToken(roomCode.value).then((customToken) => {
+        // 토큰을 얻어왔어
+        session
+            .connect(customToken.token)
+            .then(() => {
+                const publisher = OV.initPublisher("publisher");
+                session.publish(publisher);
+
+                router.push({
+                    name: "gameRoom",
+                    params: { roomId: roomCode.value },
+                });
+            })
+            .catch((error) => {
+                console.error(
+                    "There was an error connecting to the session:",
+                    error
+                );
+            });
     });
 }
 

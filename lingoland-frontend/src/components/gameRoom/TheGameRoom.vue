@@ -6,26 +6,24 @@ import { useGameRoomStore } from "@/stores/gameRoom";
 import { useOpenviduStore } from "@/stores/openvidu";
 import { useWritingGameStore } from "@/stores/writingGame";
 import { storeToRefs } from "pinia";
-import { default as swal, default as Swal } from "sweetalert2";
-import { onMounted, ref } from "vue";
+import Swal from "sweetalert2";
 import { useRoute } from "vue-router";
 import GenericButton from "../common/GenericButton.vue";
 import GenericInput from "../common/GenericInput.vue";
 
-window.Swal = swal;
+window.Swal = Swal;
 
 const route = useRoute();
 
 const openviduStore = useOpenviduStore();
-const gameRoomStore = useGameRoomStore();
 const writingGameStore = useWritingGameStore();
 
-const pageCount = ref();
-const { OV, session } = openviduStore;
+const { pageCount } = storeToRefs(writingGameStore);
+const { session } = openviduStore;
 const { participants } = storeToRefs(openviduStore);
 
 const startRunningGame = () => {
-    // 시그널 송신
+    // 달리기 게임 시작 시그널 송신
     session
         .signal({
             type: "gameStart",
@@ -63,37 +61,19 @@ const startWritingGame = () => {
         maxTurn: pageCount.value,
     });
 
-    // 시그널 송신
-    // session
-    //     .signal({
-    //         type: "gameStart",
-    //         data: JSON.stringify({ type: 2, data: "writing game" }),
-    //     })
-    //     .then(() => {
-    //         console.log("******************Game start writing signal sent");
-    //     })
-    //     .catch((error) => {
-    //         console.error("****************Error sending signal:", error);
-    //     });
+    // 글쓰기 게임 시작 시그널 송신
+    session
+        .signal({
+            type: "gameStart",
+            data: JSON.stringify({ type: 2, data: "writing game" }),
+        })
+        .then(() => {
+            console.log("******************Game start writing signal sent");
+        })
+        .catch((error) => {
+            console.error("****************Error sending signal:", error);
+        });
 };
-
-function joinRoom(sessionId) {
-    gameRoomStore.getToken(sessionId).then((customToken) => {
-        // 토큰을 얻어왔어
-        session
-            .connect(customToken)
-            .then(() => {
-                const publisher = OV.initPublisher("publisher");
-                session.publish(publisher);
-            })
-            .catch((error) => {
-                console.error(
-                    "There was an error connecting to the session:",
-                    error
-                );
-            });
-    });
-}
 
 // 방코드 복사하기
 async function writeClipboardText(text) {
@@ -108,10 +88,6 @@ async function writeClipboardText(text) {
         console.error(error.message);
     }
 }
-
-onMounted(() => {
-    joinRoom(route.params.roomId);
-});
 </script>
 
 <template>
