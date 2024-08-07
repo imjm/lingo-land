@@ -26,16 +26,21 @@ public class ProblemMember extends BaseTimeEntity {
 
     private boolean isDeleted = false;
 
+    private int inCorrectCount;
+
     @Builder
     public ProblemMember(int submittedAnswer, ProblemMemberId id) {
         this.submittedAnswer = submittedAnswer;
         this.id = id;
     }
 
-    public void updateIsCorrect() {
-        if(this.isCorrect == false) {
-            this.isCorrect = true;
-        }
+    public void updateCorrectAnswer() {
+        this.isCorrect = true;
+    }
+
+    public void updateInCorrectAnswer() {
+        this.isCorrect = false;
+        this.inCorrectCount++;
     }
 
 }
