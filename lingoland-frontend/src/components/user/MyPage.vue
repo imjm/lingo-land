@@ -4,27 +4,11 @@ import PageNavigationButton from "@/components/common/PageNavigationButton.vue";
 import Profile from "@/components/common/Profile.vue";
 import incorrectDialog from "@/components/incorrect/IncorrectDialog.vue";
 import router from "@/router";
-import { onMounted, ref } from "vue";
 import GroupList from "../group/GroupList.vue";
-import { useProblemStore } from "@/stores/problem";
-
-const problemStore = useProblemStore();
-
-const incorrectList = ref();
 
 function clickTales() {
     router.push({ name: "bookList" });
 }
-
-onMounted(() => {
-    const problemList = problemStore.getMyWrongProblems();
-
-    problemList.then((getvalue) => {
-        incorrectList.value = getvalue;
-
-        console.log(incorrectList.value)
-    });
-});
 </script>
 
 <template>
@@ -96,7 +80,7 @@ onMounted(() => {
                     </v-row>
                     <v-row>
                         <v-col cols="6">
-                            <incorrectDialog :incorrects="incorrectList" />
+                            <incorrectDialog />
                         </v-col>
 
                         <v-col cols="6">
