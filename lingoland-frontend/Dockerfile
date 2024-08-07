@@ -1,5 +1,5 @@
 # Node.js 공식 이미지 사용. 경량화된 Alpine Linux 기반
-FROM node:20.15.1-alpine AS build
+FROM node:lts-slim AS build
 
 # 작업 디렉토리 설정. 컨테이너 내 앱의 기본 경로
 WORKDIR /app
@@ -9,11 +9,11 @@ COPY package.json .
 COPY package-lock.json .
 
 # 라이브러리 설치
-RUN npm ci
+RUN npm i
 
 # 환경 변수 설정
 # ARG VITE_SERVER_URL
-ENV VITE_SERVER_URL=${VITE_SERVER_URL}
+# ENV VITE_SERVER_URL=${VITE_SERVER_URL}
 
 # 소스코드 복사
 COPY . /app

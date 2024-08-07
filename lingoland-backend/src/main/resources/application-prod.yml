@@ -29,7 +29,7 @@ logging:
             sql: trace
 openvidu:
   url: ${OPENVIDU_URL}
-  secret: ${OPENVICU_SECRET}
+  secret: ${OPENVIDU_SECRET}
 # 이미지 저장 시 요청 크기 조절
 server:
   tomcat:
