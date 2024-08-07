@@ -4,7 +4,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { ref } from "vue";
 import { addLights } from "./light";
 import { loadMapSection, loadNewMapSection } from "./map";
-import { handleMovement, loadModel, moveSide } from "./model";
+import { handleMovement, loadModel, moveSide, assignRandomModel } from "./model";
 import { useGameStore } from "./gameStore";
 import { updateTimer } from "./time";
 
@@ -36,7 +36,7 @@ function initDraw() {
         loadNewMapSection(i * 1950 + 325);
     }
 
-    loadModel(scene, renderer, (model1, animMixer) => {
+    assignRandomModel(scene, renderer, (model1, animMixer) => {
         model = model1;
         mixer = animMixer;
     });

@@ -1,17 +1,29 @@
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import * as THREE from "three";
-// import { scene, renderer,} from "./init";
 import { countdown } from "./time";
 import { checkAnswer } from "./question";
 import { useGameStore } from "./gameStore";
 import { useOpenviduStore } from "@/stores/openvidu";
 import { ref } from "vue";
+import { storeToRefs } from "pinia";
 
+const gameChars = ref([]);
 const openviduStore = useOpenviduStore();
-const { OV,session } = openviduStore;
+const { session } = openviduStore;
+const { participants } = storeToRefs(openviduStore);
+
 let moveSide = ref(0);
 let model;
 let mixer;
+
+const models = [
+    { name: "chick", path: "/cute_chick/scene.gltf", scale: 1, rotation: -Math.PI / 2 },
+    { name: "squid", path: "/squid/scene.gltf", scale: 10, rotation: 0 },
+    { name: "dragonfly", path: "/dragonfly/scene.gltf", scale: 3, rotation: -Math.PI / 2 },
+    { name: "unicorn", path: "/just_a_unicorn/scene.gltf", scale: 0.5, rotation: 0 },
+    { name: "dog", path: "/stylized_dog_low_poly/scene.gltf", scale: 3, rotation: 0 },
+    { name: "cat", path: "/little_cat/scene.gltf", scale: 7, rotation: 0 },
+];
 
 const showRunningGameResult = () => {
     // 시그널 송신
@@ -27,9 +39,29 @@ const showRunningGameResult = () => {
     });
 }
 
-function loadModel(scene, renderer, callback) {
+function assignRandomModel(scene, renderer, callback) {
+    const assignedModelIndices = [];
+    for (const participant of participants.value) {
+        let randomIndex;
+        do {
+            randomIndex = Math.floor(Math.random() * models.length);
+        } while (assignedModelIndices.includes(randomIndex));
+        assignedModelIndices.push(randomIndex);
+        const modelInfo = models[randomIndex];
+        loadModel(scene, renderer, modelInfo, callback);
+
+        // 참가자의 모델 정보를 저장
+        gameChars.value.push({
+            connectionId: participant.connectionId,
+            userId: participant.userId,
+            char: modelInfo
+        });
+    }
+}
+
+function loadModel(scene, renderer, modelInfo, callback) {
     const loader = new GLTFLoader();
-    loader.load("/little_cat/scene.gltf", function (gltf) {
+    loader.load(modelInfo.path, function (gltf) {
         gltf.scene.traverse((child) => {
             if (child.isMesh) {
                 child.material.needsUpdate = true;
@@ -41,13 +73,13 @@ function loadModel(scene, renderer, callback) {
         });
 
         model = gltf.scene; // 모델을 저장
-        model.scale.set(6,6,6); // 크기 몇 배
+        model.scale.set(modelInfo.scale, modelInfo.scale, modelInfo.scale); // 크기 몇 배
         scene.add(model);
         mixer = new THREE.AnimationMixer(model);
         const action = mixer.clipAction(gltf.animations[0]);
         action.play();
 
-        model.rotation.y = 0 // 90도 회전 (왼쪽을 보던 방향을 정면으로 조정)
+        model.rotation.y = modelInfo.rotation; // 모델 회전 설정
     
         const modelBoundingBox = new THREE.Box3().setFromObject(model);
         const modelHeight = modelBoundingBox.max.y - modelBoundingBox.min.y;
@@ -102,5 +134,4 @@ function handleMovement(keysPressed, coordinatesElement) {
     }
 }
 
-
-export { loadModel, handleMovement ,moveSide};
+export { loadModel, handleMovement, moveSide, assignRandomModel, gameChars };
