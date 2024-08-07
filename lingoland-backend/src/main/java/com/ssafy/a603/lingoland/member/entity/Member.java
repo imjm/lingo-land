@@ -51,7 +51,7 @@ public class Member extends BaseEntity {
 	@Column(nullable = false)
 	private String password;
 
-	@Column(columnDefinition = "TEXT")
+	@Column(length = 512)
 	private String profileImage;
 
 	@Column(nullable = false)
@@ -71,7 +71,7 @@ public class Member extends BaseEntity {
 	@Column(nullable = false)
 	private long writingPlayedCount;
 
-	@Column(columnDefinition = "TEXT")
+	@Column(length = 512)
 	private String refreshToken;
 
 	@Enumerated(EnumType.STRING)
