@@ -21,14 +21,20 @@ public class OpenViduController {
 
 
     @PostMapping("/sessions")
-    public ResponseEntity<?> createSession() throws OpenViduJavaClientException, OpenViduHttpException {
-        return ResponseEntity.status(HttpStatus.OK).body(openViduService.createSession());
+    public ResponseEntity<?> createSession(@CurrentUser CustomUserDetails customUserDetails) throws OpenViduJavaClientException, OpenViduHttpException {
+        String sessionId = openViduService.createSession();
+        String token = openViduService.generateToken(sessionId, customUserDetails, 1);
+
+        CustomTokenDto customTokenDto = CustomTokenDto.builder().sessionId(sessionId).token(token).build();
+        return ResponseEntity.status(HttpStatus.OK).body(customTokenDto);
     }
 
     @PostMapping("/sessions/{sessionId}/connections")
     public ResponseEntity<?> generateToken(@PathVariable(value = "sessionId") String sessionId,
-                                        @CurrentUser CustomUserDetails customUserDetails) throws OpenViduJavaClientException, OpenViduHttpException {
-        String token = openViduService.generateToken(sessionId, customUserDetails);
-        return ResponseEntity.status(HttpStatus.OK).body(token);
+                                           @CurrentUser CustomUserDetails customUserDetails) throws OpenViduJavaClientException, OpenViduHttpException {
+        String token = openViduService.generateToken(sessionId, customUserDetails, 2);
+
+        CustomTokenDto customTokenDto = CustomTokenDto.builder().sessionId(sessionId).token(token).build();
+        return ResponseEntity.status(HttpStatus.OK).body(customTokenDto);
     }
 }
