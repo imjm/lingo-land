@@ -6,7 +6,7 @@ import { defineModel, defineProps, defineEmits } from "vue";
  data: input 컴포넌트 위에 지정할 이름
  variant: input field 모양을 지정
 */
-defineEmits(["blurEvent"]);
+const emit = defineEmits(["blurEvent", "keyUpEvent"]);
 
 const model = defineModel();
 
@@ -31,6 +31,7 @@ const props = defineProps({
             variant="outlined"
             :placeholder="hint"
             @blur="$emit('blurEvent')"
+            @keyup.enter="$emit('keyUpEvent')"
             :min="min"
             :max="max"
         ></v-text-field>
