@@ -26,7 +26,7 @@ logging:
       hibernate:
         type:
           descriptor:
-            sql: trace
+            sql: debug
 openvidu:
   url: ${OPENVIDU_URL}
   secret: ${OPENVIDU_SECRET}
