@@ -3,30 +3,8 @@ import GenericButton from "@/components/common/GenericButton.vue";
 import PageNavigationButton from "@/components/common/PageNavigationButton.vue";
 import Profile from "@/components/common/Profile.vue";
 import incorrectDialog from "@/components/incorrect/IncorrectDialog.vue";
-import { useGroupStore } from "@/stores/groups";
-import GroupList from "../group/GroupList.vue";
-
-import { useTaleStore } from "@/stores/tales";
-import { ref } from "vue";
 import router from "@/router";
-
-const groupStore = useGroupStore();
-
-const incorrectList = ref([
-    "문제 1",
-    "문제 2",
-    "문제 3",
-    "문제 4",
-    "문제 5",
-    "문제 6",
-    "문제 7",
-    "문제 8",
-    "문제 9",
-    "문제 10",
-    // 데이터 받아오기
-]);
-
-const taleStore = useTaleStore();
+import GroupList from "../group/GroupList.vue";
 
 function clickTales() {
     router.push({ name: "bookList" });
@@ -38,7 +16,7 @@ function clickTales() {
         <v-container>
             <v-row>
                 <v-col cols="5" class="d-flex justify-center" height="100vh">
-                    <Profile source="src\\assets\\sampleImg.jpg" />
+                    <Profile />
                 </v-col>
 
                 <v-col cols="7">
@@ -102,7 +80,7 @@ function clickTales() {
                     </v-row>
                     <v-row>
                         <v-col cols="6">
-                            <incorrectDialog :incorrects="incorrectList" />
+                            <incorrectDialog />
                         </v-col>
 
                         <v-col cols="6">
