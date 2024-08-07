@@ -1,92 +1,20 @@
 package com.ssafy.a603.lingoland.problem.service;
 
-import com.ssafy.a603.lingoland.member.entity.Member;
-import com.ssafy.a603.lingoland.member.repository.MemberRepository;
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 import com.ssafy.a603.lingoland.problem.dto.CreateGameResultsDto;
 import com.ssafy.a603.lingoland.problem.dto.GetWrongProblemsDto;
-import com.ssafy.a603.lingoland.problem.entity.Problem;
-import com.ssafy.a603.lingoland.problem.entity.ProblemMember;
-import com.ssafy.a603.lingoland.problem.entity.ProblemMemberId;
-import com.ssafy.a603.lingoland.problem.repository.ProblemMemberRepository;
-import com.ssafy.a603.lingoland.problem.repository.ProblemRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-@Service
-@RequiredArgsConstructor
-@Transactional(readOnly = true)
-public class ProblemService {
+public interface ProblemService {
 
-    private final ProblemRepository problemRepository;
-    private final ProblemMemberRepository problemMemberRepository;
-    private final MemberRepository memberRepository;
+    void createGameResults(CreateGameResultsDto createGameResultsDto, CustomUserDetails customUserDetails);
 
-    @Transactional
-    public void createGameResults(CreateGameResultsDto createGameResultsDto, CustomUserDetails customUserDetails) {
-        Member member = getMember(customUserDetails);
+    List<GetWrongProblemsDto> getWrongProblems(CustomUserDetails customUserDetails);
 
-        createGameResultsDto.getProblemList().forEach(problemDto -> {
-            Problem problem = problemRepository.findById(problemDto.getProblemId())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid problem id: " + problemDto.getProblemId()));
+    List<GetWrongProblemsDto> getWrongProblemsByGroupLeader(Integer groupId, Integer memberId, CustomUserDetails customUserDetails);
 
-            ProblemMemberId problemMemberId = new ProblemMemberId(member, problem);
+    void deleteWrongProblems(Integer problemId, CustomUserDetails customUserDetails);
 
-            ProblemMember problemMember = ProblemMember.builder()
-                    .id(problemMemberId)
-                    .submittedAnswer(problemDto.getAnswer())
-                    .build();
 
-            updateProblemMemberAndProblem(problem, problemMember, problemDto.getAnswer());
-
-            problemMemberRepository.save(problemMember);
-        });
-    }
-
-    public List<GetWrongProblemsDto> getWrongProblems(CustomUserDetails customUserDetails) {
-        Integer memberId = customUserDetails.getMemberId();
-        List<ProblemMember> problemMembers = problemMemberRepository.findByMemberIdAndIsCorrectFalse(memberId);
-
-        return problemMembers.stream()
-                .map(this::mapToGetWrongProblemsDto)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional
-    public void deleteWrongProblems(Integer problemId, CustomUserDetails customUserDetails) {
-        problemMemberRepository.deleteByMemberIdAndProblemId(problemId, customUserDetails.getMemberId());
-    }
-
-    private void updateProblemMemberAndProblem(Problem problem, ProblemMember problemMember, int answer) {
-        if (answer == problem.getDetail().getAnswer()) {
-            problemMember.updateIsCorrect();
-            problem.updateCorrectAnswerCount();
-        } else {
-            problem.updateInCorrectAnswerCount();
-        }
-    }
-
-    private GetWrongProblemsDto mapToGetWrongProblemsDto(ProblemMember problemMember) {
-        Integer problemId = problemMember.getId().getProblem().getId();
-        Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid Problem"));
-
-        return GetWrongProblemsDto.builder()
-                .problemId(problemId)
-                .problem(problem.getDetail().getProblem())
-                .choices(problem.getDetail().getChoices())
-                .answer(problem.getDetail().getAnswer())
-                .explanation(problem.getDetail().getExplanation())
-                .submittedAnswer(problemMember.getSubmittedAnswer())
-                .build();
-    }
-
-    private Member getMember(CustomUserDetails customUserDetails) {
-        return memberRepository.findById(customUserDetails.getMemberId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid member"));
-    }
 }
