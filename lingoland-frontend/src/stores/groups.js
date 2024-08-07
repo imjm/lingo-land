@@ -22,10 +22,7 @@ export const useGroupStore = defineStore("group", () => {
     /**
      * actions
      */
-    function checkPassword(
-        checkPassword,
-        originPassword
-    ) {
+    function checkPassword(checkPassword, originPassword) {
         if (originPassword === checkPassword) {
             passwordCheck.value = false;
         } else {
@@ -72,8 +69,6 @@ export const useGroupStore = defineStore("group", () => {
 
     //그룹명 중복체크
     const checkDuplicate = async (groupName) => {
-        let return_value;
-        console.log(groupName);
         await axios
             .get(`/groups/check/${groupName}`, { withCredentials: true })
             .then((response) => {
@@ -84,21 +79,17 @@ export const useGroupStore = defineStore("group", () => {
                         icon: "success",
                         confirmButtonText: "완료",
                     });
-                } else {
+                }
+            })
+            .catch((error) => {
+                if (error.response.status === httpStatus.CONFLICT) {
                     nameDuplicate.value = true;
                     Swal.fire({
                         title: "중복된 그룹 이름이 있어요",
                         icon: "error",
                     });
                 }
-            })
-            .catch((error) => {
-                if (error.status === httpStatus.CONFLICT) {
-                    return_value = false;
-                }
             });
-
-        return return_value;
     };
 
     // 그룹 등록
