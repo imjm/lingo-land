@@ -4,13 +4,13 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { ref } from "vue";
 import { addLights } from "./light";
 import { loadMapSection, loadNewMapSection } from "./map";
-import { handleChickMovement } from "./model";
+import { handleMovement, loadModel, moveSide, assignRandomModel } from "./model";
 import { useGameStore } from "./gameStore";
 import { updateTimer } from "./time";
 
-let renderer, scene, mixer, camera, controls, chickModel;
-let moveSide = ref(0);
+let renderer, scene, mixer, camera, controls, model;
 const gameStore = useGameStore();
+
 // 카메라 설정
 const cameraSettings = {
     distance: 10, // 카메라와 캐릭터 사이의 거리
@@ -22,7 +22,6 @@ let keysPressed = setupKeyListeners();
 
 function initDraw() {
     const canvas = document.querySelector("#c");
-    // const timerElement = document.querySelector("#timer");
     const coordinatesElement = document.querySelector("#coordinates");
 
     scene = initScene();
@@ -37,12 +36,14 @@ function initDraw() {
         loadNewMapSection(i * 1950 + 325);
     }
 
-    loadChickModel();
-    
-    let startTime = Date.now(); // 타이머 시작 시간
-    
-    window.addEventListener("resize", onWindowResize, false);
+    assignRandomModel(scene, renderer, (model1, animMixer) => {
+        model = model1;
+        mixer = animMixer;
+    });
 
+    let startTime = Date.now(); // 타이머 시작 시간
+
+    window.addEventListener("resize", onWindowResize, false);
 
     function animate() {
         if (gameStore.isGameEnded) {
@@ -57,13 +58,14 @@ function initDraw() {
         updateCameraPosition();
 
         updateTimer(startTime);
-        handleChickMovement(keysPressed, coordinatesElement);
+        handleMovement(keysPressed, coordinatesElement);
 
         renderer.render(scene, camera);
     }
 
     animate();
 }
+
 function initScene() {
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x87ceeb); // 하늘색 배경 설정
@@ -102,36 +104,6 @@ function initControls(camera, renderer) {
     return controls;
 }
 
-function loadChickModel() {
-    let loader = new GLTFLoader();
-    loader.load("/cute_chick/scene.gltf", function (gltf) {
-        gltf.scene.traverse((child) => {
-            if (child.isMesh) {
-                child.material.needsUpdate = true;
-                if (child.material.map) {
-                    child.material.map.anisotropy =
-                        renderer.capabilities.getMaxAnisotropy();
-                    child.material.map.needsUpdate = true;
-                }
-            }
-        });
-
-        chickModel = gltf.scene; // 병아리 모델을 저장
-        chickModel.scale.set(1, 1, 1); // 크기 1배
-        scene.add(chickModel);
-        mixer = new THREE.AnimationMixer(chickModel);
-        const action = mixer.clipAction(gltf.animations[0]);
-        action.play();
-
-        chickModel.rotation.y = -Math.PI / 2; // 90도 회전 (왼쪽을 보던 방향을 정면으로 조정)
-
-        const chickBoundingBox = new THREE.Box3().setFromObject(chickModel);
-        const chickHeight = chickBoundingBox.max.y - chickBoundingBox.min.y;
-        chickModel.position.y = chickHeight / 2; // 맵 바닥 위로 위치 조정
-    });
-}
-
-// 키보드 이벤트
 function setupKeyListeners() {
     let keysPressed = {};
 
@@ -162,25 +134,30 @@ function setupKeyListeners() {
 }
 
 function updateCameraPosition() {
-    if (chickModel) {
-        const chickPosition = chickModel.position.clone();
-        const chickRotation = chickModel.rotation.y;
+    if (model) {
+        const modelPosition = model.position.clone();
 
         const cameraOffset = new THREE.Vector3(
-            cameraSettings.distance * Math.sin(cameraSettings.angle),
+            0,
             cameraSettings.height,
-            cameraSettings.distance * Math.cos(cameraSettings.angle)
+            -cameraSettings.distance
         );
 
-        cameraOffset.applyMatrix4(
-            new THREE.Matrix4().makeRotationY(chickRotation)
+        // 카메라 위치를 캐릭터의 뒤쪽에 배치
+        camera.position.set(
+            0,
+            modelPosition.y + cameraOffset.y+3,
+            modelPosition.z + cameraOffset.z
         );
-        camera.position.set(0, chickPosition.y + cameraOffset.y, chickPosition.z + cameraOffset.z); // x축을 0으로 설정
-        camera.lookAt(0,chickPosition.y+3,chickPosition.z); // 카메라가 병아리 모델을 항상 바라보도록 설정
-    
-        gameStore.updateZCoordinate(chickPosition.z);
+
+        // 카메라가 캐릭터를 바라보도록 설정
+        camera.lookAt(0, modelPosition.y+3, modelPosition.z);
+
+        gameStore.updateZCoordinate(modelPosition.z);
     }
 }
+
+
 
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -196,7 +173,7 @@ export {
     mixer,
     camera,
     controls,
-    chickModel,
+    model,
     moveSide,
     cameraSettings,
     updateCameraPosition,
