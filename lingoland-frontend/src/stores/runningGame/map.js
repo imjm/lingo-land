@@ -20,7 +20,7 @@ function loadMapSection(zPosition) {
             }
         });
 
-        gltf.scene.scale.set(0.02, 0.02, 0.02); // 크기 1.5배로 확장
+        gltf.scene.scale.set(0.015, 0.015, 0.015); // 크기 1.5배로 확장
         gltf.scene.position.set(0, 0, zPosition);
         scene.add(gltf.scene);
     });
@@ -44,7 +44,7 @@ function loadNewMapSection(zPosition) {
             }
         });
 
-        gltf.scene.scale.set(0.02, 0.02, 0.02); // 크기 1.5배로 확장
+        gltf.scene.scale.set(0.015, 0.015, 0.015); // 크기 1.5배로 확장
         gltf.scene.position.set(0, 0, zPosition);
         scene.add(gltf.scene);
     });
