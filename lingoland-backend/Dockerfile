@@ -28,7 +28,7 @@ COPY --from=build /app/build/libs/*.jar /app/lingoland-backend.jar
 
 
 # 환경 변수 설정
-# ENV SPRING_PROFILES_ACTIVE=prod
+ENV SPRING_PROFILES_ACTIVE=prod
 
 
 EXPOSE 8080
