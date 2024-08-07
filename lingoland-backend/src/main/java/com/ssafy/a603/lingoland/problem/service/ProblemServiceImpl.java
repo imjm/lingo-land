@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,12 +43,17 @@ public class ProblemServiceImpl implements ProblemService {
             Problem problem = problemRepository.findById(problemDto.getProblemId())
                     .orElseThrow(() -> new IllegalArgumentException("Invalid problem id: " + problemDto.getProblemId()));
 
-            ProblemMemberId problemMemberId = new ProblemMemberId(member, problem);
-
-            ProblemMember problemMember = ProblemMember.builder()
-                    .id(problemMemberId)
-                    .submittedAnswer(problemDto.getAnswer())
-                    .build();
+            Optional<ProblemMember> optionalProblemMember = problemMemberRepository.findByProblemAndMember(problem, member);
+            ProblemMember problemMember;
+            if(optionalProblemMember.isPresent()) {
+                problemMember = optionalProblemMember.get();
+            } else {
+                ProblemMemberId problemMemberId = new ProblemMemberId(member, problem);
+                problemMember = ProblemMember.builder()
+                        .id(problemMemberId)
+                        .submittedAnswer(problemDto.getAnswer())
+                        .build();
+            }
 
             updateProblemMemberAndProblem(problem, problemMember, problemDto.getAnswer());
 
@@ -94,9 +100,10 @@ public class ProblemServiceImpl implements ProblemService {
 
     private void updateProblemMemberAndProblem(Problem problem, ProblemMember problemMember, int answer) {
         if (answer == problem.getDetail().getAnswer()) {
-            problemMember.updateIsCorrect();
+            problemMember.updateCorrectAnswer();
             problem.updateCorrectAnswerCount();
         } else {
+            problemMember.updateInCorrectAnswer();
             problem.updateInCorrectAnswerCount();
         }
     }
