@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 public class LingolandApplication {
 
 	public static void main(String[] args) {
+		System.out.println("********************************");
 		SpringApplication.run(LingolandApplication.class, args);
 	}
 
