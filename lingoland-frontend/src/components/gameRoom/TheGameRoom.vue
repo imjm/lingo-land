@@ -2,18 +2,19 @@
 import sampleImg from "@/assets/sampleImg.jpg";
 import runningImg from "@/assets/달리기.jpg";
 import GameMemberList from "@/components/gameRoom/GameMemberList.vue";
-import { useGameRoomStore } from "@/stores/gameRoom";
 import { useOpenviduStore } from "@/stores/openvidu";
 import { useWritingGameStore } from "@/stores/writingGame";
 import { storeToRefs } from "pinia";
 import Swal from "sweetalert2";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import GenericButton from "../common/GenericButton.vue";
 import GenericInput from "../common/GenericInput.vue";
+import NameTag from "../common/NameTag.vue";
 
 window.Swal = Swal;
 
 const route = useRoute();
+const router = useRouter();
 
 const openviduStore = useOpenviduStore();
 const writingGameStore = useWritingGameStore();
@@ -23,6 +24,8 @@ const { session } = openviduStore;
 const { participants } = storeToRefs(openviduStore);
 
 const startRunningGame = () => {
+    // 방장인지 아닌지 확인해야함
+
     // 달리기 게임 시작 시그널 송신
     session
         .signal({
@@ -38,6 +41,8 @@ const startRunningGame = () => {
 };
 
 const startWritingGame = () => {
+    // 방장인지 아닌지 확인해야함
+
     if (!pageCount.value || pageCount.value <= 0) {
         Swal.fire({
             title: "한 페이지 이상으로 입력하세요",
@@ -56,6 +61,7 @@ const startWritingGame = () => {
         return;
     }
 
+    // 글쓰기 게임 시작 서버로 API 호출
     writingGameStore.setWritingGame(route.params.roomId, {
         numPart: participants.value.length,
         maxTurn: pageCount.value,
@@ -88,6 +94,13 @@ async function writeClipboardText(text) {
         console.error(error.message);
     }
 }
+
+// 방에서 나가기
+async function outSession() {
+    session.disconnect();
+
+    router.replace({ name: "mainPage" });
+}
 </script>
 
 <template>
@@ -95,6 +108,7 @@ async function writeClipboardText(text) {
         <v-container>
             <v-row>
                 <v-col cols="5">
+                    <NameTag data="플레이어"></NameTag>
                     <GameMemberList
                         :members="participants"
                         :style="{ height: '90vh' }"
@@ -204,6 +218,10 @@ async function writeClipboardText(text) {
                             URL 복사하기
                         </v-btn>
                     </div>
+
+                    <div class="d-flex justify-space-evenly mt-10">
+                        <v-btn id="out" @click="outSession"> 나가기 </v-btn>
+                    </div>
                 </v-col>
             </v-row>
         </v-container>
@@ -224,6 +242,15 @@ async function writeClipboardText(text) {
     width: 40%;
     height: 150px;
     background-color: #d2f0ff;
+    border-radius: 1%;
+}
+
+#out {
+    width: 85%;
+    height: 100px;
+    font-size: x-large;
+    font-weight: 600;
+    background-color: #9e9e9e;
     border-radius: 1%;
 }
 </style>

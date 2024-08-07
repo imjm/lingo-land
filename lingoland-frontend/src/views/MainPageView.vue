@@ -12,7 +12,7 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 
-const gameStore = useGameStore(); // 지울 예정
+const gameStore = useGameStore(); // 삭제 예정
 const gameRoomStore = useGameRoomStore();
 const openviduStore = useOpenviduStore();
 
@@ -26,6 +26,11 @@ function makeRoom() {
         session
             .connect(customToken.token)
             .then(() => {
+                console.log(
+                    "****my connectionId",
+                    session.connection
+                );
+
                 const publisher = OV.initPublisher("publisher");
                 session.publish(publisher);
 
@@ -49,6 +54,11 @@ function joinRoom() {
         session
             .connect(customToken.token)
             .then(() => {
+                console.log(
+                    "****my connectionId",
+                    session.connection
+                );
+
                 const publisher = OV.initPublisher("publisher");
                 session.publish(publisher);
 
@@ -66,6 +76,7 @@ function joinRoom() {
     });
 }
 
+// 삭제 예정
 onMounted(() => {
     const reesult = {
         problemList: [

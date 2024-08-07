@@ -50,9 +50,12 @@ export const useOpenviduStore = defineStore("openvidu", () => {
         });
     });
 
-    // 세션에 새로운 유저가 나가면 호출되는 콜백함수
+    // 세션에 유저가 나가면 호출되는 콜백함수
     session.on("connectionDestroyed", (event) => {
         const connectionId = event.connection.connectionId;
+
+        console.log("***********connectionDestroyed", event);
+        console.log("**********participants", participants.value);
 
         participants.value = participants.value.filter(
             (participant) => participant.connectionId !== connectionId
