@@ -93,7 +93,7 @@ function createGroup() {
                                         data="중복확인"
                                         id="checkDuplicate"
                                         height="56"
-                                        @click-event="groupStore.checkDuplicate"
+                                        @click-event="groupStore.checkDuplicate(groupInfo.name)"
                                     />
                                 </v-col>
                             </v-row>
