@@ -20,8 +20,16 @@ onMounted(() => {
         <v-container>
             <v-row>
                 <v-col cols="5">
-                    <Profile :others="true" :id="userId" />
-                    <IncorrectDialogByGroupLeader :group-id="route.params.groupId" :member-id="userId" />
+                    <Profile
+                        class="mb-2"
+                        :others="true"
+                        :id="userId"
+                        :style="{ height: '50%' }"
+                    />
+                    <IncorrectDialogByGroupLeader
+                        :group-id="route.params.groupId"
+                        :member-id="userId"
+                    />
                 </v-col>
 
                 <v-col cols="7">

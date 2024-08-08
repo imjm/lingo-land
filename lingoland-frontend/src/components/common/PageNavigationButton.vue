@@ -29,13 +29,13 @@ const props = defineProps({
                 <div class="text-h4 font-weight-black">
                     {{ data }}
                 </div>
-                <div class="d-flex justify-center align-center" style="flex: 1">
+                <div class="d-flex justify-center align-center pa-1" style="flex: 1">
                     <img
                         v-if="source"
                         :src="source"
                         style="
                             max-width: 100%;
-                            max-height: 100%;
+                            height: 90%;
                             object-fit: contain;
                         "
                         alt="Icon"
