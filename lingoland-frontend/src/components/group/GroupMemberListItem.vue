@@ -20,30 +20,35 @@ onMounted(() => {
     if (props.groupMember.profileImage === null) {
         props.groupMember.profileImage = sampleImage;
     }
-    console.log(props.groupMember)
+    console.log(props.groupMember);
 });
 
 async function memberDetail() {
-
-    await userStore.getProfile().then((response)=>{
-        if(response.nickname===props.groupMember.nickname){
-            router.push({name : "myPage"})
-            return
+    await userStore.getProfile().then((response) => {
+        if (response.nickname === props.groupMember.nickname) {
+            router.push({ name: "myPage" });
+            return;
         }
-    })
+    });
     groupStore.checkGroupLeader(route.params.groupId).then((isLeader) => {
         if (isLeader) {
-            console.log("byAdmin")
+            console.log("byAdmin");
             router.push({
                 name: "groupMemberDetailByAdmin",
-                params: { memberId: props.groupMember.loginId, groupId : props.group.id},
+                params: {
+                    memberId: props.groupMember.loginId,
+                    groupId: props.group.id,
+                },
             });
         } else {
-            console.log("justMember")
+            console.log("justMember");
 
             router.push({
                 name: "groupMemberDetail",
-                params: { memberId: props.groupMember.loginId,groupId : props.group.id},
+                params: {
+                    memberId: props.groupMember.loginId,
+                    groupId: props.group.id,
+                },
             });
         }
     });
