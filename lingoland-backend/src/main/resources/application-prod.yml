@@ -1,9 +1,9 @@
 spring:
 
   datasource:
-    url: jdbc:postgresql://postgres:5432/lingoland
-    username: postgres
-    password: ssafy
+    url: ${POSTGRES_URL}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
   data:
     redis:
@@ -13,9 +13,7 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+
 
   jwt:
     secret: ${JWT_SECRET}
