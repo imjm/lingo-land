@@ -87,10 +87,21 @@ export const useOpenviduStore = defineStore("openvidu", () => {
         participants.value = [];
     }
 
+    function isLeader() {
+        console.log("************isLeader", participants.value);
+
+        const isLeader = participants.value.some(
+            (participant) => participant.role === "MODERATOR"
+        );
+
+        return isLeader;
+    }
+
     return {
         OV,
         session,
         participants,
         resetParticipants,
+        isLeader,
     };
 });

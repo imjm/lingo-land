@@ -24,8 +24,14 @@ const { session } = openviduStore;
 
 const startRunningGame = () => {
     // 방장인지 아닌지 확인해야함
+    if (!openviduStore.isLeader()) {
+        Swal.fire({
+            title: "방장이 아닙니다.",
+            icon: "error",
+        });
 
- 
+        return;
+    }
 
     // 달리기 게임 시작 시그널 송신
     session
@@ -43,8 +49,14 @@ const startRunningGame = () => {
 
 const startWritingGame = () => {
     // 방장인지 아닌지 확인해야함
+    if (!openviduStore.isLeader()) {
+        Swal.fire({
+            title: "방장이 아닙니다.",
+            icon: "error",
+        });
 
-
+        return;
+    }
 
     if (!pageCount.value || pageCount.value <= 0) {
         Swal.fire({
