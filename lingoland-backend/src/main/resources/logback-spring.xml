@@ -18,12 +18,14 @@
     </springProfile>
 
     <springProfile name="prod">
+        <!-- 특정 패키지 로거 설정 (필요에 따라 추가) -->
         <logger name="com.ssafy.a603.lingoland" level="debug" additivity="false">
-            <appender-ref ref="FILE"/>
+            <appender-ref ref="THREAD_CONSOLE"/>
         </logger>
 
+        <!-- 루트 로거 설정 -->
         <root level="info">
-            <appender-ref ref="FILE"/>
+            <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
 
