@@ -1,26 +1,16 @@
 <script setup>
 import PageNavigationButton from "@/components/common/PageNavigationButton.vue";
 import IncorrectList from "@/components/incorrect/IncorrectList.vue";
-import Swal from "sweetalert2";
-import { ref } from "vue";
+import { ref, defineProps } from "vue";
 import GenericButton from "../common/GenericButton.vue";
 import NameTag from "../common/NameTag.vue";
 
 const dialog = ref(false);
+const props = defineProps({
+    groupId : Number,
+    memberId : String,
 
-function completeProblem() {
-    // 다이얼로그 닫기
-    dialog.value = false;
-
-    Swal.fire({
-        title: "학습을 완료했어요!!!",
-        icon: "success",
-        confirmButtonText: "완료",
-    }).then(() => {
-        // 학습 완료 버튼을 누르면 다시 다이얼로그 열기
-        dialog.value = true;
-    });
-}
+})
 </script>
 
 <template>
@@ -36,7 +26,7 @@ function completeProblem() {
     />
     <v-dialog v-model="dialog" width="50%">
         <NameTag data="오답노트" />
-        <IncorrectList @click-event="completeProblem" />
+        <IncorrectList :group-id="groupId" :member-id="memberId"/>
 
         <div class="d-flex justify-end bg-white">
             <GenericButton

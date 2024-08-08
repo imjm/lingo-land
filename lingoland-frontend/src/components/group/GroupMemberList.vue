@@ -1,10 +1,15 @@
 <script setup>
+import { onMounted } from "vue";
 import GroupMemberListItem from "./GroupMemberListItem.vue";
 
 const props = defineProps({
     groupMemberList: Object,
-    groupLeader: String,
+    group: Object,
 });
+
+onMounted(()=> {
+    console.log(props.groupMemberList)
+})
 </script>
 
 <template>
@@ -16,7 +21,7 @@ const props = defineProps({
         >
             <GroupMemberListItem
                 :groupMember="groupMember"
-                :group-leader="groupLeader"
+                :group="group"
             />
         </v-expansion-panel>
     </v-expansion-panels>

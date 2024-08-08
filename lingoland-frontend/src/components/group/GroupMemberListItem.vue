@@ -2,25 +2,50 @@
 import { defineProps, onMounted } from "vue";
 import sampleImage from "@/assets/sampleImg.jpg";
 import router from "@/router";
-
+import { useGroupStore } from "@/stores/groups";
+import { useRoute } from "vue-router";
+import { useUserStore } from "@/stores/user";
+const groupStore = useGroupStore();
+const route = useRoute();
+const userStore = useUserStore();
 const props = defineProps({
     groupMember: {
         type: Object,
         required: true,
     },
-    groupLeader: String,
+    group: Object,
 });
 
 onMounted(() => {
     if (props.groupMember.profileImage === null) {
         props.groupMember.profileImage = sampleImage;
     }
+    console.log(props.groupMember)
 });
 
-function memberDetail() {
-    router.push({
-        name: "groupMemberDetail",
-        params: { memberId: props.groupMember.loginId },
+async function memberDetail() {
+
+    await userStore.getProfile().then((response)=>{
+        if(response.nickname===props.groupMember.nickname){
+            router.push({name : "myPage"})
+            return
+        }
+    })
+    groupStore.checkGroupLeader(route.params.groupId).then((isLeader) => {
+        if (isLeader) {
+            console.log("byAdmin")
+            router.push({
+                name: "groupMemberDetailByAdmin",
+                params: { memberId: props.groupMember.loginId, groupId : props.group.id},
+            });
+        } else {
+            console.log("justMember")
+
+            router.push({
+                name: "groupMemberDetail",
+                params: { memberId: props.groupMember.loginId,groupId : props.group.id},
+            });
+        }
     });
 }
 </script>
@@ -43,7 +68,7 @@ function memberDetail() {
 
             <v-spacer></v-spacer>
             <v-col
-                v-if="groupMember.nickname === groupLeader"
+                v-if="groupMember.isLeader"
                 class="text-no-wrap text-right text-grey"
                 sm="auto"
             >
