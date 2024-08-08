@@ -6,6 +6,7 @@ import GenericInput from "../common/GenericInput.vue";
 import NameTag from "../common/NameTag.vue";
 import SubmitButton from "../common/SubmitButton.vue";
 import { useUserStore } from "@/stores/user";
+import BackButton from "../common/BackButton.vue";
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -57,6 +58,7 @@ function cancel() {
 </script>
 
 <template>
+    <BackButton />
     <v-main class="d-flex align-center justify-center">
         <div>
             <NameTag data="비밀번호 변경" :style="{ width: '220px' }" />

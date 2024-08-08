@@ -3,18 +3,18 @@ import { onMounted, ref, defineProps } from "vue";
 import TaleListItem from "./Not-use-TaleListItem.vue";
 import { useTaleStore } from "@/stores/tales";
 import { useRoute } from "vue-router";
-const route = useRoute()
+import BackButton from "../common/BackButton.vue";
+
+const route = useRoute();
 const taleStore = useTaleStore();
 const items = ref([]);
 
 const search = ref("");
 
-
 const props = defineProps({
-    others : Boolean,
-    id : String,
-
-})
+    others: Boolean,
+    id: String,
+});
 
 const headers = ref([
     { title: "번호", value: "id" },
@@ -26,45 +26,39 @@ const headers = ref([
 
 const rowClick = (event, { item }) => {
     console.log("나는 눌리긴 하는중!@!@><");
-    // console.log();
     taleStore.oneTaleById(item.id);
 };
 
-
 onMounted(() => {
     let talesListPromise;
-    if(props.others) {
-        console.log('다른 유저 동화')
-        talesListPromise=taleStore.otherTalesList(props.id);
-        
-    }else if(route.params.memberId) {
-        console.log('다른 유저 동화')
-        talesListPromise=taleStore.otherTalesList(route.params.memberId);
-    }else {
-        console.log('내 동화')
-        talesListPromise=taleStore.myTalesList();
+    if (props.others) {
+        console.log("다른 유저 동화");
+        talesListPromise = taleStore.otherTalesList(props.id);
+    } else if (route.params.memberId) {
+        console.log("다른 유저 동화");
+        talesListPromise = taleStore.otherTalesList(route.params.memberId);
+    } else {
+        console.log("내 동화");
+        talesListPromise = taleStore.myTalesList();
     }
 
     talesListPromise.then((promiseValue) => {
-        items.value=promiseValue;
-    })
-
+        items.value = promiseValue;
+    });
 });
 </script>
 
 <template>
-    <!-- <button @click="rowClick">asdfasdf</button> -->
     <v-card
         flat
-        class="gowun-batang-regular mx-5 px-5"
-        :style="{ width: '80%' }"
+        class="gowun-batang-regular mx-5 px-5 d-flex flex-column"
+        :style="{ width: '80%', minHeight: '90vh' }"
     >
         <v-card-title class="d-flex align-center pa-3">
             <span class="material-icons"> menu_book </span>
             <span style="font-size: xx-large; font-weight: bold">
-                &nbsp; 동화 목록</span
-            >
-
+                &nbsp; 동화 목록
+            </span>
             <v-spacer></v-spacer>
             <!-- 검색 -->
             <v-text-field
@@ -88,12 +82,13 @@ onMounted(() => {
             :items="items"
             @click:row="rowClick"
             items-per-page="6"
+            class="flex-grow-1"
         >
             <template v-slot:item.cover="{ item }">
                 <v-img
                     class="my-2"
                     :src="item.cover"
-                    height="100px"
+                    height="60px"
                     max-width="100px"
                     width="100%"
                     contain

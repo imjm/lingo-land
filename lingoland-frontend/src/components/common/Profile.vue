@@ -84,12 +84,14 @@ onMounted(() => {
                 <ImageBox :source="userProfile.profileImage" />
             </v-col>
             <v-col
-                class="d-flex align-center justify-center text-h3 font-weight-bold my-3"
+                class="d-flex align-center justify-center my-3" 
+                style="font-size:70px; font-weight: 700;"
             >
                 {{ userProfile.nickname }}
             </v-col>
             <v-col
-                class="d-flex align-center justify-center text-h4 font-weight-bold my-3"
+                class="d-flex align-center justify-center my-3"
+                style="font-size:xx-large; font-weight: 700;"
             >
                 {{ userProfile.rank }}
             </v-col>
