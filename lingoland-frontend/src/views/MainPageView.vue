@@ -40,22 +40,22 @@ onMounted(() => {
                 problemId: 1,
                 answer: 2,
             },
-            {
-                problemId: 2,
-                answer: 2,
-            },
-            {
-                problemId: 3,
-                answer: 3,
-            },
-            {
-                problemId: 4,
-                answer: 2,
-            },
-            {
-                problemId: 5,
-                answer: 3,
-            },
+            // {
+            //     problemId: 2,
+            //     answer: 2,
+            // },
+            // {
+            //     problemId: 3,
+            //     answer: 3,
+            // },
+            // {
+            //     problemId: 4,
+            //     answer: 2,
+            // },
+            // {
+            //     problemId: 5,
+            //     answer: 3,
+            // },
         ],
     };
 

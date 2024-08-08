@@ -20,10 +20,12 @@ const props = defineProps({
 
 function getWrongProblems() {
     let problemList;
-
-    if (route.params.groupId) {
+    console.log('다른 사람 아이디',route.params.memberId)
+    if (route.params.memberId) {
         problemList = problemStore.getWrongProblemsByadmin(props.groupId,props.memberId);
+        console.log("호이ㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣ")
     } else {
+        console.log('내가 불렸어')
         problemList = problemStore.getMyWrongProblems();
     }
 
@@ -52,6 +54,7 @@ onMounted(() => {
             <IncorrectListItem
                 :incorrect="incorrect"
                 @click-event="completeWrongProblem"
+                :member-id="memberId"
             ></IncorrectListItem>
         </v-list-item>
     </v-list>

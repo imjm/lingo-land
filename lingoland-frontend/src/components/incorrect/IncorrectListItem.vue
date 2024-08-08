@@ -6,7 +6,7 @@ import GenericButton from "../common/GenericButton.vue";
 const emit = defineEmits(["clickEvent"]);
 
 const props = defineProps({
-    incorrect: Object,
+    memberId: String,
 });
 
 const problemStore = useProblemStore();
@@ -71,7 +71,7 @@ function completeProblem(problemId) {
                 </v-col>
             </template>
 
-            <v-col>
+            <v-col v-if="!props.memberId">
                 <div class="d-flex justify-end">
                     <GenericButton
                         :style="{
