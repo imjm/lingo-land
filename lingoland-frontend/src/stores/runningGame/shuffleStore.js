@@ -10,13 +10,7 @@ import { storeToRefs } from 'pinia';
 // let mixModels
 
 export const useShuffleStore = defineStore('shuffleStore', () => {
-    // const gameStore = useGameStore();
-    // const gameRanks = computed(() => gameStore.gameRanks); // or however you get ranks
-// console.log('@@@@@@@randommodels',proShuffleStore)
-        // const mixModels = randomModel
-    // const sortedRanks = computed(() => {
-    //     return [...gameRanks.value].sort((a, b) => b.score - a.score);
-    // });
+
 
     return {};
 });

@@ -107,7 +107,7 @@ function handleChickMovement(keysPressed, coordinatesElement) {
             alert("경기 종료!");
             setInterval(() => {
                 showRunningGameResult();
-            }, 9000);
+            }, 5000);
         }
     }
 }
