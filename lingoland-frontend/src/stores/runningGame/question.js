@@ -13,8 +13,8 @@ const gameRanks = ref([]);
 
 const openviduStore = useOpenviduStore();
 const { session } = openviduStore;
-const { participants } = storeToRefs(openviduStore);
-for (const participant of participants.value) {
+const { reparticipants } = storeToRefs(openviduStore);
+for (const participant of reparticipants.value) {
   gameRanks.value.push({
     connectionId: participant.connectionId,
     userId: participant.userId,
@@ -52,7 +52,7 @@ session.on("signal:checkProblem", (event) => {
   // event.from.connectionId가 같은 놈을 찾아서
 
   // 점수를 더해주면 된다.
-  let lenPar = participants.value.length;
+  let lenPar = reparticipants.value.length;
   for (let i = 0; i < lenPar; i++) {
     if (gameRanks.value[i].connectionId === event.from.connectionId) {
       gameRanks.value[i].score += problemResult.score;

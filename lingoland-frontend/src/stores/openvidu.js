@@ -13,6 +13,7 @@ export const useOpenviduStore = defineStore("openvidu", () => {
     const userStore = useUserStore();
     const participants = ref([]);
     const mynum = ref("");
+    const reparticipants = ref([])
 
     // 세션에 스트림이 생성될 때 호출되는 콜백 함수
     session.on("streamCreated", function (event) {
@@ -54,9 +55,15 @@ export const useOpenviduStore = defineStore("openvidu", () => {
 
         // 달리기 게임으로
         if (gameType.type === 1) {
-            for (let i = 0; i < participants.value.length; i++) {
+          console.log('오픈비두 참가자목록 보기',participants)
+          reparticipants.value = participants.value.sort((a,b) => {
+            return a.connectionId.localeCompare(b.connectionId)
+          })
+          console.log('재정렬한참가자들!!!!!!!!!!!!!!!!!',reparticipants.value)
+
+          for (let i = 0; i < reparticipants.value.length; i++) {
                 if (
-                    participants.value[i].connectionId ==
+                    reparticipants.value[i].connectionId ==
                     event.target.connection.connectionId
                 ) {
                     mynum.value = i;
@@ -111,5 +118,6 @@ export const useOpenviduStore = defineStore("openvidu", () => {
         mynum,
         resetParticipants,
         isLeader,
+        reparticipants
     };
 });
