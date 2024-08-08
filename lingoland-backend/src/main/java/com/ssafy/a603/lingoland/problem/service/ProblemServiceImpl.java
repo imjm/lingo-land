@@ -72,7 +72,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public List<GetWrongProblemsDto> getWrongProblemsByGroupLeader(Integer groupId, Integer memberId, CustomUserDetails customUserDetails) {
+    public List<GetWrongProblemsDto> getWrongProblemsByGroupLeader(Integer groupId, String memberId, CustomUserDetails customUserDetails) {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Group"));
         Integer memberIdByRequest = customUserDetails.getMemberId();
@@ -81,7 +81,7 @@ public class ProblemServiceImpl implements ProblemService {
             throw new ForbiddenException(ErrorCode.GROUP_NOT_LEADER);
         }
 
-        if(!groupMemberRepository.existsByGroupIdAndMemberId(groupId, memberId)) {
+        if(!groupMemberRepository.existsByGroupIdAndMemberId(groupId, getMember(memberId).getId())) {
             throw new IllegalArgumentException("Invalid Member");
         }
 
@@ -128,4 +128,8 @@ public class ProblemServiceImpl implements ProblemService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid member"));
     }
 
+    private Member getMember(String memberId) {
+        return memberRepository.findByLoginId(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid member"));
+    }
 }
