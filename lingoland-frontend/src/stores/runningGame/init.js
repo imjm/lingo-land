@@ -164,7 +164,15 @@ function onWindowResize() {
 const clock = new THREE.Clock();
 
 export {
-    camera, cameraSettings, chickModel, controls, initDraw, mixer, moveSide, renderer,
-    scene, setupKeyListeners, updateCameraPosition
+    camera,
+    cameraSettings,
+    chickModel,
+    controls,
+    initDraw,
+    mixer,
+    moveSide,
+    renderer,
+    scene,
+    setupKeyListeners,
+    updateCameraPosition,
 };
-

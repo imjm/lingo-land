@@ -6,7 +6,7 @@ import { useGameStore } from "./gameStore";
 import { checkAnswer } from "./question";
 import { countdown } from "./time";
 const openviduStore = useOpenviduStore();
-const { OV, session, mynum } = openviduStore;
+const { session, mynum } = openviduStore;
 
 const models = [
     {
@@ -139,4 +139,3 @@ function handleChickMovement(keysPressed, coordinatesElement) {
 }
 
 export { handleChickMovement, loadChickModel, moveSide };
-
