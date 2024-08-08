@@ -1,9 +1,12 @@
 package com.ssafy.a603.lingoland.openvidu;
 
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
+import com.ssafy.a603.lingoland.openvidu.dto.ConnectionDto;
 import io.openvidu.java.client.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class OpenViduService {

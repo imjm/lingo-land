@@ -1,4 +1,4 @@
-package com.ssafy.a603.lingoland.openvidu;
+package com.ssafy.a603.lingoland.openvidu.dto;
 
 import lombok.Builder;
 

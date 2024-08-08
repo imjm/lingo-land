@@ -6,7 +6,6 @@ import { useOpenviduStore } from "@/stores/openvidu";
 import { useWritingGameStore } from "@/stores/writingGame";
 import { storeToRefs } from "pinia";
 import Swal from "sweetalert2";
-import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import GenericButton from "../common/GenericButton.vue";
 import GenericInput from "../common/GenericInput.vue";
@@ -26,6 +25,8 @@ const { session } = openviduStore;
 const startRunningGame = () => {
     // 방장인지 아닌지 확인해야함
 
+ 
+
     // 달리기 게임 시작 시그널 송신
     session
         .signal({
@@ -42,6 +43,8 @@ const startRunningGame = () => {
 
 const startWritingGame = () => {
     // 방장인지 아닌지 확인해야함
+
+
 
     if (!pageCount.value || pageCount.value <= 0) {
         Swal.fire({
@@ -101,7 +104,7 @@ function outSession() {
     session.disconnect();
     // 메인페이지로 리다리엑트
     router.replace({ name: "mainPage" }).then(() => {
-        openviduStore.participants.value = ref([]);
+        openviduStore.resetParticipants();
     });
 }
 </script>

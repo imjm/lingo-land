@@ -19,7 +19,7 @@ export const useOpenviduStore = defineStore("openvidu", () => {
 
     // 세션에 새로운 유저가 참가하면 호출되는 콜백함수
     session.on("connectionCreated", (event) => {
-        console.log("***************event", event);
+        console.log("***************connectionCreated event", event);
 
         userStore.getProfileById(event.connection.data).then((info) => {
             // 참가자 배열에 이미 있는 사람인지 확인 필요
@@ -54,9 +54,6 @@ export const useOpenviduStore = defineStore("openvidu", () => {
     session.on("connectionDestroyed", (event) => {
         const connectionId = event.connection.connectionId;
 
-        console.log("***********connectionDestroyed", event);
-        console.log("**********participants", participants.value);
-
         participants.value = participants.value.filter(
             (participant) => participant.connectionId !== connectionId
         );
@@ -84,5 +81,16 @@ export const useOpenviduStore = defineStore("openvidu", () => {
             router.replace({ name: "writingGameResult" });
         }
     });
-    return { OV, session, participants };
+
+    // 방참가자리스트 초기화
+    function resetParticipants() {
+        participants.value = [];
+    }
+
+    return {
+        OV,
+        session,
+        participants,
+        resetParticipants,
+    };
 });
