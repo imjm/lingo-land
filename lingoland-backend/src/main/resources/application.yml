@@ -50,6 +50,8 @@ deepL:
   api:
     key: ${DEEPL_API_KEY}
 
+frontend-url: http://localhost:5173
+
 image:
   store-url: ${STORE_PATH}
   find-url: ${IMAGE_PATH}

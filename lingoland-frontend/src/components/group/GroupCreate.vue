@@ -1,18 +1,28 @@
 <script setup>
+import imageSource from "@/assets/sampleImg.jpg";
 import { useGroupStore } from "@/stores/groups";
+import { storeToRefs } from "pinia";
 import swal from "sweetalert2";
 import { ref } from "vue";
 import GenericButton from "../common/GenericButton.vue";
 import GenericInput from "../common/GenericInput.vue";
 import GenericInputArea from "../common/GenericInputArea.vue";
 import ImageBox from "../common/ImageBox.vue";
-import SubmitButton from "../common/SubmitButton.vue";
-import imageSource from "@/assets/sampleImg.jpg";
 import NameTag from "../common/NameTag.vue";
+import SubmitButton from "../common/SubmitButton.vue";
 
 window.Swal = swal;
 
 const groupStore = useGroupStore();
+
+const {
+    groupNameFormat,
+    passwordFormat,
+    nameDuplicate,
+    passwordCheck,
+    groupDiscriptionFormat,
+} = storeToRefs(groupStore);
+
 const groupInfo = ref({
     name: "",
     password: "",
@@ -21,17 +31,13 @@ const groupInfo = ref({
 
 const checkedPassword = ref("");
 
-const groupNameFormat = ref(false);
-const passwordFormat = ref(false);
-const nameDuplicate = ref(false);
-const passwordCheck = ref(false);
-
 function createGroup() {
     if (
         !groupNameFormat.value &&
         !nameDuplicate.value &&
         !passwordFormat.value &&
-        !passwordCheck.value
+        !passwordCheck.value &&
+        !groupDiscriptionFormat.value
     ) {
         groupStore.createGroup(groupInfo.value);
         console.log(groupNameFormat.value);
@@ -47,61 +53,6 @@ function createGroup() {
             title: "그룹 생성 양식을 확인해주세요",
             icon: "error",
         });
-    }
-}
-
-function checkDuplicate() {
-    groupStore.checkDuplicate(groupInfo.value.name).then((response) => {
-        if (response) {
-            nameDuplicate.value = false;
-            Swal.fire({
-                title: "중복확인 완료",
-                icon: "success",
-                confirmButtonText: "완료",
-            });
-        } else {
-            nameDuplicate.value = true;
-            Swal.fire({
-                title: "중복된 그룹 이름이 있어요",
-                icon: "error",
-            });
-        }
-    });
-}
-
-function checkPassword(
-    checkPassword,
-    originPassword = groupInfo.value.password
-) {
-    if (originPassword === checkPassword) {
-        passwordCheck.value = false;
-    } else {
-        passwordCheck.value = true;
-    }
-}
-
-// 비밀번호 포멧체크
-function validatePasswordFormat(password) {
-    // 비밀번호 최대길이 25
-
-    // 형식이 일치함
-    if (password.length <= 25) {
-        passwordFormat.value = false;
-    } else {
-        passwordFormat.value = true;
-    }
-}
-
-// 닉네임 포맷 체크
-function validateGroupNameFormat(groupName) {
-    // 닉네임 길이 3- 20 한글,영어,숫자/-/_
-    const groupNameRegex = /^[ㄱ-ㅎ가-힣a-z0-9_-]{3,20}$/;
-
-    // 형식이 일치함
-    if (groupNameRegex.test(groupName)) {
-        groupNameFormat.value = false;
-    } else {
-        groupNameFormat.value = true;
     }
 }
 </script>
@@ -131,7 +82,7 @@ function validateGroupNameFormat(groupName) {
                                         id="name"
                                         v-model="groupInfo.name"
                                         @blur-event="
-                                            validateNickNameFormat(
+                                            groupStore.validateGroupNameFormat(
                                                 groupInfo.name
                                             )
                                         "
@@ -142,10 +93,11 @@ function validateGroupNameFormat(groupName) {
                                         data="중복확인"
                                         id="checkDuplicate"
                                         height="56"
-                                        @click-event="checkDuplicate"
+                                        @click-event="groupStore.checkDuplicate(groupInfo.name)"
                                     />
                                 </v-col>
                             </v-row>
+
                             <div v-if="groupNameFormat" class="text-red mb-3">
                                 3~20자의 한글, 영문 소문자, 숫자와
                                 특수기호(_),(-)만 사용 가능해요.
@@ -155,20 +107,35 @@ function validateGroupNameFormat(groupName) {
                                 data="그룹 소개"
                                 v-model="groupInfo.description"
                                 placeholder="그룹 소개를 입력하세요"
+                                @blur-event="
+                                    groupStore.validateGroupDiscriptionFormat(
+                                        groupInfo.description
+                                    )
+                                "
                             />
+
+                            <div
+                                v-if="groupDiscriptionFormat"
+                                class="text-red mb-3"
+                            >
+                                그룹 소개는 200자 이내로 작성 가능해요
+                            </div>
 
                             <GenericInput
                                 type="password"
                                 data="비밀번호"
                                 id="password"
+                                hint="4자리 숫자를 입력해주세요"
                                 v-model="groupInfo.password"
                                 @blur-event="
-                                    validatePasswordFormat(groupInfo.password)
+                                    groupStore.validatePasswordFormat(
+                                        groupInfo.password
+                                    )
                                 "
                             />
 
                             <div v-if="passwordFormat" class="text-red mb-3">
-                                최대 25자만 사용가능해요.
+                                숫자 4자리만 사용가능해요.
                             </div>
 
                             <GenericInput
@@ -176,7 +143,12 @@ function validateGroupNameFormat(groupName) {
                                 data="비밀번호확인"
                                 id="groupPasswordCheck"
                                 v-model="checkedPassword"
-                                @blur-event="checkPassword(checkedPassword)"
+                                @blur-event="
+                                    groupStor.checkPassword(
+                                        checkedPassword,
+                                        groupInfo.password
+                                    )
+                                "
                             />
 
                             <div v-if="passwordCheck" class="text-red mb-3">

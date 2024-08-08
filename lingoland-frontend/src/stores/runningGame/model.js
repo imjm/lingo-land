@@ -1,56 +1,71 @@
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import * as THREE from "three";
-import { scene, renderer, mixer, chickModel, moveSide } from "./init";
 import { countdown } from "./time";
 import { checkAnswer } from "./question";
 import { useGameStore } from "./gameStore";
 import { useOpenviduStore } from "@/stores/openvidu";
-
+import { ref } from "vue";
+// import { useShuffleStore } from "./shuffleStore";
 const openviduStore = useOpenviduStore();
-const { OV, session } = openviduStore;
+const { OV, session, mynum } = openviduStore;
+// const shuffleStore = useShuffleStore();
+// const { models } = shuffleStore;
+const models = [
+    { name: "chick", path: "/cute_chick/scene.gltf", scale: 1, rotation: -Math.PI / 2 },
+    { name: "squid", path: "/squid/scene.gltf", scale: 10, rotation: 0 },
+    { name: "dragonfly", path: "/dragonfly/scene.gltf", scale: 3, rotation: -Math.PI},
+    { name: "unicorn", path: "/just_a_unicorn/scene.gltf", scale: 0.5, rotation: 0 },
+    { name: "dog", path: "/stylized_dog_low_poly/scene.gltf", scale: 3, rotation: 0 },
+    { name: "cat", path: "/little_cat/scene.gltf", scale: 7, rotation: 0 },
+];
+let moveSide = ref(0);
+let chickModel;
+let mixer;
 
 const showRunningGameResult = () => {
-    //시그널 송신
+    // 시그널 송신
     session.signal({
         type: "gameEnd",
-        data: JSON.stringify({type:1, data:"running game result"})
+        data: JSON.stringify({ type: 1, data: "running game result" })
     })
     .then(() => {
-        console.log("***************************달리기 게임 결과화면 ㄱㄱ")
-
+        console.log("***************************달리기 게임 결과화면 ㄱㄱ");
     })
     .catch((error) => {
-        console.log("************ERROR 결과로 못가",error)
-    })
+        console.log("************ERROR 결과로 못가", error);
+    });
 }
-// function loadChickModel() {
-//     let loader = new GLTFLoader();
-//     loader.load("/cute_chick/scene.gltf", function (gltf) {
-//         gltf.scene.traverse((child) => {
-//             if (child.isMesh) {
-//                 child.material.needsUpdate = true;
-//                 if (child.material.map) {
-//                     child.material.map.anisotropy =
-//                         renderer.capabilities.getMaxAnisotropy();
-//                     child.material.map.needsUpdate = true;
-//                 }
-//             }
-//         });
+console.log('mynum@@@@@@@@@@@@@@@@@@model',mynum)
+console.log('model@@@@@@@@models',models)
+function loadChickModel(scene, renderer, callback) {
+    const loader = new GLTFLoader();
+    loader.load(models[mynum].path, function (gltf) {
+        gltf.scene.traverse((child) => {
+            if (child.isMesh) {
+                child.material.needsUpdate = true;
+                if (child.material.map) {
+                    child.material.map.anisotropy = renderer.capabilities.getMaxAnisotropy();
+                    child.material.map.needsUpdate = true;
+                }
+            }
+        });
 
-//         chickModel = gltf.scene; // 병아리 모델을 저장
-//         chickModel.scale.set(1, 1, 1); // 크기 1배
-//         scene.add(chickModel);
-//         mixer = new THREE.AnimationMixer(chickModel);
-//         const action = mixer.clipAction(gltf.animations[0]);
-//         action.play();
+        chickModel = gltf.scene; // 병아리 모델을 저장
+        chickModel.scale.set(models[mynum].scale, models[mynum].scale, models[mynum].scale); // 크기 1배
+        scene.add(chickModel);
+        mixer = new THREE.AnimationMixer(chickModel);
+        const action = mixer.clipAction(gltf.animations[0]);
+        action.play();
 
-//         chickModel.rotation.y = -Math.PI / 2; // 90도 회전 (왼쪽을 보던 방향을 정면으로 조정)
+        chickModel.rotation.y = models[mynum].rotation; // 정면을 보도록 설정 (0도로 설정)
 
-//         const chickBoundingBox = new THREE.Box3().setFromObject(chickModel);
-//         const chickHeight = chickBoundingBox.max.y - chickBoundingBox.min.y;
-//         chickModel.position.y = chickHeight / 2; // 맵 바닥 위로 위치 조정
-//     });
-// }
+        const chickBoundingBox = new THREE.Box3().setFromObject(chickModel);
+        const chickHeight = chickBoundingBox.max.y - chickBoundingBox.min.y;
+        chickModel.position.y = chickHeight / 2; // 맵 바닥 위로 위치 조정
+
+        if (callback) callback(chickModel, mixer);
+    });
+}
 
 function handleChickMovement(keysPressed, coordinatesElement) {
     const moveSpeed = 10;
@@ -58,16 +73,13 @@ function handleChickMovement(keysPressed, coordinatesElement) {
     const gameStore = useGameStore();
 
     if (chickModel && countdown.value === 0 && !gameStore.isGameEnded) {
-        // 자동으로 앞으로 이동
-        const forwardDirection = new THREE.Vector3(1, 0, 0); // 앞쪽 방향
-        forwardDirection.applyQuaternion(chickModel.quaternion); // 현재 회전에 따라 방향 벡터를 업데이트합니다.
-        chickModel.position.addScaledVector(forwardDirection, autoForwardSpeed);
+        // 자동으로 z축을 따라 앞으로 이동
+        chickModel.position.z += autoForwardSpeed;
 
         // 키 입력에 따른 옆으로 이동 처리
         if (moveSide.value !== 0) {
-            const sideDirection = new THREE.Vector3(0, 0, -1); // 옆 방향
-            sideDirection.applyQuaternion(chickModel.quaternion); // 현재 회전에 따라 방향 벡터를 업데이트합니다.
-            chickModel.position.addScaledVector(sideDirection, moveSide.value); // moveSide 값을 직접 사용
+            const sideDirection = new THREE.Vector3(moveSide.value, 0, 0); // 옆 방향
+            chickModel.position.add(sideDirection); // moveSide 값을 직접 사용
             moveSide.value = 0; // 한 번 이동한 후 상태 리셋
         }
 
@@ -78,9 +90,7 @@ function handleChickMovement(keysPressed, coordinatesElement) {
         );
 
         const { x, y, z } = chickModel.position;
-        coordinatesElement.textContent = `X: ${x.toFixed(2)}, Y: ${y.toFixed(
-            2
-        )}, Z: ${z.toFixed(2)}`;
+        coordinatesElement.textContent = `X: ${x.toFixed(2)}, Y: ${y.toFixed(2)}, Z: ${z.toFixed(2)}`;
 
         // x축 위치에 따른 정답 체크
         if (x.toFixed(2) == -4.00) {
@@ -96,11 +106,10 @@ function handleChickMovement(keysPressed, coordinatesElement) {
             gameStore.endGame(); // 경기 종료 함수 호출
             alert("경기 종료!");
             setInterval(() => {
-                showRunningGameResult()
-              }, 9000);
-            
+                showRunningGameResult();
+            }, 9000);
         }
     }
 }
 
-export {  handleChickMovement };
+export { loadChickModel, handleChickMovement, moveSide };

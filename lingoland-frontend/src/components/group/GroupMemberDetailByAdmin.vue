@@ -1,9 +1,6 @@
 <script setup>
-import GenericButton from "@/components/common/GenericButton.vue";
-import PageNavigationButton from "@/components/common/PageNavigationButton.vue";
 import Profile from "@/components/common/Profile.vue";
 import TaleList from "../tale/TaleList.vue";
-import IncorrectList from "../incorrect/IncorrectList.vue";
 
 import { ref } from "vue";
 import IncorrectDialog from "../incorrect/IncorrectDialog.vue";
@@ -29,7 +26,7 @@ const incorrectList = ref([
             <v-row>
                 <v-col cols="5">
                     <v-row>
-                        <Profile source="src\\assets\\sampleImg.jpg" />
+                        <Profile />
                     </v-row>
                     <v-row>
                         <v-col>
