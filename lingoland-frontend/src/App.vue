@@ -3,7 +3,7 @@ import { RouterView } from "vue-router";
 </script>
 
 <template>
-  <RouterLink :to="{ name: 'login' }"> login</RouterLink> |
+  <!-- <RouterLink :to="{ name: 'login' }"> login</RouterLink> |
   <RouterLink :to="{ name: 'gameRoom', params: { roomId: '1' } }">
     gameRoom</RouterLink
   >
@@ -30,7 +30,7 @@ import { RouterView } from "vue-router";
     :to="{ name: 'runningGameResult', params: { roomId: '1' } }"
     >runningGameResult</RouterLink
   >
-  |
+  | -->
 
   <v-app class="bg-amber-lighten-3 gamja-flower-regular">
     <RouterView></RouterView>
@@ -57,4 +57,8 @@ import { RouterView } from "vue-router";
   font-weight: 400;
   font-style: normal;
 }
+
+
+
+
 </style>

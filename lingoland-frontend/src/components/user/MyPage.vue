@@ -28,10 +28,10 @@ function clickTales() {
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
     />
 
-    <v-main class="d-flex justify-center" height="100vh">
-        <v-container>
+    <v-main class="d-flex justify-center">
+        <v-container >
             <v-row>
-                <v-col cols="5" class="d-flex justify-center" height="100vh">
+                <v-col cols="5" class="d-flex justify-center">
                     <Profile />
                 </v-col>
 
@@ -122,4 +122,5 @@ function clickTales() {
     border-radius: 4px;
     font-size: x-large;
 }
+
 </style>

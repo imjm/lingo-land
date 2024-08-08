@@ -67,7 +67,7 @@ onMounted(() => {
         width="auto"
         height="auto"
         class="d-flex align-center"
-        max-height="700"
+        max-height="100vh"
         
     >
         <v-row class="d-flex flex-column ma-6">

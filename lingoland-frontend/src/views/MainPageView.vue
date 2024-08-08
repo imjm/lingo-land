@@ -40,22 +40,22 @@ onMounted(() => {
                 problemId: 1,
                 answer: 2,
             },
-            // {
-            //     problemId: 2,
-            //     answer: 2,
-            // },
-            // {
-            //     problemId: 3,
-            //     answer: 3,
-            // },
-            // {
-            //     problemId: 4,
-            //     answer: 2,
-            // },
-            // {
-            //     problemId: 5,
-            //     answer: 3,
-            // },
+            {
+                problemId: 2,
+                answer: 2,
+            },
+            {
+                problemId: 3,
+                answer: 3,
+            },
+            {
+                problemId: 4,
+                answer: 2,
+            },
+            {
+                problemId: 5,
+                answer: 3,
+            },
         ],
     };
 
@@ -79,10 +79,10 @@ onMounted(() => {
         rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
     />
-    <v-main class="d-flex justify-center" height="100vh">
+    <v-main class="d-flex justify-center">
         <v-container>
             <v-row>
-                <v-col cols="5" class="d-flex justify-center" height="100vh">
+                <v-col cols="5" class="d-flex justify-center">
                     <Profile
                         @click-event="
                             () => {
@@ -96,7 +96,7 @@ onMounted(() => {
                     <v-row>
                         <v-col
                             cols="6"
-                            class="d-flex flex-column align-content-space-between"
+                            class="d-flex flex-column align-content-space-evenly"
                         >
                             <div>
                                 <PageNavigationButton
