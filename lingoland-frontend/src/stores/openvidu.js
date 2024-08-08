@@ -8,9 +8,11 @@ import { useUserStore } from "./user";
 export const useOpenviduStore = defineStore("openvidu", () => {
     const OV = new OpenVidu();
     const session = OV.initSession();
+
+    const router = useRouter();
     const userStore = useUserStore();
     const participants = ref([]);
-    const router = useRouter();
+    const mynum = ref("");
 
     // 세션에 스트림이 생성될 때 호출되는 콜백 함수
     session.on("streamCreated", function (event) {
@@ -19,8 +21,6 @@ export const useOpenviduStore = defineStore("openvidu", () => {
 
     // 세션에 새로운 유저가 참가하면 호출되는 콜백함수
     session.on("connectionCreated", (event) => {
-        console.log("***************connectionCreated event", event);
-
         userStore.getProfileById(event.connection.data).then((info) => {
             // 참가자 배열에 이미 있는 사람인지 확인 필요
             // 배열에서 userId 중복되는지 확인
@@ -45,9 +45,29 @@ export const useOpenviduStore = defineStore("openvidu", () => {
                             : "PUBLISHER",
                 });
             }
-
-            console.log("**********참가자", participants.value);
         });
+    });
+
+    // 게임 시작 Signal 수신 처리
+    session.on("signal:gameStart", function (event) {
+        const gameType = JSON.parse(event.data);
+
+        // 달리기 게임으로
+        if (gameType.type === 1) {
+            for (let i = 0; i < participants.value.length; i++) {
+                if (
+                    participants.value[i].connectionId ==
+                    event.target.connection.connectionId
+                ) {
+                    mynum.value = i;
+                    break;
+                }
+            }
+            router.replace({ name: "runningGame" });
+        } else if (gameType.type === 2) {
+            // 글쓰기 게임으로
+            router.replace({ name: "writingGame" });
+        }
     });
 
     // 세션에 유저가 나가면 호출되는 콜백함수
@@ -57,19 +77,6 @@ export const useOpenviduStore = defineStore("openvidu", () => {
         participants.value = participants.value.filter(
             (participant) => participant.connectionId !== connectionId
         );
-    });
-
-    // 게임 시작 signal 수신 처리
-    session.on("signal:gameStart", function (event) {
-        const gameType = JSON.parse(event.data);
-
-        if (gameType.type === 1) {
-            // 달리기 게임으로
-            router.replace({ name: "runningGame" });
-        } else if (gameType.type === 2) {
-            // 글쓰기 게임으로
-            router.replace({ name: "writingGame" });
-        }
     });
 
     // 게임 종료 signal 수신 처리
@@ -101,6 +108,7 @@ export const useOpenviduStore = defineStore("openvidu", () => {
         OV,
         session,
         participants,
+        mynum,
         resetParticipants,
         isLeader,
     };

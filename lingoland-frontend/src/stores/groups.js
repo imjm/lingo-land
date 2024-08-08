@@ -253,25 +253,19 @@ export const useGroupStore = defineStore("group", () => {
 
     // 그룹장 확인
     const checkGroupLeader = async (groupId) => {
-        await axios
+        const isLeader = await axios
             .get(`/groups/${groupId}/check-leader`, {
                 withCredentials: true,
             })
             .then((response) => {
                 if (response.status === httpStatus.OK) {
-                    if (response.data) {
-                        router.push({ name: "groupModify", params: groupId });
-                    } else {
-                        Swal.fire({
-                            title: "그룹장이 아닙니다.",
-                            icon: "error",
-                        });
-                    }
+                    return response.data;
                 }
             })
             .catch((error) => {
                 console.log(error);
             });
+        return isLeader;
     };
 
     return {

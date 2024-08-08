@@ -1,18 +1,28 @@
 <script setup>
 import Profile from "@/components/common/Profile.vue";
 import TaleList from "../tale/TaleList.vue";
+import { onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
+const route = useRoute()
+const userId = ref(null)
+
+onMounted(()=> {
+    userId.value= route.params.memberId
+    console.log('유저아이디',userId.value)
+})
+
 </script>
 
 <template>
-    <v-main class="d-flex mt-10 justify-center">
+    <v-main v-if="userId" class="d-flex mt-10 justify-center">
         <v-container>
             <v-row>
                 <v-col cols="5">
-                    <Profile />
+                    <Profile :others="true" :id="userId"/>
                 </v-col>
 
                 <v-col cols="7">
-                    <TaleList />
+                    <TaleList :others="true" :id="userId"/>
                 </v-col>
             </v-row>
         </v-container>

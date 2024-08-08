@@ -3,7 +3,7 @@ import { RouterView } from "vue-router";
 </script>
 
 <template>
-  <RouterLink :to="{ name: 'login' }"> login</RouterLink> |
+  <!-- <RouterLink :to="{ name: 'login' }"> login</RouterLink> |
   <RouterLink :to="{ name: 'gameRoom', params: { roomId: '1' } }">
     gameRoom</RouterLink
   >
@@ -23,30 +23,14 @@ import { RouterView } from "vue-router";
   <RouterLink :to="{ name: 'mainPage' }"> mainPage</RouterLink> |
   <RouterLink :to="{ name: 'myPage' }">myPage</RouterLink> |
   <RouterLink :to="{ name: 'myPageModify' }">mypageModify</RouterLink> |
-  <RouterLink :to="{ name: 'bookList' }">bookList</RouterLink> |
-  <RouterLink :to="{ name: 'bookDetail', params: { bookId: '1' } }"
-    >bookListDetail</RouterLink
-  >
-  |
+
   <RouterLink :to="{ name: 'groupList' }">groupList</RouterLink> |
-  <RouterLink :to="{ name: 'groupDetail', params: { groupId: '1' } }"
-    >myGroupDetail</RouterLink
-  >
-  | <RouterLink :to="{ name: 'groupCreate' }">groupCreate</RouterLink> |
-  <RouterLink :to="{ name: 'groupMemberDetail', params: { memberId: '1' } }"
-    >groupMemberDetail</RouterLink
-  >
-  |
-  <RouterLink
-    :to="{ name: 'groupMemberDetailByAdmin', params: { memberId: '1' } }"
-    >groupMemberDetailByAdmin</RouterLink
-  >
-  |
+  
   <RouterLink
     :to="{ name: 'runningGameResult', params: { roomId: '1' } }"
     >runningGameResult</RouterLink
   >
-  |
+  | -->
 
   <v-app class="bg-amber-lighten-3 gamja-flower-regular">
     <RouterView></RouterView>
@@ -73,4 +57,8 @@ import { RouterView } from "vue-router";
   font-weight: 400;
   font-style: normal;
 }
+
+
+
+
 </style>

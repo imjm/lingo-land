@@ -1,12 +1,15 @@
 <script setup>
 import GenericButton from "@/components/common/GenericButton.vue";
 import GroupMemberList from "@/components/group/GroupMemberList.vue";
+import router from "@/router";
 import { useGroupMemberStore } from "@/stores/groupMember";
 import { useGroupStore } from "@/stores/groups";
+import swal from "sweetalert2";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
+window.Swal = swal;
 
 const groupMemberStore = useGroupMemberStore();
 const groupStore = useGroupStore();
@@ -38,7 +41,17 @@ onMounted(async () => {
 
 function modify() {
     // 그룹장인 경우만 수정되도록
-    groupStore.checkGroupLeader(groupInfo.value.id)
+    groupStore.checkGroupLeader(groupInfo.value.id).then((responseValue) => {
+        if (responseValue) {
+            router.push({ name: "groupModify", params: groupInfo.value.id });
+            console.log("true!!!!!!!!!!!!!");
+        } else {
+            Swal.fire({
+                title: "그룹장이 아닙니다.",
+                icon: "error",
+            });
+        }
+    });
 }
 </script>
 
@@ -71,7 +84,10 @@ function modify() {
                         </v-col>
                     </v-row>
 
-                    <GroupMemberList :groupMemberList="groupMemberList" :group-leader="groupInfo.leaderNickname"/>
+                    <GroupMemberList
+                        :groupMemberList="groupMemberList"
+                        :group="groupInfo"
+                    />
 
                     <v-row>
                         <v-col>

@@ -4,11 +4,11 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { ref } from "vue";
 import { addLights } from "./light";
 import { loadMapSection, loadNewMapSection } from "./map";
-import { handleMovement, loadModel, moveSide, assignRandomModel } from "./model";
+import { handleChickMovement, loadChickModel, moveSide } from "./model";
 import { useGameStore } from "./gameStore";
 import { updateTimer } from "./time";
 
-let renderer, scene, mixer, camera, controls, model;
+let renderer, scene, mixer, camera, controls, chickModel;
 const gameStore = useGameStore();
 
 // 카메라 설정
@@ -36,8 +36,8 @@ function initDraw() {
         loadNewMapSection(i * 1950 + 325);
     }
 
-    assignRandomModel(scene, renderer, (model1, animMixer) => {
-        model = model1;
+    loadChickModel(scene, renderer, (model, animMixer) => {
+        chickModel = model;
         mixer = animMixer;
     });
 
@@ -58,7 +58,7 @@ function initDraw() {
         updateCameraPosition();
 
         updateTimer(startTime);
-        handleMovement(keysPressed, coordinatesElement);
+        handleChickMovement(keysPressed, coordinatesElement);
 
         renderer.render(scene, camera);
     }
@@ -134,8 +134,8 @@ function setupKeyListeners() {
 }
 
 function updateCameraPosition() {
-    if (model) {
-        const modelPosition = model.position.clone();
+    if (chickModel) {
+        const chickPosition = chickModel.position.clone();
 
         const cameraOffset = new THREE.Vector3(
             0,
@@ -146,18 +146,16 @@ function updateCameraPosition() {
         // 카메라 위치를 캐릭터의 뒤쪽에 배치
         camera.position.set(
             0,
-            modelPosition.y + cameraOffset.y+3,
-            modelPosition.z + cameraOffset.z
+            chickPosition.y + cameraOffset.y,
+            chickPosition.z + cameraOffset.z
         );
 
         // 카메라가 캐릭터를 바라보도록 설정
-        camera.lookAt(0, modelPosition.y+3, modelPosition.z);
+        camera.lookAt(0, chickPosition.y, chickPosition.z);
 
-        gameStore.updateZCoordinate(modelPosition.z);
+        gameStore.updateZCoordinate(chickPosition.z);
     }
 }
-
-
 
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -173,7 +171,7 @@ export {
     mixer,
     camera,
     controls,
-    model,
+    chickModel,
     moveSide,
     cameraSettings,
     updateCameraPosition,

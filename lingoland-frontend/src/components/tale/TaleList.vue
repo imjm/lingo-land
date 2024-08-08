@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, defineProps } from "vue";
 import TaleListItem from "./Not-use-TaleListItem.vue";
 import { useTaleStore } from "@/stores/tales";
 import { useRoute } from "vue-router";
@@ -8,6 +8,14 @@ const taleStore = useTaleStore();
 const items = ref([]);
 
 const search = ref("");
+
+
+const props = defineProps({
+    others : Boolean,
+    id : String,
+
+})
+
 const headers = ref([
     { title: "번호", value: "id" },
     { title: "제목", value: "title" },
@@ -25,10 +33,13 @@ const rowClick = (event, { item }) => {
 
 onMounted(() => {
     let talesListPromise;
-    if(route.params.userId) {
+    if(props.others) {
         console.log('다른 유저 동화')
-        talesListPromise=taleStore.otherTalesList(route.params.userId);
+        talesListPromise=taleStore.otherTalesList(props.id);
         
+    }else if(route.params.memberId) {
+        console.log('다른 유저 동화')
+        talesListPromise=taleStore.otherTalesList(route.params.memberId);
     }else {
         console.log('내 동화')
         talesListPromise=taleStore.myTalesList();

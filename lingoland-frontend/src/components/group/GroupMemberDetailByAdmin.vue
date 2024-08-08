@@ -1,42 +1,39 @@
 <script setup>
 import Profile from "@/components/common/Profile.vue";
 import TaleList from "../tale/TaleList.vue";
+import { onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
+import IncorrectDialogByGroupLeader from "../incorrect/IncorrectDialogByGroupLeader.vue";
+const route = useRoute();
+const userId = ref(null);
 
-import { ref } from "vue";
-import IncorrectDialog from "../incorrect/IncorrectDialog.vue";
+onMounted(() => {
+    userId.value = route.params.memberId;
+    console.log("유저아이디", userId.value);
 
-const incorrectList = ref([
-    "문제 1",
-    "문제 2",
-    "문제 3",
-    "문제 4",
-    "문제 5",
-    "문제 1",
-    "문제 2",
-    "문제 3",
-    "문제 4",
-    "문제 5",
-    // 데이터 받아오기
-]);
+    //클릭한 사람이 그룹장인지 확인
+});
 </script>
 
 <template>
-    <v-main class="d-flex mt-10 justify-center">
+    <v-main v-if="userId" class="d-flex mt-10 justify-center">
         <v-container>
             <v-row>
                 <v-col cols="5">
-                    <v-row>
-                        <Profile />
-                    </v-row>
-                    <v-row>
-                        <v-col>
-                            <IncorrectDialog :incorrects="incorrectList" />
-                        </v-col>
-                    </v-row>
+                    <Profile
+                        class="mb-2"
+                        :others="true"
+                        :id="userId"
+                        :style="{ height: '50%' }"
+                    />
+                    <IncorrectDialogByGroupLeader
+                        :group-id="route.params.groupId"
+                        :member-id="userId"
+                    />
                 </v-col>
 
                 <v-col cols="7">
-                    <TaleList />
+                    <TaleList :others="true" :id="userId" />
                 </v-col>
             </v-row>
         </v-container>

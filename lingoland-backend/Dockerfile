@@ -8,7 +8,7 @@ COPY build.gradle settings.gradle ./
 # Java Toolchain 설정이 Java 21을 필요로 하므로, Java 21을 설치합니다.
 RUN apt-get update && apt-get install -y openjdk-21-jdk
 
-RUN gradle dependencies --no-daemon
+#RUN gradle dependencies --no-daemon
 
 COPY . /app
 
@@ -16,7 +16,7 @@ COPY . /app
 RUN gradle clean build --no-daemon -x test
 
 # JRE 이미지로 런타임 이미지 생성
-FROM openjdk:21-jdk
+FROM openjdk:21-jdk-slim
 
 WORKDIR /app
 

@@ -2,6 +2,7 @@ package com.ssafy.a603.lingoland.config;
 
 import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +34,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+	@Value("${frontend-url}")
+	private String frontendUrl;
 	private final AuthenticationConfiguration authenticationConfiguration;
 	private final JWTUtil jwtUtil;
 	private final MemberServiceImpl memberService;
@@ -51,7 +54,7 @@ public class SecurityConfig {
 		http.formLogin(AbstractHttpConfigurer::disable);
 
 		http.authorizeHttpRequests((authorizeRequests) -> authorizeRequests
-			.requestMatchers("/", "/error", "/api/v1/users/sign-up", "/api/v1/login", "/api/v1/users/check/*",
+			.requestMatchers("/", "/error", "/api/v1/users/sign-up", "/api/v1/login", "/api/v1/users/**",
 				"/api/v1/sessions", "/api/v1/sessions/**", "/api/v1/problems").permitAll()
 			.requestMatchers("/api/v1/reissue").permitAll()
 			.anyRequest().authenticated());
@@ -74,7 +77,8 @@ public class SecurityConfig {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowCredentials(true);
 		configuration.setExposedHeaders(Arrays.asList("Authorization"));
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+		configuration.setAllowedOriginPatterns(Arrays.asList(frontendUrl,"https://i11a603.p.ssafy.io"
+		, "http://i11a603.p.ssafy.io"));
 		configuration.setAllowedHeaders(Arrays.asList("*"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

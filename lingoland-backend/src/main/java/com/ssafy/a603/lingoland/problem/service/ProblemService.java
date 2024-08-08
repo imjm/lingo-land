@@ -14,7 +14,7 @@ public interface ProblemService {
 
     List<GetWrongProblemsDto> getWrongProblems(CustomUserDetails customUserDetails);
 
-    List<GetWrongProblemsDto> getWrongProblemsByGroupLeader(Integer groupId, Integer memberId, CustomUserDetails customUserDetails);
+    List<GetWrongProblemsDto> getWrongProblemsByGroupLeader(Integer groupId, String memberId, CustomUserDetails customUserDetails);
 
     void deleteWrongProblems(Integer problemId, CustomUserDetails customUserDetails);
 
