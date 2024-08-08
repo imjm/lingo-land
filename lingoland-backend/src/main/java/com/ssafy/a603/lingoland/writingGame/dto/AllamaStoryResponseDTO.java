@@ -1,16 +1,19 @@
 package com.ssafy.a603.lingoland.writingGame.dto;
 
-public record AllamaStoryResponseDTO(String style, String target, String environment, String lighting, String color,
-									 String atmosphere, String composition) {
+import lombok.Builder;
+
+@Builder
+public record AllamaStoryResponseDTO(String medium, String character, String environment, String lighting, String color,
+									 String mood, String composition) {
 	@Override
 	public String toString() {
 		return "{" +
-			"style='" + style + '\'' +
-			", target='" + target + '\'' +
+			"medium='" + medium + '\'' +
+			", character='" + character + '\'' +
 			", environment='" + environment + '\'' +
 			", lighting='" + lighting + '\'' +
 			", color='" + color + '\'' +
-			", atmosphere='" + atmosphere + '\'' +
+			", mood='" + mood + '\'' +
 			", composition='" + composition + '\'' +
 			'}';
 	}
