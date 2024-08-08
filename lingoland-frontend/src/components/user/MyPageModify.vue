@@ -8,6 +8,7 @@ import ImageBox from "../common/ImageBox.vue";
 import NameTag from "../common/NameTag.vue";
 import SubmitButton from "../common/SubmitButton.vue";
 import sampleImage from "@/assets/sampleImg.jpg";
+import BackButton from "../common/BackButton.vue";
 
 const router = useRouter();
 
@@ -48,6 +49,7 @@ onMounted(() => {
 </script>
 
 <template>
+    <BackButton />
     <v-main class="d-flex align-center justify-center">
         <div>
             <NameTag data="프로필 수정" :style="{ width: '250px' }" />

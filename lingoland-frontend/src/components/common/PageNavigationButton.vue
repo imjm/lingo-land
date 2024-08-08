@@ -26,7 +26,7 @@ const props = defineProps({
             @click="$emit('clickEvent')"
         >
             <div class="d-flex flex-column">
-                <div class="text-h4 font-weight-black">
+                <div style="font-size:xx-large; font-weight: 700;"> 
                     {{ data }}
                 </div>
                 <div class="d-flex justify-center align-center pa-1" style="flex: 1">
