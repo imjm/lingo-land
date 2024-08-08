@@ -38,10 +38,10 @@ const models = [
   { name: "cat", path: "/little_cat/scene.gltf", scale: 7, rotation: 0 },
 ];
 const openviduStore = useOpenviduStore();
-const { participants } = storeToRefs(openviduStore);
+const { reparticipants } = storeToRefs(openviduStore);
 const resultStore = useResultStore();
 const { sortedRanks } = storeToRefs(resultStore);
-console.log('참가자들결과',participants.value)
+console.log('참가자들결과',reparticipants.value)
 console.log('결과',sortedRanks)
 let resultlen;
 const resultlst = ref([])
@@ -52,8 +52,8 @@ if (sortedRanks.value.length<3) {
 }
 
 for (let i=0;i<resultlen;i++) {
-    for (let j =0;j<participants.value.length;j++) {
-        if (sortedRanks.value[i].connectionId == participants.value[j].connectionId) {
+    for (let j =0;j<reparticipants.value.length;j++) {
+        if (sortedRanks.value[i].connectionId == reparticipants.value[j].connectionId) {
             resultlst.value.push({
                 winnerInfo:models[j]
             
