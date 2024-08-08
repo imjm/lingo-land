@@ -49,3 +49,5 @@ kakao:
 deepL:
   api:
     key: ${DEEPL_API_KEY}
+
+frontend-url: http://localhost:5173
