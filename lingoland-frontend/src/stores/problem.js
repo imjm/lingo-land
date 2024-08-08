@@ -39,7 +39,7 @@ export const useProblemStore = defineStore("problemStore", () => {
                     return Promise.resolve(response.data);
                 }
             })
-            .catch((error) => {
+            .catch((error) => { 
                 console.log(error);
             });
 

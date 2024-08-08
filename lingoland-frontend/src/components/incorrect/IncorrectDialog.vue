@@ -27,7 +27,7 @@ function completeProblem() {
     <PageNavigationButton
         background-color="#BF5847"
         data="오답노트"
-        source="src\assets\오답노트.png"
+        source="\src\assets\오답노트.png"
         @click-event="
             () => {
                 dialog = true;

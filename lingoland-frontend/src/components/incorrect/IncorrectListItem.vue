@@ -6,6 +6,7 @@ import GenericButton from "../common/GenericButton.vue";
 const emit = defineEmits(["clickEvent"]);
 
 const props = defineProps({
+    incorrect: Object,
     memberId: String,
 });
 
