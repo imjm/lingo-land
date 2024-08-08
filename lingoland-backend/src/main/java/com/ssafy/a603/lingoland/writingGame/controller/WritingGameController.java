@@ -30,10 +30,4 @@ public class WritingGameController {
 	public ResponseEntity<?> request(@PathVariable("sessionId") String sessionId, @RequestBody DrawingRequestDTO dto) {
 		return ResponseEntity.status(HttpStatus.OK).body(writingGameService.submitStory(sessionId, dto));
 	}
-
-	@PostMapping("/test/{sessionId}")
-	public ResponseEntity<?> test(@PathVariable("sessionId") String sessionId, @RequestBody DrawingRequestDTO dto) {
-		writingGameService.test(sessionId, dto);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-	}
 }
