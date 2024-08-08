@@ -4,12 +4,8 @@ import TaleList from "@/components/tale/TaleList.vue";
 
 <template>
     <div class="d-flex justify-center align-center">
-
-        <TaleList class="my-10"/>
+        <TaleList class="my-10" />
     </div>
 </template>
 
-<style scoped>
-
-
-</style>
+<style scoped></style>
