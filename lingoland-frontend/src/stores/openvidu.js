@@ -12,7 +12,7 @@ export const useOpenviduStore = defineStore("openvidu", () => {
   const userStore = useUserStore();
   const participants = ref([]);
   const router = useRouter();
-
+const mynum = ref('');
   // 세션에 스트림이 생성될 때 호출되는 콜백 함수
   session.on("streamCreated", function (event) {
     session.subscribe(event.stream, "subscriber");
@@ -51,8 +51,23 @@ export const useOpenviduStore = defineStore("openvidu", () => {
     );
   });
 
+
+
+  
   // 게임 시작 Signal 수신 처리
   session.on("signal:gameStart", function (event) {
+    console.log('@@참가자명단!!!!!!!',participants)
+    console.log('@@@@@@@@@@@윤희의 connectionId추출',event.target.connection.connectionId)
+    console.log('@@@@@@@@@@@윤희의 이벤트만',event.from.connectionId)
+    
+    console.log('@@@@@@@@@@@@@@@@@@@@@윤희의 참가자',participants.value)
+    for (let i = 0; i < participants.value.length;i++) {
+      if (participants.value[i].connectionId == event.target.connection.connectionId) {
+        mynum.value = i
+        console.log('@@@@@@@@@@@@@@@mynum',mynum)
+        break;
+      }
+    }
     const gameType = JSON.parse(event.data);
 
     if (gameType.type === 1) {
@@ -70,5 +85,5 @@ export const useOpenviduStore = defineStore("openvidu", () => {
       router.replace({ name: "runningGameResult" });
     }
   });
-  return { OV, session, participants };
+  return { OV, session, participants ,mynum};
 });
