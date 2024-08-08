@@ -6,6 +6,7 @@ import { useOpenviduStore } from "@/stores/openvidu";
 import { useWritingGameStore } from "@/stores/writingGame";
 import { storeToRefs } from "pinia";
 import Swal from "sweetalert2";
+import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import GenericButton from "../common/GenericButton.vue";
 import GenericInput from "../common/GenericInput.vue";
@@ -21,7 +22,6 @@ const writingGameStore = useWritingGameStore();
 
 const { pageCount } = storeToRefs(writingGameStore);
 const { session } = openviduStore;
-const { participants } = storeToRefs(openviduStore);
 
 const startRunningGame = () => {
     // 방장인지 아닌지 확인해야함
@@ -63,7 +63,7 @@ const startWritingGame = () => {
 
     // 글쓰기 게임 시작 서버로 API 호출
     writingGameStore.setWritingGame(route.params.roomId, {
-        numPart: participants.value.length,
+        numPart: openviduStore.participants.value.length,
         maxTurn: pageCount.value,
     });
 
@@ -96,10 +96,13 @@ async function writeClipboardText(text) {
 }
 
 // 방에서 나가기
-async function outSession() {
+function outSession() {
+    // 세션과의 연결 종료
     session.disconnect();
-
-    router.replace({ name: "mainPage" });
+    // 메인페이지로 리다리엑트
+    router.replace({ name: "mainPage" }).then(() => {
+        openviduStore.participants.value = ref([]);
+    });
 }
 </script>
 
@@ -110,7 +113,7 @@ async function outSession() {
                 <v-col cols="5">
                     <NameTag data="플레이어"></NameTag>
                     <GameMemberList
-                        :members="participants"
+                        :members="openviduStore.participants"
                         :style="{ height: '90vh' }"
                     />
                 </v-col>

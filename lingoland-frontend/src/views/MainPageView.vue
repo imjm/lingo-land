@@ -26,10 +26,7 @@ function makeRoom() {
         session
             .connect(customToken.token)
             .then(() => {
-                console.log(
-                    "****my connectionId",
-                    session.connection
-                );
+                console.log("****my connectionId", session.connection);
 
                 const publisher = OV.initPublisher("publisher");
                 session.publish(publisher);
@@ -54,10 +51,7 @@ function joinRoom() {
         session
             .connect(customToken.token)
             .then(() => {
-                console.log(
-                    "****my connectionId",
-                    session.connection
-                );
+                console.log("****my connectionId", session.connection);
 
                 const publisher = OV.initPublisher("publisher");
                 session.publish(publisher);
@@ -78,7 +72,12 @@ function joinRoom() {
 
 // 삭제 예정
 onMounted(() => {
-    const reesult = {
+    console.log("********** 메인페이지에서 참가자", openviduStore.participants.value);
+    
+   openviduStore.participants.value = ref([])
+    console.log("********** 메인페이지에서 참가자 again", openviduStore.participants.value);
+
+    const result = {
         problemList: [
             {
                 problemId: 1,
@@ -103,7 +102,7 @@ onMounted(() => {
         ],
     };
 
-    gameStore.saveResult(reesult);
+    gameStore.saveResult(result);
 });
 </script>
 
