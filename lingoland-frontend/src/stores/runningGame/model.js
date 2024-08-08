@@ -5,25 +5,22 @@ import { checkAnswer } from "./question";
 import { useGameStore } from "./gameStore";
 import { useOpenviduStore } from "@/stores/openvidu";
 import { ref } from "vue";
-import { storeToRefs } from "pinia";
-
-const gameChars = ref([]);
+// import { useShuffleStore } from "./shuffleStore";
 const openviduStore = useOpenviduStore();
-const { session } = openviduStore;
-const { participants } = storeToRefs(openviduStore);
-
-let moveSide = ref(0);
-let model;
-let mixer;
-
+const { OV, session, mynum } = openviduStore;
+// const shuffleStore = useShuffleStore();
+// const { models } = shuffleStore;
 const models = [
     { name: "chick", path: "/cute_chick/scene.gltf", scale: 1, rotation: -Math.PI / 2 },
     { name: "squid", path: "/squid/scene.gltf", scale: 10, rotation: 0 },
-    { name: "dragonfly", path: "/dragonfly/scene.gltf", scale: 3, rotation: -Math.PI / 2 },
+    { name: "dragonfly", path: "/dragonfly/scene.gltf", scale: 3, rotation: -Math.PI},
     { name: "unicorn", path: "/just_a_unicorn/scene.gltf", scale: 0.5, rotation: 0 },
     { name: "dog", path: "/stylized_dog_low_poly/scene.gltf", scale: 3, rotation: 0 },
     { name: "cat", path: "/little_cat/scene.gltf", scale: 7, rotation: 0 },
 ];
+let moveSide = ref(0);
+let chickModel;
+let mixer;
 
 const showRunningGameResult = () => {
     // 시그널 송신
@@ -38,30 +35,11 @@ const showRunningGameResult = () => {
         console.log("************ERROR 결과로 못가", error);
     });
 }
-
-function assignRandomModel(scene, renderer, callback) {
-    const assignedModelIndices = [];
-    for (const participant of participants.value) {
-        let randomIndex;
-        do {
-            randomIndex = Math.floor(Math.random() * models.length);
-        } while (assignedModelIndices.includes(randomIndex));
-        assignedModelIndices.push(randomIndex);
-        const modelInfo = models[randomIndex];
-        loadModel(scene, renderer, modelInfo, callback);
-
-        // 참가자의 모델 정보를 저장
-        gameChars.value.push({
-            connectionId: participant.connectionId,
-            userId: participant.userId,
-            char: modelInfo
-        });
-    }
-}
-
-function loadModel(scene, renderer, modelInfo, callback) {
+console.log('mynum@@@@@@@@@@@@@@@@@@model',mynum)
+console.log('model@@@@@@@@models',models)
+function loadChickModel(scene, renderer, callback) {
     const loader = new GLTFLoader();
-    loader.load(modelInfo.path, function (gltf) {
+    loader.load(models[mynum].path, function (gltf) {
         gltf.scene.traverse((child) => {
             if (child.isMesh) {
                 child.material.needsUpdate = true;
@@ -72,46 +50,46 @@ function loadModel(scene, renderer, modelInfo, callback) {
             }
         });
 
-        model = gltf.scene; // 모델을 저장
-        model.scale.set(modelInfo.scale, modelInfo.scale, modelInfo.scale); // 크기 몇 배
-        scene.add(model);
-        mixer = new THREE.AnimationMixer(model);
+        chickModel = gltf.scene; // 병아리 모델을 저장
+        chickModel.scale.set(models[mynum].scale, models[mynum].scale, models[mynum].scale); // 크기 1배
+        scene.add(chickModel);
+        mixer = new THREE.AnimationMixer(chickModel);
         const action = mixer.clipAction(gltf.animations[0]);
         action.play();
 
-        model.rotation.y = modelInfo.rotation; // 모델 회전 설정
-    
-        const modelBoundingBox = new THREE.Box3().setFromObject(model);
-        const modelHeight = modelBoundingBox.max.y - modelBoundingBox.min.y;
-        model.position.y = modelHeight / 2; // 맵 바닥 위로 위치 조정
+        chickModel.rotation.y = models[mynum].rotation; // 정면을 보도록 설정 (0도로 설정)
 
-        if (callback) callback(model, mixer);
+        const chickBoundingBox = new THREE.Box3().setFromObject(chickModel);
+        const chickHeight = chickBoundingBox.max.y - chickBoundingBox.min.y;
+        chickModel.position.y = chickHeight / 2; // 맵 바닥 위로 위치 조정
+
+        if (callback) callback(chickModel, mixer);
     });
 }
 
-function handleMovement(keysPressed, coordinatesElement) {
+function handleChickMovement(keysPressed, coordinatesElement) {
     const moveSpeed = 10;
     const autoForwardSpeed = 1; // 자동으로 앞으로 가는 속도
     const gameStore = useGameStore();
 
-    if (model && countdown.value === 0 && !gameStore.isGameEnded) {
+    if (chickModel && countdown.value === 0 && !gameStore.isGameEnded) {
         // 자동으로 z축을 따라 앞으로 이동
-        model.position.z += autoForwardSpeed;
+        chickModel.position.z += autoForwardSpeed;
 
         // 키 입력에 따른 옆으로 이동 처리
         if (moveSide.value !== 0) {
             const sideDirection = new THREE.Vector3(moveSide.value, 0, 0); // 옆 방향
-            model.position.add(sideDirection); // moveSide 값을 직접 사용
+            chickModel.position.add(sideDirection); // moveSide 값을 직접 사용
             moveSide.value = 0; // 한 번 이동한 후 상태 리셋
         }
 
         // x축 이동 범위 제한
-        model.position.x = Math.max(
+        chickModel.position.x = Math.max(
             -4.00,
-            Math.min(4.00, model.position.x)
+            Math.min(4.00, chickModel.position.x)
         );
 
-        const { x, y, z } = model.position;
+        const { x, y, z } = chickModel.position;
         coordinatesElement.textContent = `X: ${x.toFixed(2)}, Y: ${y.toFixed(2)}, Z: ${z.toFixed(2)}`;
 
         // x축 위치에 따른 정답 체크
@@ -134,4 +112,4 @@ function handleMovement(keysPressed, coordinatesElement) {
     }
 }
 
-export { loadModel, handleMovement, moveSide, assignRandomModel, gameChars };
+export { loadChickModel, handleChickMovement, moveSide };
