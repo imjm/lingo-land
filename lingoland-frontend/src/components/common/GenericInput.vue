@@ -6,7 +6,7 @@ import { defineModel, defineProps, defineEmits } from "vue";
  data: input 컴포넌트 위에 지정할 이름
  variant: input field 모양을 지정
 */
-defineEmits(["blurEvent"]);
+const emit = defineEmits(["blurEvent", "keyUpEvent"]);
 
 const model = defineModel();
 
@@ -15,16 +15,12 @@ const props = defineProps({
     type: String,
     data: String,
     variant: String,
-    // value:String,
     hint: String,
+    min: String,
+    max: String,
 });
-// readonly: {
-//   type: Boolean,
-//   default: false
-// }
 </script>
 <template>
-
     <div>
         {{ data }}
         <v-text-field
@@ -35,10 +31,10 @@ const props = defineProps({
             variant="outlined"
             :placeholder="hint"
             @blur="$emit('blurEvent')"
-           
-            ></v-text-field>
-            <!-- :readonly="readonly" -->
-            <!-- :value="value" -->
+            @keyup.enter="$emit('keyUpEvent')"
+            :min="min"
+            :max="max"
+        ></v-text-field>
     </div>
 </template>
 
