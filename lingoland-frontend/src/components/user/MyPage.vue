@@ -12,6 +12,22 @@ function clickTales() {
 </script>
 
 <template>
+    <button
+        class="d-flex justify-start"
+        @click="
+            () => {
+                router.push({ name: 'mainPage' });
+            }
+        "
+    >
+        <span class="material-symbols-outlined mt-4 ml-5"> home </span>
+        <span class="mt-3 ml-1">메인페이지</span>
+    </button>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
+
     <v-main class="d-flex justify-center" height="100vh">
         <v-container>
             <v-row>

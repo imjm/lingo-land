@@ -29,6 +29,23 @@ export const useProblemStore = defineStore("problemStore", () => {
         return myWrongProblemList;
     };
 
+    const getWrongProblemsByadmin = async (groupId, memberId) => {
+        const WrongProblemList = await axios
+            .get(`/problems/wrong-problems/${groupId}/${memberId}`, {
+                withCredentials: true,
+            })
+            .then((response) => {
+                if (response.status === httpStatus.OK) {
+                    return Promise.resolve(response.data);
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+        return WrongProblemList;
+    };
+
     // 학습 완료된 오답노트 삭제하기
     const delectMyWrongProblem = async (problemId) => {
         const myWrongProblemList = await axios
@@ -49,5 +66,9 @@ export const useProblemStore = defineStore("problemStore", () => {
         return myWrongProblemList;
     };
 
-    return { getMyWrongProblems, delectMyWrongProblem };
+    return {
+        getMyWrongProblems,
+        delectMyWrongProblem,
+        getWrongProblemsByadmin,
+    };
 });

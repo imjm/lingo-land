@@ -1,7 +1,7 @@
 <script setup>
 import sampleImage from "@/assets/sampleImg.jpg";
 import { useUserStore } from "@/stores/user";
-import { onMounted, ref, defineProps } from "vue";
+import { onMounted, ref, defineProps, defineEmits } from "vue";
 import ImageBox from "./ImageBox.vue";
 import { useRoute, useRouter } from "vue-router";
 
@@ -14,6 +14,7 @@ const props = defineProps({
     others: Boolean,
     id: String,
 });
+defineEmits(["clickEvent"]);
 const userProfile = ref({
     nickname: "",
     profileImage: null,
@@ -39,8 +40,7 @@ onMounted(() => {
     if (props.others) {
         profile = userStore.getProfileById(props.id);
         console.log("니 프로필");
-    }
-    else if (route.params.memberId) {
+    } else if (route.params.memberId) {
         profile = userStore.getProfileById(route.params.memberId);
         console.log("니 프로필");
     } else {
@@ -68,6 +68,7 @@ onMounted(() => {
         height="auto"
         class="d-flex align-center"
         max-height="700"
+        
     >
         <v-row class="d-flex flex-column ma-6">
             <v-col class="d-flex justify-end">
@@ -79,7 +80,7 @@ onMounted(() => {
                     @update:modelValue="selectItem"
                 ></v-select>
             </v-col>
-            <v-col class="d-flex align-center justify-center">
+            <v-col class="d-flex align-center justify-center" @click="$emit('clickEvent')">
                 <ImageBox :source="userProfile.profileImage" />
             </v-col>
             <v-col

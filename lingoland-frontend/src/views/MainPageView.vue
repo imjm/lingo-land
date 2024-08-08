@@ -64,11 +64,32 @@ onMounted(() => {
 </script>
 
 <template>
-    <v-main class="d-flex justify-center mt-10" height="100vh">
+    <button
+        class="d-flex justify-start"
+        @click="
+            () => {
+                router.push({ name: 'myPage' });
+            }
+        "
+    >
+        <span class="material-symbols-outlined mt-4 ml-5"> face </span>
+        <span class="mt-2 ml-1">마이페이지</span>
+    </button>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
+    <v-main class="d-flex justify-center" height="100vh">
         <v-container>
             <v-row>
                 <v-col cols="5" class="d-flex justify-center" height="100vh">
-                    <Profile />
+                    <Profile
+                        @click-event="
+                            () => {
+                                router.push({ name: 'myPage' });
+                            }
+                        "
+                    />
                 </v-col>
 
                 <v-col cols="7">
