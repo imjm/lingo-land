@@ -102,7 +102,7 @@ function handleChickMovement(keysPressed, coordinatesElement) {
         }
 
         // z 좌표가 9000이 되면 경기 종료
-        if (z >= 200) {
+        if (z >= 9000) {
             gameStore.endGame(); // 경기 종료 함수 호출
             alert("경기 종료!");
             setInterval(() => {
