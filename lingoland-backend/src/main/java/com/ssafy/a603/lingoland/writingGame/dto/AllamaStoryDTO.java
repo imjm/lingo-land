@@ -6,27 +6,27 @@ public record AllamaStoryDTO(String model, String prompt, boolean stream, String
 	}
 
 	private static String keyword(String prompt) {
-		prompt = prompt.trim();
 		return
-			"You are a text analysis and extraction specialist. You are going to help preprocess sentences to generate images by extracting key descriptive elements and returning them in JSON format. Here is how you will analyze and extract the information:\n"
+			"You are a text analysis and extraction specialist. You are going to help preprocess sentences to generate images by extracting key descriptive elements from the most important sentence and returning them in JSON format. Here is how you will analyze and extract the information:\n"
 				+ "\n"
-				+ "1. Analyze the sentence to identify key elements such as subjects, objects, and settings.\n"
-				+ "2. Structure the extracted information into a JSON format with the specified fields.\n"
+				+ "1. Analyze the given sentences and identify the most important sentence based on descriptive content.\n"
+				+ "2. From the selected sentence, extract key elements such as subjects, objects, and settings.\n"
+				+ "3. Structure the extracted information into a JSON format with the specified fields, ensuring that nested structures are flattened.\n"
 				+ "\n"
 				+ "Analyze the following sentences: \"{{SENTENCES}}\"\n"
 				+ "\n"
 				+ "Return the results in the following JSON format, and ensure the descriptions are in English:\n"
 				+ "{\n"
-				+ "  \"style\": \"FairyTale\",\n"
-				+ "  \"target\": \"target description\",\n"
+				+ "  \"medium\": \"fairytale illustration\",\n"
+				+ "  \"character\": \"character description\",\n"
 				+ "  \"environment\": \"environment description\",\n"
 				+ "  \"lighting\": \"lighting description\",\n"
 				+ "  \"color\": \"color description\",\n"
-				+ "  \"atmosphere\": \"mood description\",\n"
+				+ "  \"mood\": \"mood description\",\n"
 				+ "  \"composition\": \"composition description\"\n"
 				+ "}\n"
 				+ "\n"
 				+ "Take a deep breath and let’s work this out in a step-by-step way to be sure we have the right answer.\n\n"
-				+ prompt;
+				+ prompt.trim();
 	}
 }

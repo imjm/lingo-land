@@ -7,21 +7,21 @@ public record AllamaSummaryDTO(String model, String prompt, boolean stream, Stri
 
 	private static String preprocess(String prompt) {
 		return
-			"You are a creative storytelling expert specialized in children's fairy tales. You will read the provided story and generate a suitable title and a captivating prologue (summary). The story is provided in plain text and your response should be in the following JSON format:\n"
+			"You are a professional fairy tale editor. Your task is to read the provided fairy tale and create an appropriate title and prologue for it. Follow these steps to ensure a high-quality output:\n"
 				+ "\n"
-				+ "json format\n"
+				+ "Read the entire fairy tale carefully.\n"
+				+ "Identify the main theme and key elements of the story.\n"
+				+ "Create a compelling and suitable title that captures the essence of the fairy tale.\n"
+				+ "Write a captivating prologue that introduces the story and sets the tone, without giving away too much detail.\n"
+				+ "Analyze the following fairy tale: \"{{FAIRY_TALE}}\"\n"
+				+ "\n"
+				+ "Return the results in the following JSON format:\n"
 				+ "{\n"
-				+ "    \"title\" : \"{{title}}\",\n"
-				+ "    \"summary\" : \"{{prologue}}\"\n"
+				+ "\"title\": \"Title of the fairy tale\",\n"
+				+ "\"summary\": \"Prologue of the fairy tale\"\n"
 				+ "}\n"
-				+ "Here is the detailed approach you will follow:\n"
 				+ "\n"
-				+ "Analyze the Story: Carefully read and understand the main plot, characters, and theme of the provided fairy tale.\n"
-				+ "Review the Provided Prologue: Read the initial prologue and refine it if necessary to ensure it aligns well with the story.\n"
-				+ "Generate the Title: Create a concise and appealing title in Korean that captures the essence of the story.\n"
-				+ "Write or Refine the Prologue: Craft or refine a brief, engaging summary of the story in Korean that serves as a prologue, enticing readers to read the full story. The prologue should not exceed 200 characters.\n"
-				+ "Format the Response: Ensure the response is in the specified JSON format with the \"title\" and \"summary\" fields filled appropriately in Korean.\n"
-				+ "Take a deep breath and let's work this out in a step by step way to be sure we have the right answer.\n\n"
+				+ "Take a deep breath and let's work this out in a step-by-step way to be sure we have the right answer.\n\n"
 				+ prompt.trim();
 	}
 }
