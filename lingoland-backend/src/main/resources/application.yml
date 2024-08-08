@@ -49,3 +49,7 @@ kakao:
 deepL:
   api:
     key: ${DEEPL_API_KEY}
+
+image:
+  store-url: ${STORE_PATH}
+  find-url: ${IMAGE_PATH}
