@@ -77,8 +77,8 @@ public class SecurityConfig {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowCredentials(true);
 		configuration.setExposedHeaders(Arrays.asList("Authorization"));
-		configuration.setAllowedOrigins(Arrays.asList(frontendUrl, "https://i11a603.p.ssafy.io:443"
-		, "http://i11a603.p.ssafy.io:80"));
+		configuration.setAllowedOrigins(Arrays.asList(frontendUrl, "https://i11a603.p.ssafy.io:443","https://i11a603.p.ssafy.io"
+		, "http://i11a603.p.ssafy.io:80", "http://i11a603.p.ssafy.io"));
 		configuration.setAllowedHeaders(Arrays.asList("*"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
