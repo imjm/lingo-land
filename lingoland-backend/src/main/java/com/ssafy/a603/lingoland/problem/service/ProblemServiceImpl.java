@@ -72,20 +72,21 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public List<GetWrongProblemsDto> getWrongProblemsByGroupLeader(Integer groupId, Integer memberId, CustomUserDetails customUserDetails) {
+    public List<GetWrongProblemsDto> getWrongProblemsByGroupLeader(Integer groupId, String memberId, CustomUserDetails customUserDetails) {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Group"));
         Integer memberIdByRequest = customUserDetails.getMemberId();
+        int memberIdByLoginId = getMember(memberId).getId();
 
         if(group.getLeader().getId() != memberIdByRequest) {
             throw new ForbiddenException(ErrorCode.GROUP_NOT_LEADER);
         }
 
-        if(!groupMemberRepository.existsByGroupIdAndMemberId(groupId, memberId)) {
+        if(!groupMemberRepository.existsByGroupIdAndMemberId(groupId, memberIdByLoginId)) {
             throw new IllegalArgumentException("Invalid Member");
         }
 
-        List<ProblemMember> problemMembers = problemMemberRepository.findByMemberIdAndIsCorrectFalse(memberIdByRequest);
+        List<ProblemMember> problemMembers = problemMemberRepository.findByMemberIdAndIsCorrectFalse(memberIdByLoginId);
 
         return problemMembers.stream()
                 .map(this::mapToGetWrongProblemsDto)
@@ -128,4 +129,8 @@ public class ProblemServiceImpl implements ProblemService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid member"));
     }
 
+    private Member getMember(String memberId) {
+        return memberRepository.findByLoginId(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid member"));
+    }
 }

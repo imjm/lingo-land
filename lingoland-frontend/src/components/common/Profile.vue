@@ -1,14 +1,20 @@
 <script setup>
 import sampleImage from "@/assets/sampleImg.jpg";
 import { useUserStore } from "@/stores/user";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, defineProps, defineEmits } from "vue";
 import ImageBox from "./ImageBox.vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 const userStore = useUserStore();
 
 const router = useRouter();
+const route = useRoute();
 
+const props = defineProps({
+    others: Boolean,
+    id: String,
+});
+defineEmits(["clickEvent"]);
 const userProfile = ref({
     nickname: "",
     profileImage: null,
@@ -29,7 +35,18 @@ function selectItem(event) {
 }
 
 onMounted(() => {
-    const profile = userStore.getProfile();
+    let profile;
+
+    if (props.others) {
+        profile = userStore.getProfileById(props.id);
+        console.log("니 프로필");
+    } else if (route.params.memberId) {
+        profile = userStore.getProfileById(route.params.memberId);
+        console.log("니 프로필");
+    } else {
+        profile = userStore.getProfile();
+        console.log("내 프로필");
+    }
 
     profile.then((getValue) => {
         userProfile.value.nickname = getValue.nickname;
@@ -50,7 +67,8 @@ onMounted(() => {
         width="auto"
         height="auto"
         class="d-flex align-center"
-        max-height="700"
+        max-height="100vh"
+        
     >
         <v-row class="d-flex flex-column ma-6">
             <v-col class="d-flex justify-end">
@@ -62,7 +80,7 @@ onMounted(() => {
                     @update:modelValue="selectItem"
                 ></v-select>
             </v-col>
-            <v-col class="d-flex align-center justify-center">
+            <v-col class="d-flex align-center justify-center" @click="$emit('clickEvent')">
                 <ImageBox :source="userProfile.profileImage" />
             </v-col>
             <v-col

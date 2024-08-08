@@ -47,7 +47,7 @@ public class ProblemController {
 
     @GetMapping("/wrong-problems/{groupId}/{memberId}")
     public ResponseEntity<?> getWrongProblemsByGroupLeader(@PathVariable(value = "groupId") Integer groupId,
-                                                           @PathVariable(value = "memberId") Integer memberId,
+                                                           @PathVariable(value = "memberId") String memberId,
                                                            @CurrentUser CustomUserDetails customUserDetails) {
         List<GetWrongProblemsDto> getWrongProblemsDtos = problemService.getWrongProblemsByGroupLeader(groupId, memberId, customUserDetails);
         return ResponseEntity.status(HttpStatus.OK).body(getWrongProblemsDtos);

@@ -122,12 +122,12 @@ const router = createRouter({
           component: () => import("@/components/group/GroupModify.vue"),
         },
         {
-          path: "member/:memberId",
+          path: ":groupId/member/:memberId",
           name: "groupMemberDetail",
           component: GroupMemberDetail,
         },
         {
-          path: "member/:memberId",
+          path: ":groupId/member/:memberId/admin",
           name: "groupMemberDetailByAdmin",
           component: GroupMemberDetailByAdmin,
           //그룹장만 입장 가능하게 해야 되맨!

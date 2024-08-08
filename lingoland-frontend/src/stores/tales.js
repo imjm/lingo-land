@@ -49,7 +49,6 @@ export const useTaleStore = defineStore("tale", () => {
                 }
             })
             .then((data) => {
-                router.push({ name: "bookList" });
                 return data; // 여기에 data를 명확히 반환합니다.
             })
             .catch((error) => {
