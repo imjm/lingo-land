@@ -22,9 +22,6 @@ const useProShuffleStore = defineStore('proShuffleStore', () => {
             const j = Math.floor(Math.random() * (i + 1));
             [randomModels[i], randomModels[j]] = [randomModels[j], randomModels[i]];
         }
-    // const sortedRanks = computed(() => {
-    //     return [...gameRanks.value].sort((a, b) => b.score - a.score);
-    // });
 
     return { randomModels };
 });
