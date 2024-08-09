@@ -8,14 +8,14 @@ import { RouterView } from "vue-router";
     gameRoom</RouterLink
   >
   | <RouterLink :to="{ name: 'signUp' }"> signup</RouterLink> |  -->
-
+<!-- 
   <RouterLink :to="{ name: 'writingGame', params: { roomId: '1' } }">
     writingGame</RouterLink
   >
   |
   <RouterLink :to="{ name: 'writingGameResult', params: { roomId: '1' } }">
     writingGameResult</RouterLink
-  >
+  > -->
 <!--   
   |
   <RouterLink :to="{ name: 'runningGame', params: { roomId: '1' } }">

@@ -10,6 +10,7 @@ import { useRoute, useRouter } from "vue-router";
 import GenericButton from "../common/GenericButton.vue";
 import GenericInput from "../common/GenericInput.vue";
 import NameTag from "../common/NameTag.vue";
+import MainPageButton from "../common/MainPageButton.vue";
 
 window.Swal = Swal;
 
@@ -122,21 +123,30 @@ function outSession() {
 </script>
 
 <template>
-    <v-main class="d-flex justify-center mt-10">
+    <button @click="outSession" class="d-flex justify-start mx-5 mt-5">
+        <span class="material-symbols-outlined"> logout </span>
+    </button>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
+
+    <v-main class="d-flex justify-center">
         <v-container>
             <v-row>
                 <v-col cols="5">
                     <NameTag data="플레이어"></NameTag>
                     <GameMemberList
+                        class="gameMember"
                         :members="openviduStore.participants"
                         :style="{ height: '90vh' }"
                     />
                 </v-col>
 
-                <v-col cols="7">
+                <v-col cols="7" class="mt-15">
                     <div
                         class="d-flex justify-space-evenly"
-                        style="height: 65vh"
+                        style="height: 65vh; border-radius: 10%"
                     >
                         <v-card
                             class="d-flex justify-center align-start"
@@ -236,10 +246,6 @@ function outSession() {
                             URL 복사하기
                         </v-btn>
                     </div>
-
-                    <div class="d-flex justify-space-evenly mt-10">
-                        <v-btn id="out" @click="outSession"> 나가기 </v-btn>
-                    </div>
                 </v-col>
             </v-row>
         </v-container>
@@ -270,5 +276,10 @@ function outSession() {
     font-weight: 600;
     background-color: #9e9e9e;
     border-radius: 1%;
+}
+.gameMember {
+    border-bottom-left-radius: 1%;
+    border-bottom-right-radius: 1%;
+    border-top-right-radius: 1%;
 }
 </style>
