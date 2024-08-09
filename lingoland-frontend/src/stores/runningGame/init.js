@@ -109,11 +109,11 @@ function initCoinModels() {
   const xPositions = [-4, 0, 4]; // 가능한 x 위치
   const generatedCoins = {}; // 각 z 좌표에 대해 생성된 x 위치를 추적하는 객체
 
-  for (let zBase = 0; zBase < 9000; zBase += 1000) {
+  for (let zBase = 0; zBase < 4500; zBase += 1000) {
     // 1000 단위로 반복
     let coinCount = 0;
 
-    while (coinCount < 100) {
+    while (coinCount < 25) {
       // 각 구간마다 최소 100개의 코인 생성
       const z = zBase + Math.random() * 1000; // 현재 구간 내에서 z 좌표를 랜덤하게 설정
 
