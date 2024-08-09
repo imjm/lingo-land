@@ -1,29 +1,41 @@
 package com.ssafy.a603.lingoland.writingGame.config;
 
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.core.task.support.TaskExecutorAdapter;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import com.ssafy.a603.lingoland.global.error.entity.ErrorCode;
+import com.ssafy.a603.lingoland.global.error.exception.BaseException;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Configuration
 @EnableAsync
 public class AsyncConfig implements AsyncConfigurer {
-	private int CORE_POOL_SIZE = 10;
-	private int MAX_POOL_SIZE = 20;
-	private int QUEUE_CAPACITY = 10000;
+	@Override
+	@Bean(name = "myExecutor")
+	public ExecutorService getAsyncExecutor() {
+		ThreadFactory factory = Thread.ofVirtual()
+			.name("virtual-thread", 1)
+			.uncaughtExceptionHandler(
+				(t, e) -> {
+					log.error("Uncaught exception in thread " + t.getName() + ": " + e.getMessage());
+					throw new BaseException(ErrorCode.INTERNAL_SERVER_ERROR);
+				})
+			.factory();
+		return Executors.newThreadPerTaskExecutor(factory);
+	}
 
 	@Bean(name = "sampleExecutor")
-	public Executor threadPoolTaskExecutor() {
-		ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-
-		taskExecutor.setCorePoolSize(CORE_POOL_SIZE);
-		taskExecutor.setMaxPoolSize(MAX_POOL_SIZE);
-		taskExecutor.setQueueCapacity(QUEUE_CAPACITY);
-		taskExecutor.setThreadNamePrefix("Executor-");
-
-		return taskExecutor;
+	public AsyncTaskExecutor applicationTaskExecutor() {
+		return new TaskExecutorAdapter(getAsyncExecutor());
 	}
 }
