@@ -1,24 +1,17 @@
 package com.ssafy.a603.lingoland.writingGame.service;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.ClientHttpRequestFactories;
-import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.MediaType;
-import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -42,48 +35,29 @@ import com.ssafy.a603.lingoland.writingGame.dto.KarloDTO;
 import com.ssafy.a603.lingoland.writingGame.dto.KarloReturn;
 import com.ssafy.a603.lingoland.writingGame.dto.WritingGameStartRequestDTO;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class WritingGameServiceImpl implements WritingGameService {
 	private static final String FAIRY_TALE_IMAGE_PATH = "fairyTale";
 	private final ObjectMapper objectMapper;
 	private final RedisTemplate<String, Object> redisTemplate;
-	private final ConcurrentHashMap<String, List<DrawingRequestDTO>> requestMap;
+	private final ConcurrentHashMap<String, List<DrawingRequestDTO>> requestMap = new ConcurrentHashMap<>();
 	private final RestClient restClient;
-	private final String restApiKey;
 	private final FairyTaleService fairyTaleService;
 	private final ImgUtils imgUtils;
 
-	public WritingGameServiceImpl(ObjectMapper objectMapper, RedisTemplate<String, Object> redisTemplate,
-		@Value("${kakao.api.key}") String restApiKey, @Value("${deepL.api.key}") String deepLApiKey,
-		FairyTaleService fairyTaleService, ImgUtils imgUtils) {
-		this.objectMapper = objectMapper;
-		this.redisTemplate = redisTemplate;
-		this.requestMap = new ConcurrentHashMap<>();
+	@Qualifier("myExecutor")
+	private final ExecutorService executor;
 
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS
-			.withReadTimeout(Duration.ofMinutes(3));
-		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories.get(settings);
-		this.restClient = RestClient.builder()
-			.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-			.defaultStatusHandler(HttpStatusCode::is4xxClientError,
-				(request, response) -> {
-					log.error("Client Error Code={}", response.getStatusCode());
-					log.error("Client Error Message={}", new String(response.getBody().readAllBytes()));
-				})
-			.defaultStatusHandler(HttpStatusCode::is5xxServerError,
-				(request, response) -> {
-					log.error("Server Error Code={}", response.getStatusCode());
-					log.error("Server Error Message={}", new String(response.getBody().readAllBytes()));
-				})
-			.requestFactory(requestFactory)
-			.build();
-		this.restApiKey = restApiKey;
-		this.fairyTaleService = fairyTaleService;
-		this.imgUtils = imgUtils;
-	}
+	@Value("${kakao.api.key}")
+	private String imageApiKey;
+
+	@Value("${ollama.api-url}")
+	private String ollamaUrl;
 
 	@Override
 	public int[] start(String sessionId, WritingGameStartRequestDTO request) {
@@ -114,7 +88,6 @@ public class WritingGameServiceImpl implements WritingGameService {
 			log.error("Failed to deserialize WritingGameStartRequestDTO", e);
 			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
 		}
-		ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 		if (requests.size() == sessionInfo.numPart()) {
 			log.info("All members have submitted stories for session: {}", sessionId);
 			List<DrawingRequestDTO> collected = new ArrayList<>(requests);
@@ -143,7 +116,6 @@ public class WritingGameServiceImpl implements WritingGameService {
 	private CompletableFuture<Void> processStoriesAsync(String sessionId, List<DrawingRequestDTO> requests,
 		WritingGameStartRequestDTO sessionInfo) {
 		log.info("Processing stories asynchronously for session: {}", sessionId);
-		ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 		List<CompletableFuture<Void>> futures = new ArrayList<>();
 		for (DrawingRequestDTO request : requests) {
 			CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
@@ -213,7 +185,6 @@ public class WritingGameServiceImpl implements WritingGameService {
 			.map(DrawingRequestDTO::key)
 			.collect(Collectors.toList());
 
-		ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 		List<CompletableFuture<FairyTale>> futures = requests.stream()
 			.map(request -> CompletableFuture.supplyAsync(() -> endProcess(request, writers), executor)
 				.exceptionally(ex -> {
@@ -252,12 +223,13 @@ public class WritingGameServiceImpl implements WritingGameService {
 			log.info("Created Title: {}", titleWithSummary.toString());
 		} catch (BaseException e) {
 			log.error("Failed to create title and summary, using default values");
-			titleWithSummary = new AllamaSummaryResponseDTO("No title", "No summary");
+			titleWithSummary = new AllamaSummaryResponseDTO("No title", "No summary",
+				AllamaStoryResponseDTO.builder().build());
 		}
 
 		if (titleWithSummary != null && !titleWithSummary.title().equals("No title")) {
 			try {
-				imgUrl = generateImage(titleWithSummary.toString());
+				imgUrl = generateImage(titleWithSummary.content().toString());
 				log.info("Generated image URL: {}", imgUrl);
 			} catch (BaseException e) {
 				log.error("Image generation failed, using default image", e);
@@ -276,7 +248,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 	private AllamaSummaryResponseDTO makeTitleWithSummary(String story) throws BaseException {
 		log.info("Summary story using Allama3.1 : {}", story);
 		String json = restClient.post()
-			.uri("http://localhost:11434/api/generate")
+			.uri(ollamaUrl)
 			.body(new AllamaSummaryDTO(story))
 			.retrieve()
 			.body(String.class);
@@ -295,7 +267,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 	private AllamaStoryResponseDTO translateStory2ImagePrompt(String story) throws BaseException {
 		log.info("Translating story using Allama3.1 : {}", story);
 		String json = restClient.post()
-			.uri("http://localhost:11434/api/generate")
+			.uri(ollamaUrl)
 			.body(new AllamaStoryDTO(story))
 			.retrieve()
 			.body(String.class);
@@ -315,7 +287,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 		log.info("generate image using text {}", translated);
 		KarloReturn karloReturn = restClient.post()
 			.uri("https://api.kakaobrain.com/v2/inference/karlo/t2i")
-			.header("Authorization", "KakaoAK " + restApiKey)
+			.header("Authorization", "KakaoAK " + imageApiKey)
 			.header("Content-Type", "application/json")
 			.body(new KarloDTO(translated))
 			.retrieve()
