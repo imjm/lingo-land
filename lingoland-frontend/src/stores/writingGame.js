@@ -10,7 +10,8 @@ export const useWritingGameStore = defineStore("writingGameStore", () => {
     window.Swal = swal;
 
     const axios = inject("axios");
-    const pageCount = ref();
+    const pageCount = ref(0);
+    const turn = ref(0);
 
     /**
      * actions
@@ -29,5 +30,6 @@ export const useWritingGameStore = defineStore("writingGameStore", () => {
                 console.log(error);
             });
     };
-    return { pageCount, setWritingGame };
+
+    return { pageCount, turn, setWritingGame };
 });
