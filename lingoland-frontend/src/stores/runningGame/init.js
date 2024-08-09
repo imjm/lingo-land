@@ -9,6 +9,7 @@ import { useGameStore } from "./gameStore";
 import { updateTimer } from "./time";
 
 let renderer, scene, mixer, camera, controls, chickModel, coinSound;
+const coinScore = ref(0);
 const gameStore = useGameStore();
 
 // 카메라 설정
@@ -31,9 +32,9 @@ function initDraw() {
 
   addLights(scene);
 
-  for (let i = -1; i < 10; i++) {
-    loadMapSection(i * 1950 - 650);
-    loadNewMapSection(i * 1950 + 325);
+  for (let i = -1; i < 8; i++) {
+    loadMapSection(i * 2040 - 680);
+    loadNewMapSection(i * 2040 + 340);
   }
 
   loadChickModel(scene, renderer, (model, animMixer) => {
@@ -95,33 +96,46 @@ function loadCoinModel(x, z) {
     coinModel.position.set(x, 2, z); // 위치 설정
     scene.add(coinModel);
 
-    mixer = new THREE.AnimationMixer(coinModel);
-    const action = mixer.clipAction(gltf.animations[0]);
-    action.setLoop(THREE.LoopRepeat);
-    action.play();
+    // mixer = new THREE.AnimationMixer(coinModel);
+    // const action = mixer.clipAction(gltf.animations[0]);
+    // action.setLoop(THREE.LoopRepeat);
+    // action.play();
 
     coinModel.userData = { isCoin: true }; // 충돌 체크를 위한 플래그 설정
   });
 }
 
 function initCoinModels() {
-  const xPositions = [-4, 0, 4];
+  const xPositions = [-4, 0, 4]; // 가능한 x 위치
+  const generatedCoins = {}; // 각 z 좌표에 대해 생성된 x 위치를 추적하는 객체
 
   for (let zBase = 0; zBase < 9000; zBase += 1000) {
     // 1000 단위로 반복
     let coinCount = 0;
 
-    while (coinCount < 300) {
-      // 각 구간마다 최소 300개의 코인 생성
+    while (coinCount < 100) {
+      // 각 구간마다 최소 100개의 코인 생성
       const z = zBase + Math.random() * 1000; // 현재 구간 내에서 z 좌표를 랜덤하게 설정
-      const x = xPositions[Math.floor(Math.random() * xPositions.length)]; // x 좌표를 랜덤하게 선택
+
+      if (!generatedCoins[z]) {
+        generatedCoins[z] = []; // z 좌표에 대한 배열 초기화
+      }
+
+      let x;
+      do {
+        x = xPositions[Math.floor(Math.random() * xPositions.length)]; // x 좌표를 랜덤하게 선택
+      } while (generatedCoins[z].includes(x)); // 동일한 z 좌표에서 이미 생성된 x 위치는 제외
+
       loadCoinModel(x, z);
+      generatedCoins[z].push(x); // 생성된 x 위치 저장
       coinCount++;
 
-      // 추가 코인을 z축을 따라 0.7 간격으로 최소 3개 이상 배치
+      // 추가 코인을 z축을 따라 3 간격으로 최소 3개 이상 배치
       for (let i = 1; i < 3 + Math.floor(Math.random() * 3); i++) {
         if (coinCount >= 300) break; // 코인 개수가 300개를 넘으면 중지
-        loadCoinModel(x, z + i * 0.7);
+        const newZ = z + i * 3;
+        loadCoinModel(x, newZ);
+        generatedCoins[newZ] = [x]; // 동일한 x 위치로 z축에 따라 추가 생성
         coinCount++;
       }
     }
@@ -259,7 +273,7 @@ function checkForCoinCollisions() {
 
       if (chickBB.intersectsBox(coinBB)) {
         // 캐릭터와 코인의 충돌 감지
-
+        coinScore.value += 0.01;
         scene.remove(child); // 충돌 시 코인을 씬에서 제거
         if (coinSound.isPlaying) {
           coinSound.stop(); // 이전 사운드가 재생 중이면 정지
@@ -290,4 +304,5 @@ export {
   updateCameraPosition,
   initDraw,
   setupKeyListeners,
+  coinScore,
 };

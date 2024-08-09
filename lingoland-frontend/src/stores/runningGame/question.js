@@ -2,6 +2,7 @@ import axios from "axios";
 import { storeToRefs } from "pinia";
 import { ref } from "vue";
 import { useOpenviduStore } from "../openvidu";
+import { coinScore } from "./init";
 
 const { VITE_SERVER_URL } = import.meta.env;
 
@@ -56,6 +57,8 @@ session.on("signal:checkProblem", (event) => {
   for (let i = 0; i < lenPar; i++) {
     if (gameRanks.value[i].connectionId === event.from.connectionId) {
       gameRanks.value[i].score += problemResult.score;
+      gameRanks.value[i].score += coinScore.value;
+      coinScore.value = 0
       break;
     }
   }
@@ -66,6 +69,7 @@ session.on("signal:checkProblem", (event) => {
   );
   // console.log("****************problemResult", problemResult);
   console.log("***************시그널 보낸애 점수 점수점수", gameRanks.value);
+  console.log("점수점수 refcoinScore",coinScore.value)
 });
 
 const questionCountDown = ref(5);
