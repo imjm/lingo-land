@@ -9,6 +9,7 @@ import com.ssafy.a603.lingoland.member.entity.Member;
 import com.ssafy.a603.lingoland.member.repository.MemberRepository;
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 import com.ssafy.a603.lingoland.problem.dto.CreateGameResultsDto;
+import com.ssafy.a603.lingoland.problem.dto.GetProblemDto;
 import com.ssafy.a603.lingoland.problem.dto.GetWrongProblemsDto;
 import com.ssafy.a603.lingoland.problem.entity.Problem;
 import com.ssafy.a603.lingoland.problem.entity.ProblemMember;
@@ -59,6 +60,14 @@ public class ProblemServiceImpl implements ProblemService {
 
             problemMemberRepository.save(problemMember);
         });
+    }
+
+    @Override
+    public List<GetProblemDto> getProblems() {
+        List<Problem> problems = problemRepository.findRandomProblems();
+        return problems.stream()
+                .map(Problem::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override

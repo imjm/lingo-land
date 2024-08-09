@@ -2,6 +2,7 @@ package com.ssafy.a603.lingoland.problem.service;
 
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 import com.ssafy.a603.lingoland.problem.dto.CreateGameResultsDto;
+import com.ssafy.a603.lingoland.problem.dto.GetProblemDto;
 import com.ssafy.a603.lingoland.problem.dto.GetWrongProblemsDto;
 import org.springframework.stereotype.Service;
 
@@ -19,4 +20,5 @@ public interface ProblemService {
     void deleteWrongProblems(Integer problemId, CustomUserDetails customUserDetails);
 
 
+    List<GetProblemDto> getProblems();
 }
