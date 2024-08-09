@@ -15,12 +15,12 @@
                 height="80%"
                 margin-bottom="10px"
             />
-            <div>달리기 게임 설명</div>
+            <div>문해력 향상을 위한 달리기게임!</div>
         </v-carousel-item>
 
         <v-carousel-item>
             <img src="\src\assets\sampleImg.jpg" width="100%" height="80%" />
-            <div>릴레이 글쓰기 게임 설명</div>
+            <div>릴레이로 글을 써서 동화를 만들어요!</div>
         </v-carousel-item>
     </v-carousel>
 </template>

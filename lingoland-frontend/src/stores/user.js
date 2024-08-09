@@ -36,7 +36,8 @@ export const useUserStore = defineStore("userStore", () => {
                 }
             })
             .catch((error) => {
-                if (error.status === httpStatus.CONFLICT) {
+                console.log(error)
+                if (error.response.status === httpStatus.CONFLICT) {
                     return_value = false;
                 }
             });

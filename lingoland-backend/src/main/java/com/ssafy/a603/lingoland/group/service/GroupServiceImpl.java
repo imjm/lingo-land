@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class GroupServiceImpl implements GroupService {
-	private static final String GROUP_IMAGE_PATH = "GROUP";
+	private static final String GROUP_IMAGE_PATH = "group";
 	private final GroupRepository groupRepository;
 	private final MemberRepository memberRepository;
 	private final GroupMemberRepository groupMemberRepository;
@@ -50,7 +50,7 @@ public class GroupServiceImpl implements GroupService {
 			.leader(member)
 			.build();
 
-		group.setGroupImagePath(imgUtils.getDefaultGroupImagePath());
+		group.setGroupImagePath(imgUtils.getDefaultImage());
 		Group createdGroup = groupRepository.save(group);
 
 		addMemberToGroup(group, member, "그룹장 입니다.");
@@ -112,7 +112,7 @@ public class GroupServiceImpl implements GroupService {
 		}
 
 		group.updateGroup(request);
-		imgUtils.deleteImage(group.getGroupImage(), GROUP_IMAGE_PATH);
+		imgUtils.deleteImage(group.getGroupImage());
 		group.setGroupImagePath(imgUtils.saveImage(groupImage, GROUP_IMAGE_PATH));
 
 		log.info("Group with ID: {} updated successfully.", groupId);

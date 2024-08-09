@@ -18,16 +18,26 @@ const props = defineProps({
 </script>
 
 <template>
-    <div>
-        <v-img
-            :src="source"
-            width="300"
-            height="300"
-            aspect-ratio="1/1"
-            cover
-            class="rounded-circle"
-        ></v-img>
+    <div class="imagebox-container">
+      <v-img
+        :src="source"
+        class="responsive-img rounded-circle"
+        cover
+      ></v-img>
     </div>
-</template>
-
-<style scoped></style>
+  </template>
+  
+  <style scoped>
+  .imagebox-container {
+    width: 100%;
+    max-width: 300px; /* 기본 크기를 300px로 설정 */
+    aspect-ratio: 1/1; /* 이미지 비율 유지 */
+  }
+  
+  .responsive-img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: inherit; /* 부모의 비율을 상속 */
+  }
+  
+  </style>

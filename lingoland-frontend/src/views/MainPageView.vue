@@ -1,6 +1,7 @@
 <script setup>
 import GenericButton from "@/components/common/GenericButton.vue";
 import GenericInput from "@/components/common/GenericInput.vue";
+import MyPageButton from "@/components/common/MyPageButton.vue";
 import PageNavigationButton from "@/components/common/PageNavigationButton.vue";
 import Profile from "@/components/common/Profile.vue";
 import RankList from "@/components/rank/RankList.vue";
@@ -100,21 +101,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <button
-        class="d-flex justify-start"
-        @click="
-            () => {
-                router.push({ name: 'myPage' });
-            }
-        "
-    >
-        <span class="material-symbols-outlined mt-4 ml-5"> face </span>
-        <span class="mt-2 ml-1">마이페이지</span>
-    </button>
-    <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
-    />
+    <MyPageButton />
     <v-main class="d-flex justify-center">
         <v-container>
             <v-row>
@@ -125,6 +112,7 @@ onMounted(() => {
                                 router.push({ name: 'myPage' });
                             }
                         "
+                        :style="{ width: '80%' }"
                     />
                 </v-col>
 
@@ -132,20 +120,28 @@ onMounted(() => {
                     <v-row>
                         <v-col
                             cols="6"
-                            class="d-flex flex-column align-content-space-evenly"
+                            class="d-flex flex-column justify-space-between"
                         >
                             <div>
                                 <PageNavigationButton
                                     background-color="#CCCBFF"
                                     data="방 만들기"
+                                    source="\src\assets\makeroom.png"
                                     @click-event="makeRoom"
+                                    height="45vh"
                                 />
                             </div>
 
                             <div
                                 class="room-code d-flex flex-column justify-center align-center"
                             >
-                                <div class="ma-3 text-h4 font-weight-black">
+                                <div
+                                    class="ma-3"
+                                    style="
+                                        font-size: xx-large;
+                                        font-weight: 700;
+                                    "
+                                >
                                     방 코드
                                 </div>
                                 <GenericInput

@@ -33,8 +33,9 @@ function completeProblem() {
                 dialog = true;
             }
         "
+        height="30vh"
     />
-    <v-dialog v-model="dialog" width="50%">
+    <v-dialog v-model="dialog" width="50%" class="gowun-batang-regular">
         <NameTag data="오답노트" />
         <IncorrectList @click-event="completeProblem" />
 
@@ -57,4 +58,13 @@ function completeProblem() {
     </v-dialog>
 </template>
 
-<style scoped></style>
+<style>
+
+@import url("https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap");
+.gowun-batang-regular {
+    font-family: "Gowun Batang", serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: large;
+}
+</style>

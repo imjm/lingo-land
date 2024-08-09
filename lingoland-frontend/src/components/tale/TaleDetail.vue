@@ -4,6 +4,7 @@ import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import router from "@/router";
 import GenericButton from "../common/GenericButton.vue";
+import BackButton from "../common/BackButton.vue";
 
 const route = useRoute();
 const taleStore = useTaleStore();
@@ -49,10 +50,6 @@ watch(activePage, (newPage) => {
 
 <template>
     <!-- 뒤로가기 -->
-    <button class="d-flex justify-start mt-5 mx-5" @click="router.back()">
-        <span class="material-symbols-outlined"> menu_open </span>
-    </button>
-
     <!-- 책 -->
     <div v-if="tale" class="scene centered gowun-batang-regular ">
         <div class="book" ref="book">

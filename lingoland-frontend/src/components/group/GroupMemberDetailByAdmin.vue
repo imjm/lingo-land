@@ -4,6 +4,7 @@ import TaleList from "../tale/TaleList.vue";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import IncorrectDialogByGroupLeader from "../incorrect/IncorrectDialogByGroupLeader.vue";
+import BackButton from "../common/BackButton.vue";
 const route = useRoute();
 const userId = ref(null);
 
@@ -16,24 +17,26 @@ onMounted(() => {
 </script>
 
 <template>
-    <v-main v-if="userId" class="d-flex mt-10 justify-center">
+    <v-main v-if="userId" class="d-flex justify-center">
         <v-container>
             <v-row>
                 <v-col cols="5">
-                    <Profile
+                    <div>
+                        <Profile
                         class="mb-2"
                         :others="true"
                         :id="userId"
-                        :style="{ height: '50%' }"
-                    />
+                        />
+                    </div>
                     <IncorrectDialogByGroupLeader
                         :group-id="route.params.groupId"
                         :member-id="userId"
+                        :style="{height : '30%'}"
                     />
                 </v-col>
 
                 <v-col cols="7">
-                    <TaleList :others="true" :id="userId" />
+                    <TaleList :others="true" :id="userId" :style="{width :'100%'}" />
                 </v-col>
             </v-row>
         </v-container>
