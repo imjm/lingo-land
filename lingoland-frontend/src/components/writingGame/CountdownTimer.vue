@@ -1,11 +1,5 @@
-<template>
-    <div class="countdown-timer">
-        <div class="text-h6">남은 시간: {{ minutes }}:{{ seconds }}</div>
-    </div>
-</template>
-
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, defineEmits } from "vue";
+import { computed, defineEmits, onBeforeUnmount, onMounted, ref } from "vue";
 
 const emit = defineEmits(["timesUp"]);
 const totalTime = ref(120); // 2분 = 120초
@@ -40,6 +34,12 @@ onBeforeUnmount(() => {
     clearInterval(timer);
 });
 </script>
+
+<template>
+    <div class="countdown-timer">
+        <div class="text-h6">남은 시간: {{ minutes }}:{{ seconds }}</div>
+    </div>
+</template>
 
 <style scoped>
 .countdown-timer {

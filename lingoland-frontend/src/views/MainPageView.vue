@@ -1,40 +1,77 @@
 <script setup>
 import GenericButton from "@/components/common/GenericButton.vue";
 import GenericInput from "@/components/common/GenericInput.vue";
+import MyPageButton from "@/components/common/MyPageButton.vue";
 import PageNavigationButton from "@/components/common/PageNavigationButton.vue";
 import Profile from "@/components/common/Profile.vue";
 import RankList from "@/components/rank/RankList.vue";
 import { useGameRoomStore } from "@/stores/gameRoom";
+import { useOpenviduStore } from "@/stores/openvidu";
 import { useGameStore } from "@/stores/runningGame/gameStore";
-import { ref, onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
-const gameStore = useGameStore();
-const gameRoomStore = useGameRoomStore();
 const router = useRouter();
 
+const gameStore = useGameStore(); // 삭제 예정
+const gameRoomStore = useGameRoomStore();
+const openviduStore = useOpenviduStore();
+
+const { OV, session } = openviduStore;
 const roomCode = ref("");
 
 function makeRoom() {
     const sessionPromise = gameRoomStore.getSession();
 
-    sessionPromise.then((sessionId) => {
-        router.push({
-            name: "gameRoom",
-            params: { roomId: sessionId },
-        });
+    sessionPromise.then((customToken) => {
+        session
+            .connect(customToken.token)
+            .then(() => {
+                const publisher = OV.initPublisher("publisher");
+                session.publish(publisher);
+
+                router.push({
+                    name: "gameRoom",
+                    params: { roomId: customToken.sessionId },
+                });
+            })
+            .catch((error) => {
+                console.error(
+                    "There was an error connecting to the session:",
+                    error
+                );
+            });
     });
 }
 
 function joinRoom() {
-    router.push({
-        name: "gameRoom",
-        params: { roomId: roomCode.value },
+    gameRoomStore.getToken(roomCode.value).then((customToken) => {
+        // 토큰을 얻어왔어
+        session
+            .connect(customToken.token)
+            .then(() => {
+                console.log("****my connectionId", session.connection);
+
+                const publisher = OV.initPublisher("publisher");
+                session.publish(publisher);
+
+                router.push({
+                    name: "gameRoom",
+                    params: { roomId: roomCode.value },
+                });
+            })
+            .catch((error) => {
+                console.error(
+                    "There was an error connecting to the session:",
+                    error
+                );
+            });
     });
 }
 
+// 삭제 예정
 onMounted(() => {
-    const reesult = {
+    const result = {
         problemList: [
             {
                 problemId: 1,
@@ -59,26 +96,12 @@ onMounted(() => {
         ],
     };
 
-    gameStore.saveResult(reesult);
+    gameStore.saveResult(result);
 });
 </script>
 
 <template>
-    <button
-        class="d-flex justify-start"
-        @click="
-            () => {
-                router.push({ name: 'myPage' });
-            }
-        "
-    >
-        <span class="material-symbols-outlined mt-4 ml-5"> face </span>
-        <span class="mt-2 ml-1">마이페이지</span>
-    </button>
-    <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
-    />
+    <MyPageButton />
     <v-main class="d-flex justify-center">
         <v-container>
             <v-row>
@@ -96,12 +119,13 @@ onMounted(() => {
                     <v-row>
                         <v-col
                             cols="6"
-                            class="d-flex flex-column align-content-space-evenly"
+                            class="d-flex flex-column justify-space-between"
                         >
                             <div>
                                 <PageNavigationButton
                                     background-color="#CCCBFF"
                                     data="방 만들기"
+                                    source="\src\assets\makeroom.png"
                                     @click-event="makeRoom"
                                 />
                             </div>
@@ -109,7 +133,13 @@ onMounted(() => {
                             <div
                                 class="room-code d-flex flex-column justify-center align-center"
                             >
-                                <div class="ma-3 text-h4 font-weight-black">
+                                <div
+                                    class="ma-3"
+                                    style="
+                                        font-size: xx-large;
+                                        font-weight: 700;
+                                    "
+                                >
                                     방 코드
                                 </div>
                                 <GenericInput

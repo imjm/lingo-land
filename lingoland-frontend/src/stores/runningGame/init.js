@@ -1,11 +1,9 @@
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { ref } from "vue";
+import { useGameStore } from "./gameStore";
 import { addLights } from "./light";
 import { loadMapSection, loadNewMapSection } from "./map";
 import { handleChickMovement, loadChickModel, moveSide } from "./model";
-import { useGameStore } from "./gameStore";
 import { updateTimer } from "./time";
 
 let renderer, scene, mixer, camera, controls, chickModel;
@@ -166,15 +164,15 @@ function onWindowResize() {
 const clock = new THREE.Clock();
 
 export {
+    camera,
+    cameraSettings,
+    chickModel,
+    controls,
+    initDraw,
+    mixer,
+    moveSide,
     renderer,
     scene,
-    mixer,
-    camera,
-    controls,
-    chickModel,
-    moveSide,
-    cameraSettings,
-    updateCameraPosition,
-    initDraw,
     setupKeyListeners,
+    updateCameraPosition,
 };
