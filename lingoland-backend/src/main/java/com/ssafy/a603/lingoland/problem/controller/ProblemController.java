@@ -65,6 +65,7 @@ public class ProblemController {
         problem1.put("3", "철수는 집에 돌아왔다.");
         problem1.put("answer", "2");
         problem1.put("explanation", "글의 중심 내용은 철수가 학교에 갔다는 것입니다.");
+        problem1.put("problemId", 1);
         problems.add(problem1);
 
         // 문제 2
@@ -75,6 +76,7 @@ public class ProblemController {
         problem2.put("3", "영희는 책을 집에서 읽는다.");
         problem2.put("answer", "2");
         problem2.put("explanation", "글에서 영희가 매일 2시간씩 책을 읽는다고 명시되어 있습니다.");
+        problem2.put("problemId", 2);
         problems.add(problem2);
 
         // 문제 3
@@ -85,6 +87,7 @@ public class ProblemController {
         problem3.put("3", "행복하다");
         problem3.put("answer", "3");
         problem3.put("explanation", "'행복하다'는 '기쁘다'와 의미가 유사한 동의어입니다.");
+        problem3.put("problemId", 3);
         problems.add(problem3);
 
         // 문제 4
@@ -95,6 +98,7 @@ public class ProblemController {
         problem4.put("3", "즐거운");
         problem4.put("answer", "1");
         problem4.put("explanation", "'쉬운'은 '어렵다'의 반의어입니다.");
+        problem4.put("problemId", 4);
         problems.add(problem4);
 
         // 문제 5
@@ -105,6 +109,7 @@ public class ProblemController {
         problem5.put("3", "나는 손으로 그림을 그렸다.");
         problem5.put("answer", "2");
         problem5.put("explanation", "'배'는 '과일'과 '몸의 일부분'을 의미하는 동음이의어입니다.");
+        problem5.put("problemId", 5);
         problems.add(problem5);
 
         // 문제 6
@@ -115,6 +120,7 @@ public class ProblemController {
         problem6.put("3", "나는 어제 친구와 만났습니가.");
         problem6.put("answer", "2");
         problem6.put("explanation", "'만났습니다'가 맞는 표현입니다.");
+        problem6.put("problemId", 6);
         problems.add(problem6);
 
         // 문제 7
@@ -125,6 +131,7 @@ public class ProblemController {
         problem7.put("3", "우리는오늘도학교에 갑니다.");
         problem7.put("answer", "1");
         problem7.put("explanation", "'우리는 오늘도 학교에 갑니다.'가 올바른 띄어쓰기입니다.");
+        problem7.put("problemId", 7);
         problems.add(problem7);
 
         // 문제 8
@@ -135,6 +142,7 @@ public class ProblemController {
         problem8.put("3", "일을 많이 한다.");
         problem8.put("answer", "2");
         problem8.put("explanation", "'손이 크다'는 돈을 많이 쓴다는 뜻의 관용구입니다.");
+        problem8.put("problemId", 8);
         problems.add(problem8);
 
         // 문제 9
@@ -145,6 +153,7 @@ public class ProblemController {
         problem9.put("3", "소문은 빨리 퍼진다.");
         problem9.put("answer", "3");
         problem9.put("explanation", "'발 없는 말이 천리 간다'는 소문은 빨리 퍼진다는 뜻의 속담입니다.");
+        problem9.put("problemId", 9);
         problems.add(problem9);
 
         // 문제 10
@@ -155,6 +164,7 @@ public class ProblemController {
         problem10.put("3", "비가 오다 우산을 챙겼다.");
         problem10.put("answer", "2");
         problem10.put("explanation", "'비가 와서'는 원인과 결과를 나타내는 접속 표현으로 자연스럽습니다.");
+        problem10.put("problemId", 10);
         problems.add(problem10);
 
         // 전체 JSON 객체로 변환
