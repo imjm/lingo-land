@@ -25,6 +25,7 @@ public record AllamaStoryDTO(String model, String prompt, boolean stream, String
 				+ "  \"mood\": \"mood description\",\n"
 				+ "  \"composition\": \"composition description\"\n"
 				+ "}\n"
+				+ "**Important**: Make sure to strictly follow the JSON format. Do not include any additional text or explanations outside of the JSON structure.\n"
 				+ "\n"
 				+ "Take a deep breath and let’s work this out in a step-by-step way to be sure we have the right answer.\n\n"
 				+ prompt.trim();
