@@ -36,14 +36,14 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div class="countdown-timer">
-        <div class="text-h6">남은 시간: {{ minutes }}:{{ seconds }}</div>
+    <div class="countdown-timer my-10">
+        <div>{{ minutes }}분 {{ seconds }}초 남았어요!</div>
     </div>
 </template>
 
 <style scoped>
 .countdown-timer {
     text-align: center;
-    font-size: 1.2em;
+    font-size: 1.4em;
 }
 </style>

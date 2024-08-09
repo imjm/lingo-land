@@ -126,7 +126,7 @@ onMounted(() => {
                                 <PageNavigationButton
                                     background-color="#CCCBFF"
                                     data="방 만들기"
-                                    source="\src\assets\makeroom.png"
+                                    source="\src\assets\animal\ANIMALS2.png"
                                     @click-event="makeRoom"
                                     height="45vh"
                                 />

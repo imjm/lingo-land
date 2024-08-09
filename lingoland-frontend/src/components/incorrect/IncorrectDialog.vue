@@ -27,7 +27,7 @@ function completeProblem() {
     <PageNavigationButton
         background-color="#BF5847"
         data="오답노트"
-        source="\src\assets\오답노트.png"
+        source="\src\assets\오답노트2.png"
         @click-event="
             () => {
                 dialog = true;
@@ -60,11 +60,4 @@ function completeProblem() {
 
 <style>
 
-@import url("https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap");
-.gowun-batang-regular {
-    font-family: "Gowun Batang", serif;
-    font-weight: 700;
-    font-style: normal;
-    font-size: large;
-}
 </style>

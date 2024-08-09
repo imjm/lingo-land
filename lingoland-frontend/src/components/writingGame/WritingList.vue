@@ -1,7 +1,24 @@
-<script setup></script>
+<script setup>
+import { onMounted } from 'vue';
+
+
+</script>
 
 <template>
-    <div class="text-h6 text-white">지금까지 쓴 글입니다.</div>
+    <div class="image">
+        <div>dfasf</div>
+    </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.image {
+    background-image: url("/balloon1.png");
+    height: 100%;
+    width : 700px;  
+    background-size: contain;
+    background-position: center 75%;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    
+}
+</style>
