@@ -98,9 +98,9 @@ onMounted(() => {
     </div>
     <div id="ranks-container">
       <h2>게임 순위</h2>
-      <ul>
+      <ul class="no_dot">
         <li v-for="(rank, index) in sortedRanks" :key="rank.connectionId">
-          {{ index + 1 }}. {{ rank.userId }}: {{ rank.score }} 점
+          {{ index + 1 }}. {{ rank.userId }}: {{ Math.floor(rank.score*100) }} 점
         </li>
       </ul>
     </div>
@@ -122,10 +122,12 @@ onMounted(() => {
 /* Add any additional styles here */
 #ranks-container {
   position: absolute;
-  bottom: 200px;
-  right: 800px;
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
+  top: 300px;
+  bottom: auto;
+  right: auto;
+  left: 10px;
+  background-color: white;
+  color: black;
   padding: 10px;
   border-radius: 5px;
 }
