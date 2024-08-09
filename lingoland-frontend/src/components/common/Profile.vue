@@ -13,6 +13,7 @@ const route = useRoute();
 const props = defineProps({
     others: Boolean,
     id: String,
+    height: String,
 });
 defineEmits(["clickEvent"]);
 const userProfile = ref({
@@ -68,34 +69,28 @@ onMounted(() => {
         height="auto"
         class="d-flex align-center"
         max-height="100vh"
-        
     >
-        <v-row class="d-flex flex-column ma-6">
-            <v-col class="d-flex justify-end">
+
+        <v-row class="d-flex flex-column pa-6">
+            <v-col class="d-flex flex-column align-center justify-center">
                 <v-select
+                    class="fixed-select"
                     max-width="45"
                     density="compact"
                     variant="solo"
                     :items="['로그아웃', '내 정보 수정']"
                     @update:modelValue="selectItem"
                 ></v-select>
-            </v-col>
-            <v-col class="d-flex align-center justify-center" @click="$emit('clickEvent')">
-                <ImageBox :source="userProfile.profileImage" />
-            </v-col>
-            <v-col
-                class="d-flex align-center justify-center my-3" 
-                style="font-size:70px; font-weight: 700;"
-            >
-                {{ userProfile.nickname }}
-            </v-col>
-            <v-col
-                class="d-flex align-center justify-center my-3"
-                style="font-size:xx-large; font-weight: 700;"
-            >
-                {{ userProfile.rank }}
-            </v-col>
-            <v-col class="d-flex align-center justify-center text-h5 my-1">
+                <ImageBox
+                    :source="userProfile.profileImage"
+                    @click="$emit('clickEvent')"
+                />
+                <div class="my-3" style="font-size: 5vw; font-weight: 700">
+                    {{ userProfile.nickname }}
+                </div>
+                <div class="my-3" style="font-size: 2vw; font-weight: 700">
+                    {{ userProfile.rank }}
+                </div>
                 <v-progress-linear
                     rounded
                     height="25"
@@ -111,4 +106,10 @@ onMounted(() => {
     </v-card>
 </template>
 
-<style scoped></style>
+<style scoped>
+.fixed-select {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+}
+</style>

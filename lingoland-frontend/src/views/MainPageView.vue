@@ -112,6 +112,7 @@ onMounted(() => {
                                 router.push({ name: 'myPage' });
                             }
                         "
+                        :style="{ width: '80%' }"
                     />
                 </v-col>
 
@@ -127,6 +128,7 @@ onMounted(() => {
                                     data="방 만들기"
                                     source="\src\assets\makeroom.png"
                                     @click-event="makeRoom"
+                                    height="45vh"
                                 />
                             </div>
 

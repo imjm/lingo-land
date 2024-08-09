@@ -18,7 +18,7 @@ function clickTales() {
         <v-container>
             <v-row>
                 <v-col cols="5" class="d-flex justify-center">
-                    <Profile />
+                    <Profile :style="{width:'80%'}"/>
                 </v-col>
 
                 <v-col cols="7">
@@ -91,6 +91,8 @@ function clickTales() {
                                 data="ㅇㅇㅇ의 동화"
                                 source="src\assets\내동화.png"
                                 @click-event="clickTales"
+                                height="30vh"
+
                             />
                         </v-col>
                     </v-row>

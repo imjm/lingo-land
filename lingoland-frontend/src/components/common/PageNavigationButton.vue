@@ -10,19 +10,18 @@ const props = defineProps({
     data: String,
     backgroundColor: String,
     source: String,
+    height : String,
 });
 </script>
 
 <template>
     <div>
         <v-btn
-            class="mb-5"
             :style="{
                 width: '90vw',
-                height: '300px',
                 backgroundColor: backgroundColor,
-                // fontSize: 'x-large',
             }"
+            :height="height"
             @click="$emit('clickEvent')"
         >
             <div class="d-flex flex-column">
@@ -35,7 +34,8 @@ const props = defineProps({
                         :src="source"
                         style="
                             max-width: 100%;
-                            height: 90%;
+                            height: 150px;
+                            max-height:90%;
                             object-fit: contain;
                         "
                         alt="Icon"

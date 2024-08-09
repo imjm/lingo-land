@@ -15,16 +15,17 @@ const props = defineProps({
 
 <template>
     <PageNavigationButton
+        class="mt-5"
         background-color="#BF5847"
         data="오답노트"
-        source="\src\assets\오답노트.png"
         @click-event="
             () => {
                 dialog = true;
             }
         "
+        height="10vh"
     />
-    <v-dialog v-model="dialog" width="50%">
+    <v-dialog v-model="dialog" width="50%" class ="gowun-batang-regular">
         <NameTag data="오답노트" />
         <IncorrectList :group-id="groupId" :member-id="memberId"/>
 
@@ -47,4 +48,12 @@ const props = defineProps({
     </v-dialog>
 </template>
 
-<style scoped></style>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap");
+.gowun-batang-regular {
+    font-family: "Gowun Batang", serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: large;
+}
+</style>

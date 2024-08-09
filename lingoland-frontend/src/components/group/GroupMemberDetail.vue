@@ -18,8 +18,8 @@ onMounted(()=> {
     <v-main v-if="userId" class="d-flex justify-center">
         <v-container>
             <v-row>
-                <v-col cols="5" height="90vh">
-                    <Profile :others="true" :id="userId"/>
+                <v-col cols="5">
+                    <Profile :others="true" :id="userId" :style="{height : '90vh'}"/>
                 </v-col>
 
                 <v-col cols="7" >
