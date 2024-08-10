@@ -14,7 +14,7 @@ const handleTimesUp = () => {
 <template>
     <div class="d-flex flex-column justify-center align-center">
         <div
-            class="d-flex justify-end my-10"
+            class="d-flex justify-end mb-10"
             style="font-size: 30px; color: white"
         >
             다음 글을 읽고 이어질 이야기를 작성하세요
@@ -42,7 +42,7 @@ const handleTimesUp = () => {
 
 <style scoped>
 .textarea {
-    background-color: #537960;
+    background-color: #ffffff;
     width: 90%;
     height: 100px;
 }
