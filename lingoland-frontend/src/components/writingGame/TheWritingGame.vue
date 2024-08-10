@@ -1,13 +1,6 @@
 <script setup>
 import WritingInput from "@/components/writingGame/WritingInput.vue";
 import WritingList from "@/components/writingGame/WritingList.vue";
-import { useOpenviduStore } from "@/stores/openvidu";
-import { storeToRefs } from "pinia";
-
-const openviduStore = useOpenviduStore();
-
-const { OV, session } = openviduStore;
-const { participants } = storeToRefs(openviduStore);
 </script>
 
 <template>
