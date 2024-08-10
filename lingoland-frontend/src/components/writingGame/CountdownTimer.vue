@@ -1,8 +1,13 @@
 <script setup>
-import { computed, defineEmits, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, defineEmits, onBeforeUnmount, onMounted } from "vue";
+import { useWritingGameStore } from "@/stores/writingGame";
+import { storeToRefs } from "pinia";
 
 const emit = defineEmits(["timesUp"]);
-const totalTime = ref(120); // 2분 = 120초
+
+const writingGameStore = useWritingGameStore();
+const { totalTime } = storeToRefs(writingGameStore);
+
 let timer = null;
 
 const minutes = computed(() => {
