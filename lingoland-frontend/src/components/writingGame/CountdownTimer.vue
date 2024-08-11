@@ -1,5 +1,5 @@
 <script setup>
-import { computed, defineEmits, onBeforeUnmount, onMounted } from "vue";
+import { computed, defineEmits, onBeforeUnmount, onMounted, watch } from "vue";
 import { useWritingGameStore } from "@/stores/writingGame";
 import { storeToRefs } from "pinia";
 
@@ -21,6 +21,7 @@ const seconds = computed(() => {
 });
 
 const startTimer = () => {
+    // 1초마다 함수를 실행
     timer = setInterval(() => {
         if (totalTime.value > 0) {
             totalTime.value--;
@@ -37,6 +38,13 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
     clearInterval(timer);
+});
+
+watch(totalTime, (newValue, oldValue) => {
+    if (oldValue === 0 && newValue === 15) {
+        console.log("*********reset timer");
+        startTimer();
+    }
 });
 </script>
 
