@@ -121,7 +121,13 @@ public class WritingGameServiceImpl implements WritingGameService {
 	}
 
 	private String handleStoryTranslation(String story) {
-		AllamaStoryResponseDTO translated = translateStory2ImagePrompt(story);
+		AllamaStoryResponseDTO translated = null;
+		try {
+			translated = translateStory2ImagePrompt(story);
+		} catch (Exception e) {
+			log.warn("Skipping image generation due to title creation failure.");
+			return imgUtils.getDefaultImage();
+		}
 		if (translated == null || translated.medium().isBlank()) {
 			log.warn("Skipping image generation due to title creation failure.");
 			return imgUtils.getDefaultImage();
@@ -132,7 +138,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 	private String generateImageWithFallback(String translated) {
 		try {
 			return generateImage(translated);
-		} catch (BaseException e) {
+		} catch (Exception e) {
 			log.error("Image generation failed, using default image", e);
 			return imgUtils.getDefaultImage();
 		}
@@ -163,9 +169,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 
 	private <T> void serializeToRedis(String key, T value) {
 		try {
-			redisTemplate.multi();
 			redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(value));
-			redisTemplate.exec();
 		} catch (JsonProcessingException e) {
 			log.error("Failed to serialize object to Redis", e);
 			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
@@ -225,7 +229,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 		try {
 			titleWithSummary = makeTitleWithSummary(allStories.toString());
 			log.info("Created Title: {}", titleWithSummary.toString());
-		} catch (BaseException e) {
+		} catch (Exception e) {
 			log.error("Failed to create title and summary, using default values");
 			titleWithSummary = new AllamaSummaryResponseDTO("No title", "No summary",
 				AllamaStoryResponseDTO.builder().build());
@@ -248,7 +252,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 			stories, writers);
 	}
 
-	private AllamaSummaryResponseDTO makeTitleWithSummary(String story) throws BaseException {
+	private AllamaSummaryResponseDTO makeTitleWithSummary(String story) {
 		log.info("Summary story using Allama3.1 : {}", story);
 		String json = restClient.post()
 			.uri(ollamaUrl)
@@ -267,7 +271,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 		}
 	}
 
-	private AllamaStoryResponseDTO translateStory2ImagePrompt(String story) throws BaseException {
+	private AllamaStoryResponseDTO translateStory2ImagePrompt(String story) {
 		log.info("Translating story using Allama3.1 : {}", story);
 		String json = restClient.post()
 			.uri(ollamaUrl)
@@ -286,7 +290,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 		}
 	}
 
-	private String generateImage(String translated) throws BaseException {
+	private String generateImage(String translated) {
 		log.info("generate image using text {}", translated);
 		KarloReturn karloReturn = restClient.post()
 			.uri("https://api.kakaobrain.com/v2/inference/karlo/t2i")
