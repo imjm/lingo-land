@@ -16,25 +16,27 @@ const groupStore = useGroupStore();
 
 const groupMemberList = ref();
 const groupInfo = ref({
-    name: "",
-    id: "",
     description: "",
-    memberCount: "",
+    groupImage: "",
+    id: "",
     leaderNickname: "",
+    memberCount: "",
+    name: "",
 });
 
-onMounted(async () => {
+onMounted(() => {
     const groupMemberPromise = groupMemberStore.getMyGroupMembers(
         route.params.groupId
     );
 
-    groupMemberPromise.then(async (promise) => {
+    groupMemberPromise.then((promise) => {
         groupMemberList.value = promise;
     });
 
     const groupPromise = groupStore.getGroup(route.params.groupId);
 
     groupPromise.then((promise) => {
+        console.log("******************groupPromise", groupPromise);
         groupInfo.value = promise;
     });
 });
