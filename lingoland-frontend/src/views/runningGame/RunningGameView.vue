@@ -16,6 +16,7 @@ const { sortedRanks } = storeToRefs(resultStore);
 // 카운트다운 & 타이머
 import { countdown, startCountdown } from "@/stores/runningGame/time";
 
+
 // 문제
 import {
   currentQuestion,
