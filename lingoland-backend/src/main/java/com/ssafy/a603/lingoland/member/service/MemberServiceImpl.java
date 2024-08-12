@@ -5,12 +5,12 @@ import com.ssafy.a603.lingoland.member.dto.GetMemberInfoDto;
 import com.ssafy.a603.lingoland.member.dto.SignUpDto;
 import com.ssafy.a603.lingoland.member.dto.UpdateNicknameDto;
 import com.ssafy.a603.lingoland.member.dto.UpdatePasswordDto;
-import com.ssafy.a603.lingoland.member.dto.UpdateProfileImageDto;
 import com.ssafy.a603.lingoland.member.entity.Member;
 import com.ssafy.a603.lingoland.member.entity.Rank;
 import com.ssafy.a603.lingoland.member.entity.Role;
 import com.ssafy.a603.lingoland.member.repository.MemberRepository;
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
+import com.ssafy.a603.lingoland.util.ImgUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.NoSuchElementException;
 
@@ -25,9 +26,10 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MemberServiceImpl implements UserDetailsService, MemberService {
-
+	private static final String MEMBER_IMAGE_PATH = "member";
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final ImgUtils imgUtils;
 
 	@Transactional
 	public Member saveNewMember(SignUpDto signUpRequest) {
@@ -35,6 +37,7 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
 			.loginId(signUpRequest.getLoginId())
 			.nickname(signUpRequest.getNickname())
 			.password(passwordEncoder.encode(signUpRequest.getPassword()))
+				.profileImage(imgUtils.getDefaultImage())
 			.rank(Rank.CHAMBONG)
 			.role(Role.ROLE_USER)
 			.build();
@@ -102,16 +105,17 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
 		member.updatePassword(passwordEncoder.encode(updatePasswordDto.password()));
 	}
 
+    @Transactional
+    @Override
+    public void updateProfileImage(MultipartFile profileImage, CustomUserDetails customUserDetails) {
+        Member member = getMember(customUserDetails.getUsername());
+		imgUtils.deleteImage(member.getProfileImage());
+        member.updateProfileImage(imgUtils.saveImage(profileImage, MEMBER_IMAGE_PATH));
+    }
+
 	private Member getMember(String loginId) {
 		return memberRepository.findByLoginId(loginId).orElseThrow(() -> new NoSuchElementException("존재하지 않은 유저입니다"));
 	}
-
-    @Transactional
-    @Override
-    public void updateProfileImage(UpdateProfileImageDto updateProfileImageDto, CustomUserDetails customUserDetails) {
-        Member member = getMember(customUserDetails.getUsername());
-        member.updateProfileImage(updateProfileImageDto.profileImage());
-    }
 
 	public boolean checkIdDuplication(String loginId) {
 		return memberRepository.existsByLoginId(loginId);
