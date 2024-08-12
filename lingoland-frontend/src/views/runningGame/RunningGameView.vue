@@ -16,7 +16,6 @@ const { sortedRanks } = storeToRefs(resultStore);
 // 카운트다운 & 타이머
 import { countdown, startCountdown } from "@/stores/runningGame/time";
 
-
 // 문제
 import {
   currentQuestion,
@@ -83,8 +82,11 @@ onMounted(() => {
       <h2>{{ currentQuestion.problem }}</h2>
       <div v-if="questionCountDown > 0">{{ questionCountDown }}</div>
       <ul class="no_dot d-flex justify-center">
-        <li v-for="(option, index) in options" :key="index"
-        :class="{ highlighted: selectedAnswerIndex === index }">
+        <li
+          v-for="(option, index) in options"
+          :key="index"
+          :class="{ highlighted: selectedAnswerIndex === index }"
+        >
           <button>
             {{ option }}
           </button>
