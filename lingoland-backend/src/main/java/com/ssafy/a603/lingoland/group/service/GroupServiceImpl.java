@@ -50,7 +50,7 @@ public class GroupServiceImpl implements GroupService {
 			.leader(member)
 			.build();
 
-		group.setGroupImagePath(imgUtils.getDefaultImage());
+		group.setGroupImagePath(imgUtils.getImagePathWithDefaultImage(GROUP_IMAGE_PATH));
 		Group createdGroup = groupRepository.save(group);
 
 		addMemberToGroup(group, member, "그룹장 입니다.");
