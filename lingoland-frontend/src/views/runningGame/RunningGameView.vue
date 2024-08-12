@@ -5,7 +5,7 @@ import { computed, onMounted, watch, ref } from "vue";
 import { useResultStore } from "@/stores/runningGame/resultStore";
 // 초기 세팅
 import { useOpenviduStore } from "@/stores/openvidu";
-
+import { selectedAnswerIndex } from "@/stores/runningGame/model";
 import { initDraw } from "@/stores/runningGame/init";
 const openviduStore = useOpenviduStore();
 
@@ -81,7 +81,8 @@ onMounted(() => {
       <h2>{{ currentQuestion.problem }}</h2>
       <div v-if="questionCountDown > 0">{{ questionCountDown }}</div>
       <ul class="no_dot d-flex justify-center">
-        <li v-for="(option, index) in options" :key="index">
+        <li v-for="(option, index) in options" :key="index"
+        :class="{ highlighted: selectedAnswerIndex === index }">
           <button>
             {{ option }}
           </button>
@@ -101,7 +102,7 @@ onMounted(() => {
     <div v-if="questions === null" id="quiz-container">
       <p>퀴즈가 완료되었습니다!</p>
     </div>
-    <div id="ranks-container">
+    <div id="ranks-container" class="gamja-flower-regular">
       <h2>게임 순위</h2>
       <ul class="no_dot">
         <li v-for="(rank, index) in sortedRanks" :key="rank.connectionId">
@@ -128,14 +129,19 @@ onMounted(() => {
 /* Add any additional styles here */
 #ranks-container {
   position: absolute;
-  top: 300px;
+  top: 15%;
   bottom: auto;
   right: auto;
-  left: 10px;
+  left: 25px;
+  width: 150px;
   background-color: white;
   color: black;
   padding: 10px;
   border-radius: 5px;
+}
+.highlighted button {
+  background-color: yellow;
+  color: black;
 }
 .no_dot {
   list-style-type: none;
