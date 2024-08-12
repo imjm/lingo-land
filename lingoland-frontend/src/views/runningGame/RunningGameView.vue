@@ -10,6 +10,7 @@ import { initDraw } from "@/stores/runningGame/init";
 const openviduStore = useOpenviduStore();
 
 const { OV, session } = openviduStore;
+
 const resultStore = useResultStore();
 const { sortedRanks } = storeToRefs(resultStore);
 // 카운트다운 & 타이머

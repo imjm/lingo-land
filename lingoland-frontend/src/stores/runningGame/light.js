@@ -21,6 +21,7 @@ function addLights(scene) {
     const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.5);
     directionalLight2.position.set(-5, 10, -5).normalize();
     scene.add(directionalLight2);
+    
 }
 
 export { addLights };
