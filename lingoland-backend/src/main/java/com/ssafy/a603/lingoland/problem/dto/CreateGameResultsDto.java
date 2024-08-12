@@ -9,4 +9,5 @@ import java.util.List;
 public class CreateGameResultsDto {
 
     private List<ProblemDto> problemList;
+    private Integer coinCount;
 }

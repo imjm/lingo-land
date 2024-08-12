@@ -76,6 +76,7 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
 		return GetMemberInfoDto.builder()
 				.nickname(member.getNickname())
 				.profileImage(member.getProfileImage())
+				.maxExperiencePoint(member.getRank().getMaxExperience())
 				.experiencePoint(member.getExperiencePoint())
 				.rank(member.getRank().getGrade())
 				.build();
@@ -87,6 +88,7 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
 		return GetMemberInfoDto.builder()
 				.nickname(member.getNickname())
 				.profileImage(member.getProfileImage())
+				.maxExperiencePoint(member.getRank().getMaxExperience())
 				.experiencePoint(member.getExperiencePoint())
 				.rank(member.getRank().getGrade())
 				.build();
