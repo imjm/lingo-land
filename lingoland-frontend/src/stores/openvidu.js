@@ -1,9 +1,10 @@
 import sampleImg from "@/assets/sampleImg.jpg";
 import { OpenVidu } from "openvidu-browser";
-import { defineStore } from "pinia";
+import { defineStore, storeToRefs } from "pinia";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "./user";
+import { useWritingGameStore } from "./writingGame";
 
 export const useOpenviduStore = defineStore("openvidu", () => {
     const OV = new OpenVidu();
@@ -13,7 +14,13 @@ export const useOpenviduStore = defineStore("openvidu", () => {
     const userStore = useUserStore();
     const participants = ref([]);
     const mynum = ref("");
-    const reparticipants = ref([])
+
+    const reparticipants = ref([]);
+    const storyList = ref([]);
+    const storyOrderList = ref([]);
+
+    const writingGameStore = useWritingGameStore();
+    const { turn, pageCount } = storeToRefs(writingGameStore);
 
     // 세션에 스트림이 생성될 때 호출되는 콜백 함수
     session.on("streamCreated", function (event) {
@@ -49,34 +56,6 @@ export const useOpenviduStore = defineStore("openvidu", () => {
         });
     });
 
-    // 게임 시작 Signal 수신 처리
-    session.on("signal:gameStart", function (event) {
-        const gameType = JSON.parse(event.data);
-
-        // 달리기 게임으로
-        if (gameType.type === 1) {
-          console.log('오픈비두 참가자목록 보기',participants)
-          reparticipants.value = participants.value.sort((a,b) => {
-            return a.connectionId.localeCompare(b.connectionId)
-          })
-          console.log('재정렬한참가자들!!!!!!!!!!!!!!!!!',reparticipants.value)
-
-          for (let i = 0; i < reparticipants.value.length; i++) {
-                if (
-                    reparticipants.value[i].connectionId ==
-                    event.target.connection.connectionId
-                ) {
-                    mynum.value = i;
-                    break;
-                }
-            }
-            router.replace({ name: "runningGame" });
-        } else if (gameType.type === 2) {
-            // 글쓰기 게임으로
-            router.replace({ name: "writingGame" });
-        }
-    });
-
     // 세션에 유저가 나가면 호출되는 콜백함수
     session.on("connectionDestroyed", (event) => {
         const connectionId = event.connection.connectionId;
@@ -86,24 +65,71 @@ export const useOpenviduStore = defineStore("openvidu", () => {
         );
     });
 
+    // 게임 시작 Signal 수신 처리
+    session.on("signal:gameStart", function (event) {
+        const gameType = JSON.parse(event.data);
+
+        // 참가자 커넥션 아이디를 기준으로 정렬
+        reparticipants.value = participants.value.sort((a, b) => {
+            return a.connectionId.localeCompare(b.connectionId);
+        });
+
+        // 달리기 게임으로
+        if (gameType.type === 1) {
+            for (let i = 0; i < reparticipants.value.length; i++) {
+                if (
+                    reparticipants.value[i].connectionId ==
+                    event.target.connection.connectionId
+                ) {
+                    mynum.value = i;
+                    break;
+                }
+            }
+            router.replace({ name: "runningGame" });
+
+            // 글쓰기 게임으로
+        } else if (gameType.type === 2) {
+            // 방장이 보내준 글쓰기 페이지로 초기화
+            pageCount.value = gameType.data;
+
+            // 이야기 배열 초기화
+            initalizeStoryList();
+
+            // 정렬된 참가자 아이디를 기준으로 이야기 작성 순서 초기화
+            initalizeOrderList();
+
+            // 글쓰기 게임으로
+            router.replace({ name: "writingGame" });
+        }
+    });
+
     // 게임 종료 signal 수신 처리
     session.on("signal:gameEnd", function (event) {
         const resultType = JSON.parse(event.data);
+
         if (resultType.type === 1) {
             router.replace({ name: "runningGameResult" });
-        } else if (resultType.taype === 2) {
+        } else if (resultType.type === 2) {
             router.replace({ name: "writingGameResult" });
         }
     });
 
-    // 방참가자리스트 초기화
+    // 글쓰기 게임 제출 시그널 수신처리
+    session.on("signal:writingGame", async function (event) {
+        const writingGameSignal = await JSON.parse(event.data);
+
+        await setStory(writingGameSignal);
+
+        console.log("************storyList", storyList.value);
+    });
+
+    // 방 참가자 리스트 초기화
     function resetParticipants() {
         participants.value = [];
     }
 
+    // 방장 확인
     function isLeader() {
-        console.log("************isLeader", participants.value);
-
         const isLeader = participants.value.some(
             (participant) => participant.role === "MODERATOR"
         );
@@ -111,13 +137,100 @@ export const useOpenviduStore = defineStore("openvidu", () => {
         return isLeader;
     }
 
+    // 이야기 배열 초기화
+    function initalizeStoryList() {
+        for (let index = 0; index < reparticipants.value.length; index++) {
+            storyList.value.push({
+                storyId: reparticipants.value[index].userId,
+                story: [],
+            });
+        }
+    }
+
+    // 이야기 작성 배열 초기화
+    function initalizeOrderList() {
+        // 정렬된 참가자 순서로 이야기 순서 만들기
+        for (let index = 0; index < reparticipants.value.length; index++) {
+            let orderList = [];
+
+            // 페이지 수만큼 반복
+            // 이야기 아이디는 로그인 아이디를 기준으로 만듦
+            for (
+                let orderIndex = index;
+                orderIndex < Number(index) + Number(pageCount.value);
+                orderIndex++
+            ) {
+                orderList.push(
+                    reparticipants.value[
+                        orderIndex % reparticipants.value.length
+                    ].userId
+                );
+            }
+
+            storyOrderList.value.push({
+                connectionId: reparticipants.value[index].connectionId,
+                nickname: reparticipants.value[index].userId,
+                orderList: orderList,
+            });
+        }
+
+        console.log("**********storyOrderList", storyOrderList.value);
+    }
+
+    // 글쓰기 제출 시그널을 받았을 때 처리
+    function setStory(writingGameSignal) {
+        // 받은 이벤트로부터 스토리 아이디를 찾고
+        // 스토리 리스트에서 해당하는 스토리 아이디에 이야기를 추가한다.
+        for (let index = 0; index < storyList.value.length; index++) {
+            if (storyList.value[index].storyId === writingGameSignal.storyId) {
+                storyList.value[index].story.push(writingGameSignal.story);
+                return;
+            }
+        }
+    }
+
+    // 현재 내가 작성하고 있는 이야기 아이디 찾기
+    function findCurrentStoryId() {
+        let currentStoryId = null;
+        // storyOrderList에서 내 커넥션 아이디를 찾고
+        // 현재 턴에 해당하는 이야기아이디를 찾음
+        for (let index = 0; index < storyOrderList.value.length; index++) {
+            if (
+                storyOrderList.value[index].connectionId ===
+                session.connection.connectionId
+            ) {
+                currentStoryId =
+                    storyOrderList.value[index].orderList[turn.value];
+                return currentStoryId;
+            }
+        }
+    }
+
+    // 내 로그인 아이디 찾기
+    function findMyLoginId() {
+        let myLoginId = null;
+        for (let index = 0; index < participants.value.length; index++) {
+            if (
+                participants.value[index].connectionId ===
+                session.connection.connectionId
+            ) {
+                myLoginId = participants.value[index].userId;
+                return myLoginId;
+            }
+        }
+    }
+
     return {
         OV,
         session,
         participants,
+        reparticipants,
         mynum,
+        storyList,
+        storyOrderList,
         resetParticipants,
         isLeader,
-        reparticipants
+        findCurrentStoryId,
+        findMyLoginId,
     };
 });
