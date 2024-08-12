@@ -18,7 +18,7 @@ public record AllamaSummaryDTO(String model, String prompt, boolean stream, Stri
 				+ "7. Structure the extracted information into a JSON format with the specified fields, ensuring that nested structures are flattened.\n"
 				+ "8. Analyze the following fairy tale: \"{{FAIRY_TALE}}\"\n"
 				+ "\n"
-				+ "Return the results in the following JSON format:\n"
+				+ "Return the results in the following JSON format, ensuring that the medium is always set to 'fairytale illustration' and that all content is in English:\n"
 				+ "{\n"
 				+ "\"title\": \"Title of the fairy tale\",\n"
 				+ "\"summary\": \"Prologue of the fairy tale\"\n"
