@@ -63,31 +63,24 @@ public class WritingGameServiceImpl implements WritingGameService {
 	public int[] start(String sessionId, WritingGameStartRequestDTO request) {
 		String redisKey = "lingoland:fairyTale:session:" + sessionId;
 		log.info("Starting game for session: {}", sessionId);
-		try {
-			redisTemplate.opsForValue().set(redisKey, objectMapper.writeValueAsString(request));
-		} catch (JsonProcessingException e) {
-			log.error("Failed to serialize WritingGameStartRequestDTO", e);
-			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
-		}
+		serializeToRedis(redisKey, request);
 		return randomNumList(request.numPart());
 	}
 
 	@Override
 	public List<FairyTale> submitStory(String sessionId, DrawingRequestDTO dto) {
 		log.info("Submitting story for session: {}", sessionId);
-		requestMap.putIfAbsent(sessionId, new ArrayList<>());
-		List<DrawingRequestDTO> requests = requestMap.get(sessionId);
-		requests.add(dto);
-		log.debug("Added DrawingRequestDTO to session: {}, current size: {}", sessionId, requests.size());
+		List<DrawingRequestDTO> requests = requestMap.compute(sessionId, (key, existingList) -> {
+			if (existingList == null) {
+				existingList = new ArrayList<>();
+			}
+			existingList.add(dto);
+			log.debug("Added DrawingRequestDTO to session: {}, current size: {}", sessionId, existingList.size());
+			return existingList;
+		});
 
-		String sessionInfoJson = (String)redisTemplate.opsForValue().get("lingoland:fairyTale:session:" + sessionId);
-		WritingGameStartRequestDTO sessionInfo;
-		try {
-			sessionInfo = objectMapper.readValue(sessionInfoJson, WritingGameStartRequestDTO.class);
-		} catch (JsonProcessingException e) {
-			log.error("Failed to deserialize WritingGameStartRequestDTO", e);
-			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
-		}
+		WritingGameStartRequestDTO sessionInfo = deserializeFromRedis("lingoland:fairyTale:session:" + sessionId,
+			WritingGameStartRequestDTO.class);
 		if (requests.size() == sessionInfo.numPart()) {
 			log.info("All members have submitted stories for session: {}", sessionId);
 			List<DrawingRequestDTO> collected = new ArrayList<>(requests);
@@ -103,11 +96,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 					}
 				});
 
-			if (requests.get(0).order() == sessionInfo.maxTurn()) {
-				return future.join();
-			} else {
-				return Collections.emptyList();
-			}
+			return requests.get(0).order() == sessionInfo.maxTurn() ? future.join() : Collections.emptyList();
 		}
 		return Collections.emptyList();
 	}
@@ -118,64 +107,89 @@ public class WritingGameServiceImpl implements WritingGameService {
 		log.info("Processing stories asynchronously for session: {}", sessionId);
 		List<CompletableFuture<Void>> futures = new ArrayList<>();
 		for (DrawingRequestDTO request : requests) {
-			CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-				String story = request.story();
-
-				String imgUrl = null;
-				AllamaStoryResponseDTO translated = null;
-				try {
-					translated = translateStory2ImagePrompt(story);
-					log.info("Translated story: {}", translated);
-				} catch (BaseException e) {
-					translated = AllamaStoryResponseDTO.builder().build();
-					log.error("Failed to create title and summary, using default values");
-				}
-
-				if (translated != null && !translated.medium().isBlank()) {
-					try {
-						imgUrl = generateImage(translated.toString());
-						log.info("Generated image URL: {}", imgUrl);
-					} catch (BaseException e) {
-						log.error("Image generation failed, using default image", e);
-						imgUrl = imgUtils.getDefaultImage();
-					}
-				} else {
-					log.warn("Skipping image generation due to title creation failure.");
-					imgUrl = imgUtils.getDefaultImage(); // 기본 이미지 사용
-				}
-
-				String savedImgUrl = imgUtils.saveBase64Image(imgUrl, FAIRY_TALE_IMAGE_PATH);
-				String redisStoryKey = "lingoland:fairyTale:" + request.key();
-				FairyTale.Story node = FairyTale.Story.builder()
-					.illustration(savedImgUrl)
-					.story(request.story())
-					.build();
-
-				try {
-					if (request.order() == 1) {
-						List<FairyTale.Story> lists = new ArrayList<>();
-						lists.add(node);
-						redisTemplate.opsForValue().set(redisStoryKey, objectMapper.writeValueAsString(lists));
-						log.info("Stored first story in Redis with key: {}", redisStoryKey);
-					} else {
-						String existingJson = (String)redisTemplate.opsForValue().get(redisStoryKey);
-						List<FairyTale.Story> existingStories = objectMapper.readValue(existingJson,
-							new TypeReference<List<FairyTale.Story>>() {
-							});
-						existingStories.add(node);
-						redisTemplate.opsForValue()
-							.set(redisStoryKey, objectMapper.writeValueAsString(existingStories));
-						log.info("Updated story list in Redis with key: {}", redisStoryKey);
-					}
-				} catch (JsonProcessingException e) {
-					log.error("Error processing JSON", e);
-					throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
-				}
-			}, executor);
-			futures.add(future);
+			futures.add(CompletableFuture.runAsync(() -> processSingleStory(sessionId, request), executor));
 		}
 		return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
 			.thenRun(() -> log.info("All story processing tasks completed for session: {}", sessionId));
+	}
+
+	private void processSingleStory(String sessionId, DrawingRequestDTO request) {
+		String story = request.story();
+		String imgUrl = handleStoryTranslation(story);
+		String savedImgUrl = imgUtils.saveBase64Image(imgUrl, FAIRY_TALE_IMAGE_PATH);
+		saveStoryToRedis(request.key(), request, savedImgUrl);
+	}
+
+	private String handleStoryTranslation(String story) {
+		AllamaStoryResponseDTO translated = null;
+		try {
+			translated = translateStory2ImagePrompt(story);
+		} catch (Exception e) {
+			log.warn("Skipping image generation due to title creation failure.");
+			return imgUtils.getDefaultImage();
+		}
+		if (translated == null || translated.medium().isBlank()) {
+			log.warn("Skipping image generation due to title creation failure.");
+			return imgUtils.getDefaultImage();
+		}
+		return generateImageWithFallback(translated.toString());
+	}
+
+	private String generateImageWithFallback(String translated) {
+		try {
+			return generateImage(translated);
+		} catch (Exception e) {
+			log.error("Image generation failed, using default image", e);
+			return imgUtils.getDefaultImage();
+		}
+	}
+
+	private void saveStoryToRedis(String key, DrawingRequestDTO request, String savedImgUrl) {
+		String redisStoryKey = "lingoland:fairyTale:" + key;
+		FairyTale.Story node = FairyTale.Story.builder()
+			.illustration(savedImgUrl)
+			.story(request.story())
+			.build();
+
+		try {
+			if (request.order() == 1) {
+				List<FairyTale.Story> stories = new ArrayList<>();
+				stories.add(node);
+				serializeToRedis(redisStoryKey, stories);
+				return;
+			}
+			List<FairyTale.Story> existingStories = getExistingStories(redisStoryKey);
+			existingStories.add(node);
+			serializeToRedis(redisStoryKey, existingStories);
+		} catch (JsonProcessingException e) {
+			log.error("Error processing JSON", e);
+			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
+		}
+	}
+
+	private List<FairyTale.Story> getExistingStories(String redisStoryKey) throws JsonProcessingException {
+		String existingJson = (String)redisTemplate.opsForValue().get(redisStoryKey);
+		return existingJson != null ? objectMapper.readValue(existingJson, new TypeReference<List<FairyTale.Story>>() {
+		}) : new ArrayList<>();
+	}
+
+	private <T> void serializeToRedis(String key, T value) {
+		try {
+			redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(value));
+		} catch (JsonProcessingException e) {
+			log.error("Failed to serialize object to Redis", e);
+			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
+		}
+	}
+
+	private <T> T deserializeFromRedis(String key, Class<T> valueType) {
+		String json = (String)redisTemplate.opsForValue().get(key);
+		try {
+			return objectMapper.readValue(json, valueType);
+		} catch (JsonProcessingException e) {
+			log.error("Failed to deserialize object from Redis", e);
+			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
+		}
 	}
 
 	@Async("sampleExecutor")
@@ -221,23 +235,22 @@ public class WritingGameServiceImpl implements WritingGameService {
 		try {
 			titleWithSummary = makeTitleWithSummary(allStories.toString());
 			log.info("Created Title: {}", titleWithSummary.toString());
-		} catch (BaseException e) {
+		} catch (Exception e) {
 			log.error("Failed to create title and summary, using default values");
 			titleWithSummary = new AllamaSummaryResponseDTO("No title", "No summary",
 				AllamaStoryResponseDTO.builder().build());
 		}
 
-		if (titleWithSummary != null && !titleWithSummary.title().equals("No title")) {
-			try {
-				imgUrl = generateImage(titleWithSummary.content().toString());
-				log.info("Generated image URL: {}", imgUrl);
-			} catch (BaseException e) {
-				log.error("Image generation failed, using default image", e);
-				imgUrl = imgUtils.getDefaultImage();
-			}
+		boolean isValidTitle = titleWithSummary != null && titleWithSummary.title() != null && !titleWithSummary.title()
+			.equals("No title");
+		boolean isValidSummary = titleWithSummary.summary() != null && !titleWithSummary.summary().equals("No summary");
+		boolean isValidContent = titleWithSummary.content() != null;
+
+		if (isValidTitle && isValidSummary && isValidContent) {
+			imgUrl = generateImageWithFallback(titleWithSummary.content().toString());
 		} else {
-			log.warn("Skipping image generation due to title creation failure.");
-			imgUrl = imgUtils.getDefaultImage(); // 기본 이미지 사용
+			log.warn("Skipping image generation due to invalid title or summary.");
+			imgUrl = imgUtils.getDefaultImage();
 		}
 
 		String savedImgUrl = imgUtils.saveBase64Image(imgUrl, FAIRY_TALE_IMAGE_PATH);
@@ -245,7 +258,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 			stories, writers);
 	}
 
-	private AllamaSummaryResponseDTO makeTitleWithSummary(String story) throws BaseException {
+	private AllamaSummaryResponseDTO makeTitleWithSummary(String story) {
 		log.info("Summary story using Allama3.1 : {}", story);
 		String json = restClient.post()
 			.uri(ollamaUrl)
@@ -264,7 +277,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 		}
 	}
 
-	private AllamaStoryResponseDTO translateStory2ImagePrompt(String story) throws BaseException {
+	private AllamaStoryResponseDTO translateStory2ImagePrompt(String story) {
 		log.info("Translating story using Allama3.1 : {}", story);
 		String json = restClient.post()
 			.uri(ollamaUrl)
@@ -283,7 +296,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 		}
 	}
 
-	private String generateImage(String translated) throws BaseException {
+	private String generateImage(String translated) {
 		log.info("generate image using text {}", translated);
 		KarloReturn karloReturn = restClient.post()
 			.uri("https://api.kakaobrain.com/v2/inference/karlo/t2i")
@@ -316,3 +329,4 @@ public class WritingGameServiceImpl implements WritingGameService {
 		return array;
 	}
 }
+
