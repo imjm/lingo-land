@@ -5,6 +5,7 @@ import freeImage from "@/assets/free.png";
 
 const drawer = ref(true);
 const rail = ref(true);
+
 </script>
 
 <template>

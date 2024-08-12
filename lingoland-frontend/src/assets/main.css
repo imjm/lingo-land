@@ -1,6 +1,12 @@
 @import "./base.css";
 @import url("https://fonts.googleapis.com/css2?family=Gamja+Flower&family=Gowun+Dodum&family=Hahmlet:wght@100..900&display=swap");
-
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap');
+.gowun-batang-regular {
+  font-family: "Gowun Batang", serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size : large;
+}
 .gamja-flower-regular {
     font-family: "Gamja Flower", sans-serif;
     font-weight: 500;

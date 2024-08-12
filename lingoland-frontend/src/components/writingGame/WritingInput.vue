@@ -92,4 +92,14 @@ function sumbit() {
     </v-card>
 </template>
 
-<style scoped></style>
+<style scoped>
+.textarea {
+    background-color: #537960;
+    width: 90%;
+    height: 100px;
+}
+
+.custom-textarea .v-input__details{
+    height : 0px;
+}
+</style>

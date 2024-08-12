@@ -4,31 +4,31 @@ import WritingList from "@/components/writingGame/WritingList.vue";
 </script>
 
 <template>
-    <v-main
-        class="background-image d-flex flex-column align-center justify-center"
-    >
-        <div class="text-h3 text-white my-16 pt-5">
-            다음 글을 읽고 이어질 이야기를 작성하세요
-        </div>
+    <v-main class="background-image gowun-batang-regular pa-10">
+        <v-row>
+            <v-col class="d-flex flex-column justify-center align-center">
+                <div style="font-size: 20px; color: white">
+                    지금까지 쓴 글입니다.
+                </div>
 
-        <v-row class="d-flex justify-space-evenly">
-            <v-col class="d-flex ma-10 pa-10 align-start">
                 <WritingList />
             </v-col>
-            <v-col class="d-flex ma-10 pa-5 align-start">
+            <v-col class="d-flex flex-column justify-center align-center">
                 <WritingInput />
             </v-col>
         </v-row>
     </v-main>
 </template>
 
-<style scoped>
+<style>
 .background-image {
     background-image: url("@/assets/blackboard.png");
-    background-size: contain;
-    background-position: center;
+    background-size: cover;
+    background-position: center 75%;
     background-repeat: no-repeat;
     height: 100vh;
-    width: 100%;
+    width: 100vw;
+    background-color: black;
+    overflow: hidden;
 }
 </style>
