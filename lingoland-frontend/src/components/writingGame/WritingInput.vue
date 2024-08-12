@@ -31,6 +31,7 @@ const handleTimesUp = () => {
                 class="textarea custom-textarea"
                 v-model="textareaValue"
                 placeholder="글을 작성해주세요"
+                hide-details
             ></v-textarea>
 
             <div class="d-flex justify-end">

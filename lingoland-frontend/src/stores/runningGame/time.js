@@ -19,6 +19,7 @@ function startCountdown() {
 function startTimer() {
     startTime = Date.now();
     timerInterval = setInterval(updateTimer(startTime), 1000);
+    console.log('시간 시작!!!!!!!!!1')
 }
 
 function updateTimer(startTime) {

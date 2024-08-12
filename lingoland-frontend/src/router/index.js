@@ -125,7 +125,7 @@ const router = createRouter({
                         import("@/components/group/GroupCreate.vue"),
                 },
                 {
-                    path: "modify",
+                    path: ":groupId/modify",
                     name: "groupModify",
                     component: () =>
                         import("@/components/group/GroupModify.vue"),
