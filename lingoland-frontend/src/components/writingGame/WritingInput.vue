@@ -73,12 +73,12 @@ function sumbit() {
     const drawingDTO = {
         key: myLoginId, // 로그인 아이디
         story: textareaValue.value,
-        order: turn.value,
+        order: Number(turn.value) + Number(1),
     };
 
     console.log("*******drawDTO", drawingDTO);
     // API 요청 보내기
-    // writingGameStore.submitStory(route.params.roomId, drawingDTO)
+    writingGameStore.submitStory(route.params.roomId, drawingDTO);
 
     isSubmit.value = true;
 }
@@ -89,10 +89,6 @@ function sumbit() {
         <CountdownTimer @timesUp="handleTimesUp" />
 
         <GenericInputArea v-model="textareaValue" />
-
-        <div class="d-flex justify-end">
-            <SubmitButton width="100" data="제출" @click-event="sumbit" />
-        </div>
     </v-card>
 </template>
 
