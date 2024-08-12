@@ -22,11 +22,11 @@ const props = defineProps({
                 </v-avatar>
             </v-col>
             <v-col class="hidden-xs-only text-left ms-2">
-                <strong v-html="member.name"></strong>
+                <strong>{{ member.name }}</strong>
             </v-col>
 
             <v-col class="text-no-wrap text-left text-grey">
-                <strong v-html="member.rank"></strong>
+                <strong>{{ member.rank }}</strong>
             </v-col>
         </v-row>
     </v-expansion-panel-title>

@@ -1,8 +1,12 @@
 package com.ssafy.a603.lingoland.member.service;
 
-import com.ssafy.a603.lingoland.member.dto.*;
+import com.ssafy.a603.lingoland.member.dto.GetMemberInfoDto;
+import com.ssafy.a603.lingoland.member.dto.SignUpDto;
+import com.ssafy.a603.lingoland.member.dto.UpdateNicknameDto;
+import com.ssafy.a603.lingoland.member.dto.UpdatePasswordDto;
 import com.ssafy.a603.lingoland.member.entity.Member;
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface MemberService {
 
@@ -22,7 +26,7 @@ public interface MemberService {
 
     void updatePassword(UpdatePasswordDto updatePasswordDto, CustomUserDetails customUserDetails);
 
-    void updateProfileImage(UpdateProfileImageDto updateProfileImageDto, CustomUserDetails customUserDetails);
+    void updateProfileImage(MultipartFile profileImage, CustomUserDetails customUserDetails);
 
     GetMemberInfoDto getMemberInfoByLoginId(String loginId);
 }
