@@ -152,6 +152,12 @@ public class WritingGameServiceImpl implements WritingGameService {
 			.build();
 
 		try {
+			if (request.order() == 1) {
+				List<FairyTale.Story> stories = new ArrayList<>();
+				stories.add(node);
+				serializeToRedis(redisStoryKey, stories);
+				return;
+			}
 			List<FairyTale.Story> existingStories = getExistingStories(redisStoryKey);
 			existingStories.add(node);
 			serializeToRedis(redisStoryKey, existingStories);
