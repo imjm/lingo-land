@@ -60,10 +60,14 @@ const totalPages = computed(() => {
 </script>
 
 <template>
-    <v-container class="d-flex flex-column align-center">
-        <v-row class="d-flex justify-start align-center mt-10" style="position : relative">
-            <div class="cube-face-bar1"></div>
-            <div class="cube-face-bar2"></div>
+    <v-container class="d-flex flex-column justify-center align-center">
+        <v-row
+            class="d-flex justify-center align-center mt-10"
+            style="position: relative; width:95%"  
+        >
+            <div v-if="items.length > 6" class="cube-face-bar1"></div>
+            <div v-if="items.length > 6" class="cube-face-bar2"></div>
+            <div v-if="items.length <= 6" class="cube-face-bar3"></div>
 
             <v-col
                 v-for="item in paginatedItems"
@@ -109,16 +113,16 @@ const totalPages = computed(() => {
         >
             <v-col>
                 <!-- <div class="d-flex justify-start"> -->
-                    <v-text-field
-                        class="search"
-                        v-model="search"
-                        label="제목을 입력해 주세요"
-                        prepend-inner-icon="mdi-magnify"
-                        variant="solo-filled"
-                        flat
-                        hide-details
-                        single-line
-                    ></v-text-field>
+                <v-text-field
+                    class="search"
+                    v-model="search"
+                    label="제목을 입력해 주세요"
+                    prepend-inner-icon="mdi-magnify"
+                    variant="solo-filled"
+                    flat
+                    hide-details
+                    single-line
+                ></v-text-field>
                 <!-- </div> -->
             </v-col>
             <v-col>
@@ -134,13 +138,12 @@ const totalPages = computed(() => {
 </template>
 
 <style scoped>
-
 .truncated-text {
     white-space: nowrap; /* 텍스트를 한 줄로 유지 */
     overflow: hidden; /* 넘치는 텍스트 숨김 */
     text-overflow: ellipsis; /* 넘치는 부분을 ...으로 표시 */
     max-width: 140px; /* 필요에 따라 최대 너비 설정 */
-    font-size : 10px;
+    font-size: 10px;
 }
 
 .book-row {
@@ -165,41 +168,48 @@ const totalPages = computed(() => {
     font-size: small;
 }
 
-
 .cube-face-right {
     background: rgb(255, 250, 226);
-    border : 1px black;
+    border: 1px black;
     transform: rotateY(60deg) translateZ(20px);
     position: absolute;
-    top : 10%;
-    right : 8px;
-    width : 15%;
-    height : 94%;
+    top: 10%;
+    right: 8px;
+    width: 15%;
+    height: 94%;
     box-shadow: 5px 1px 15px rgba(0, 0, 0, 0.5); /* 그림자 효과 추가 */
 }
 
 .cube-face-bar1 {
-    position : absolute;
-    background: rgba(104, 63, 9, 0.3);
-    border : 1px black;
     position: absolute;
-    top : 38%;
-    width : 94%;
-    height : 1%;
+    background: rgba(104, 63, 9, 0.3);
+    border: 1px black;
+    position: absolute;
+    top: 38%;
+    width: 94%;
+    height: 1%;
     box-shadow: 5px 1px 15px rgba(0, 0, 0, 0.5);
 }
 
 .cube-face-bar2 {
-    position : absolute;
-
-    background: rgba(198, 197, 197, 0.8);
-    border : 1px black;
     position: absolute;
-    top : 88%;
-    width : 94%;
-    height : 1%;
+    background: rgba(198, 197, 197, 0.8);
+    border: 1px black;
+    position: absolute;
+    top: 88%;
+    width: 94%;
+    height: 1%;
     box-shadow: 5px 1px 15px rgba(0, 0, 0, 0.5); /* 그림자 효과 추가 */
 }
 
-
+.cube-face-bar3 {
+    position: absolute;
+    background: rgba(198, 197, 197, 0.8);
+    border: 1px black;
+    position: absolute;
+    top: 76%;
+    width: 94%;
+    height: 2%;
+    box-shadow: 5px 1px 15px rgba(0, 0, 0, 0.5); /* 그림자 효과 추가 */
+}
 </style>
