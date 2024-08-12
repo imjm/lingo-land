@@ -71,6 +71,7 @@ public class Problem extends BaseTimeEntity {
 
     public GetProblemDto toDto() {
         return GetProblemDto.builder()
+                .problemId(this.id)
                 .problem(this.detail.getProblem())
                 .choices(this.detail.getChoices())
                 .answer(this.detail.getAnswer())
