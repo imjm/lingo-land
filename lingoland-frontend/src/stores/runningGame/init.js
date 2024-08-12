@@ -9,13 +9,14 @@ import {
   loadChickModel,
   moveSide,
   autoForwardSpeed,
-  handleShoeMovement
+  handleShoeMovement,
 } from "./model";
 import { useGameStore } from "./gameStore";
 import { updateTimer } from "./time";
 
 let renderer, scene, mixer, camera, controls, chickModel, coinSound, shoeSound;
 const coinScore = ref(0);
+const coinTotalScore = ref(0);
 const gameStore = useGameStore();
 
 // 카메라 설정
@@ -47,7 +48,7 @@ function initDraw() {
     chickModel = model;
     mixer = animMixer;
   });
-  autoForwardSpeed.value=0.5
+  autoForwardSpeed.value = 0.5;
   loadAndPlayBackgroundMusic(camera); // 음악 재생 함수 호출
   loadCoinSound(camera); // 코인 사운드 로드
   initCoinModels(); // 코인 모델 초기화
@@ -71,12 +72,12 @@ function initDraw() {
     updateCameraPosition();
 
     updateTimer(startTime);
-    
+
     handleChickMovement(keysPressed, coordinatesElement);
     checkForCoinCollisions(); // 코인 충돌 감지 및 처리
     checkForShoeCollisions();
     // handleChickMovement();
-    handleShoeMovement(keysPressed, coordinatesElement)
+    handleShoeMovement(keysPressed, coordinatesElement);
 
     renderer.render(scene, camera);
   }
@@ -354,6 +355,7 @@ function checkForCoinCollisions() {
       if (chickBB.intersectsBox(coinBB)) {
         // 캐릭터와 코인의 충돌 감지
         coinScore.value += 0.01;
+        coinTotalScore.value += 0.01;
         scene.remove(child); // 충돌 시 코인을 씬에서 제거
         if (coinSound.isPlaying) {
           coinSound.stop(); // 이전 사운드가 재생 중이면 정지
@@ -373,36 +375,34 @@ function checkForShoeCollisions() {
 
   scene.children.forEach((child) => {
     if (child.userData.isShoe) {
-      const shoeBB = new THREE.Box3().setFromObject(child); 
+      const shoeBB = new THREE.Box3().setFromObject(child);
 
       if (chickBB.intersectsBox(shoeBB)) {
-        scene.remove(child); 
+        scene.remove(child);
 
         // 이전 타이머가 실행 중이면 취소
         if (speedTimeout) {
           clearTimeout(speedTimeout);
         }
 
-        autoForwardSpeed.value = 2.0; // 속도 증가
+        autoForwardSpeed.value = 1.0; // 속도 증가
         console.log("속도 증가:", autoForwardSpeed.value);
 
         if (shoeSound.isPlaying) {
-          shoeSound.stop(); 
+          shoeSound.stop();
         }
-        shoeSound.play(); 
+        shoeSound.play();
 
         // 5초 후에 속도를 복구하는 타이머 설정
         speedTimeout = setTimeout(() => {
           autoForwardSpeed.value = 0.5; // 속도 복구
           console.log("속도 복구:", autoForwardSpeed.value);
           speedTimeout = null; // 타이머 리셋
-        }, 5000); 
+        }, 3000);
       }
     }
   });
 }
-
-
 
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -425,5 +425,6 @@ export {
   initDraw,
   setupKeyListeners,
   coinScore,
+  coinTotalScore,
   autoForwardSpeed,
 };

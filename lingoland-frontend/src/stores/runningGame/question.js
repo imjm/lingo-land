@@ -2,7 +2,7 @@ import axios from "axios";
 import { storeToRefs } from "pinia";
 import { ref } from "vue";
 import { useOpenviduStore } from "../openvidu";
-import { coinScore } from "./init";
+import { coinScore, coinTotalScore } from "./init";
 
 const { VITE_SERVER_URL } = import.meta.env;
 
@@ -12,6 +12,7 @@ const options = ref([]);
 const isCorrect = ref(null);
 const gameRanks = ref([]);
 const wrongProblem = ref([]);
+let currentProblemId;
 
 const openviduStore = useOpenviduStore();
 const { session } = openviduStore;
@@ -21,7 +22,8 @@ for (const participant of reparticipants.value) {
     connectionId: participant.connectionId,
     userId: participant.userId,
     score: 0,
-    problemList:wrongProblem,
+    coin: 0,
+    problemList: wrongProblem,
   });
 }
 let answer = null;
@@ -39,17 +41,20 @@ const checkProblem = () => {
       data: JSON.stringify({
         score: isCorrect.value ? 1 : 0, // 점수
         isCorrect: isCorrect.value, // 문제를 맞췄다. 틀렸다. (T/F)
-        answer: answer, // 내가 작성한 답
-        wrongProblem:{problemId:currentQuestion.value.pk,
-          answer:answer
-        }
+        answer: answer,
+        problemId: currentProblemId, // 내가 작성한 답
+        // wrongProblem:{problemId:currentQuestion.value.problemId,
+        // answer:answer
+        // }
       }),
     })
     .then(() => {
-      wrongProblem.push({
-        problemId:currentQuestion.value.pk,
-        answer:answer
-      })
+      console.log(currentProblemId);
+      wrongProblem.value.push({
+        problemId: currentProblemId,
+        answer: answer,
+      });
+      console.log("저장중", wrongProblem);
       // console.log("**********************문제를 풀었다 시그널");
     });
 };
@@ -65,9 +70,10 @@ session.on("signal:checkProblem", (event) => {
   let lenPar = reparticipants.value.length;
   for (let i = 0; i < lenPar; i++) {
     if (gameRanks.value[i].connectionId === event.from.connectionId) {
-      console.log(problemResult)
+      console.log("지금의 기록", problemResult);
       gameRanks.value[i].score += problemResult.score;
       gameRanks.value[i].score += coinScore.value;
+      gameRanks.value[i].coin = coinTotalScore.value;
       coinScore.value = 0;
       break;
     }
@@ -141,7 +147,8 @@ function updateQuestion() {
 function loadQuestion() {
   if (questions.value.length > 0 && index < questions.value.length) {
     currentQuestion.value = questions.value[index];
-    console.log("currentquestion", currentQuestion.value.choices[0]);
+    currentProblemId = currentQuestion.value.problemId;
+    console.log("currentquestion", currentQuestion.value.problemId);
     options.value = [
       currentQuestion.value.choices[0]["text"],
       currentQuestion.value.choices[1]["text"],
@@ -197,4 +204,5 @@ export {
   resetQuestionOnExit,
   updateQuestion,
   gameRanks,
+  wrongProblem,
 };

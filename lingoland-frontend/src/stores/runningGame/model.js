@@ -5,9 +5,11 @@ import { ref } from "vue";
 import { useGameStore } from "./gameStore";
 import { checkAnswer } from "./question";
 import { countdown } from "./time";
+import Swal from "sweetalert2";
 const openviduStore = useOpenviduStore();
 const { session, mynum } = openviduStore;
 const autoForwardSpeed = ref(0);
+const selectedAnswerIndex = ref(null);
 const models = [
   {
     name: "chick",
@@ -119,22 +121,30 @@ function handleChickMovement(keysPressed, coordinatesElement) {
       2
     )}, Z: ${z.toFixed(2)}`;
 
-    // x축 위치에 따른 정답 체크
+    // x축 위치에 따른 정답 체크 및 하이라이트 처리
     if (x.toFixed(2) == -4.0) {
+      selectedAnswerIndex.value = 2;
       checkAnswer(3);
     } else if (x.toFixed(2) == 0) {
+      selectedAnswerIndex.value = 1;
       checkAnswer(2);
     } else if (x.toFixed(2) == 4.0) {
+      selectedAnswerIndex.value = 0;
       checkAnswer(1);
     }
 
     // z 좌표가 9000이 되면 경기 종료
+    // z 좌표가 9000이 되면 경기 종료
     if (z >= 4500) {
       gameStore.endGame(); // 경기 종료 함수 호출
-      alert("경기 종료!");
-      setInterval(() => {
+
+      Swal.fire({
+        title: "경기 종료!",
+        icon: "success",
+        timer: 5000,
+      }).then(() => {
         showRunningGameResult();
-      }, 5000);
+      });
     }
   }
 }
@@ -174,18 +184,14 @@ function handleShoeMovement(keysPressed, coordinatesElement) {
     } else if (x.toFixed(2) == 4.0) {
       checkAnswer(1);
     }
-
-    // z 좌표가 9000이 되면 경기 종료
-    if (z >= 4500) {
-      gameStore.endGame(); // 경기 종료 함수 호출
-      alert("경기 종료!");
-      setInterval(() => {
-        showRunningGameResult();
-      }, 5000);
-    }
   }
 }
 
-export { handleChickMovement, loadChickModel, moveSide, autoForwardSpeed ,handleShoeMovement};
-
-
+export {
+  handleChickMovement,
+  loadChickModel,
+  moveSide,
+  autoForwardSpeed,
+  handleShoeMovement,
+  selectedAnswerIndex,
+};
