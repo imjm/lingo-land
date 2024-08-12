@@ -10,6 +10,7 @@ import { initDraw } from "@/stores/runningGame/init";
 const openviduStore = useOpenviduStore();
 
 const { OV, session } = openviduStore;
+
 const resultStore = useResultStore();
 const { sortedRanks } = storeToRefs(resultStore);
 // 카운트다운 & 타이머
@@ -81,8 +82,11 @@ onMounted(() => {
       <h2>{{ currentQuestion.problem }}</h2>
       <div v-if="questionCountDown > 0">{{ questionCountDown }}</div>
       <ul class="no_dot d-flex justify-center">
-        <li v-for="(option, index) in options" :key="index"
-        :class="{ highlighted: selectedAnswerIndex === index }">
+        <li
+          v-for="(option, index) in options"
+          :key="index"
+          :class="{ highlighted: selectedAnswerIndex === index }"
+        >
           <button>
             {{ option }}
           </button>
