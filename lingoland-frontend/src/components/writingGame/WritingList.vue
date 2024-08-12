@@ -21,7 +21,12 @@ function setStory() {
     // 현재 내가 봐야할 스토리 아이디 찾기
     let currentStoryId = findCurrentStoryId();
 
-    currentStorys.value = storyList.value[currentStoryId].story;
+    for (let index = 0; index < storyList.value.length; index++) {
+        if (storyList.value[index].storyId === currentStoryId) {
+            currentStorys.value = storyList.value[index].story;
+            return;
+        }
+    }
 }
 
 // watch를 써서 turn의 변화를 보고 있다가 turn이 바뀌면 보여주는 글을 바꾼다.
@@ -36,6 +41,7 @@ watch(turn, (newValue, oldValue) => {
             title: "새로운 이야기가 도착했어요",
             icon: "success",
             confirmButtonText: "완료",
+            timer: 1000,
         }).then(() => {
             setStory();
 
