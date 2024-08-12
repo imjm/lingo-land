@@ -100,8 +100,10 @@ public class GroupServiceImpl implements GroupService {
 		log.info("Updating group with ID: {}", groupId);
 		Group group = getGroupById(request.id());
 		group.updateGroup(request);
-		imgUtils.deleteImage(group.getGroupImage());
-		group.setGroupImagePath(imgUtils.saveImage(groupImage, GROUP_IMAGE_PATH));
+		if (groupImage != null) {
+			imgUtils.deleteImage(group.getGroupImage());
+			group.setGroupImagePath(imgUtils.saveImage(groupImage, GROUP_IMAGE_PATH));
+		}
 
 		log.info("Group with ID: {} updated successfully.", groupId);
 	}

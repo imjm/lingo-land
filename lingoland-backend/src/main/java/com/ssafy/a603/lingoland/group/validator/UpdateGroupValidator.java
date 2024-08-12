@@ -42,7 +42,11 @@ public class UpdateGroupValidator implements Validator {
 			errors.rejectValue("Group", "그룹이 존재하지 않습니다.");
 		}
 		if (group.getLeader().getId() != customUserDetails.getMemberId()) {
-			errors.rejectValue("Group", "그룹 리더가 아닙니다.");
+			errors.rejectValue("GroupLeader", "그룹 리더가 아닙니다.");
+		}
+
+		if (request.password() != null && (request.password() < 1000 || request.password() > 9999)) {
+			errors.rejectValue("Password", "비밀번호는 4자리 숫자여야 합니다.");
 		}
 	}
 }

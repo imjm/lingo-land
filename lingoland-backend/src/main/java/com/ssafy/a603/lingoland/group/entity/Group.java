@@ -78,13 +78,13 @@ public class Group extends BaseEntity {
 	}
 
 	public void updateGroup(UpdateGroupDTO request) {
-		if (!request.name().isBlank()) {
+		if (request.name() != null && !request.name().isBlank()) {
 			this.name = request.name();
 		}
 		if (request.password() != null) {
 			this.password = request.password();
 		}
-		if (!request.description().isBlank()) {
+		if (request.description() != null && !request.description().isBlank()) {
 			this.description = request.description();
 		}
 	}
