@@ -1,18 +1,15 @@
 <script setup>
 import Profile from "@/components/common/Profile.vue";
-import TaleList from "../tale/TaleList.vue";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import IncorrectDialogByGroupLeader from "../incorrect/IncorrectDialogByGroupLeader.vue";
-import BackButton from "../common/BackButton.vue";
+import TaleList from "../tale/TaleList.vue";
 const route = useRoute();
 const userId = ref(null);
 
 onMounted(() => {
     userId.value = route.params.memberId;
     console.log("유저아이디", userId.value);
-
-    //클릭한 사람이 그룹장인지 확인
 });
 </script>
 
@@ -22,21 +19,20 @@ onMounted(() => {
             <v-row>
                 <v-col cols="5">
                     <div>
-                        <Profile
-                        class="mb-2"
-                        :others="true"
-                        :id="userId"
-                        />
+                        <Profile class="mb-2" :others="true" :id="userId" />
                     </div>
                     <IncorrectDialogByGroupLeader
                         :group-id="route.params.groupId"
                         :member-id="userId"
-                        :style="{height : '30%'}"
                     />
                 </v-col>
 
                 <v-col cols="7">
-                    <TaleList :others="true" :id="userId" :style="{width :'100%'}" />
+                    <TaleList
+                        :others="true"
+                        :id="userId"
+                        :style="{ width: '100%' }"
+                    />
                 </v-col>
             </v-row>
         </v-container>

@@ -1,13 +1,15 @@
 <script setup>
-import { defineProps, onMounted } from "vue";
 import sampleImage from "@/assets/sampleImg.jpg";
 import router from "@/router";
 import { useGroupStore } from "@/stores/groups";
-import { useRoute } from "vue-router";
 import { useUserStore } from "@/stores/user";
-const groupStore = useGroupStore();
+import { defineProps, onMounted } from "vue";
+import { useRoute } from "vue-router";
+
 const route = useRoute();
+const groupStore = useGroupStore();
 const userStore = useUserStore();
+
 const props = defineProps({
     groupMember: {
         type: Object,
@@ -31,25 +33,32 @@ async function memberDetail() {
             return;
         }
 
-        const isLeader = await groupStore.checkGroupLeader(route.params.groupId);
+        const isLeader = await groupStore.checkGroupLeader(
+            route.params.groupId
+        );
         if (isLeader) {
             console.log("byAdmin");
             router.push({
                 name: "groupMemberDetailByAdmin",
-                params: { memberId: props.groupMember.loginId, groupId: props.group.id },
+                params: {
+                    memberId: props.groupMember.loginId,
+                    groupId: props.group.id,
+                },
             });
         } else {
             console.log("justMember");
             router.push({
                 name: "groupMemberDetail",
-                params: { memberId: props.groupMember.loginId, groupId: props.group.id },
+                params: {
+                    memberId: props.groupMember.loginId,
+                    groupId: props.group.id,
+                },
             });
         }
     } catch (error) {
         console.error("An error occurred:", error);
     }
 }
-
 </script>
 
 <template>

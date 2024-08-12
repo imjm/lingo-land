@@ -1,20 +1,19 @@
 <script setup>
 import PageNavigationButton from "@/components/common/PageNavigationButton.vue";
 import IncorrectList from "@/components/incorrect/IncorrectList.vue";
-import { ref, defineProps } from "vue";
+import { defineProps, ref } from "vue";
 import GenericButton from "../common/GenericButton.vue";
 import NameTag from "../common/NameTag.vue";
 
 const dialog = ref(false);
 const props = defineProps({
-    groupId : Number,
-    memberId : String,
-
-})
+    groupId: String,
+    memberId: String,
+});
 </script>
 
 <template>
-    <PageNavigationButton
+    <PageNavigationButtonㄹ
         class="mt-5"
         background-color="#BF5847"
         data="오답노트"
@@ -25,9 +24,9 @@ const props = defineProps({
         "
         height="10vh"
     />
-    <v-dialog v-model="dialog" width="50%" class ="gowun-batang-regular">
+    <v-dialog v-model="dialog" width="50%" class="gowun-batang-regular">
         <NameTag data="오답노트" />
-        <IncorrectList :group-id="groupId" :member-id="memberId"/>
+        <IncorrectList :group-id="groupId" :member-id="memberId" />
 
         <div class="d-flex justify-end bg-white">
             <GenericButton

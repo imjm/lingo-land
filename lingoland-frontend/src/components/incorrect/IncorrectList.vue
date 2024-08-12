@@ -1,8 +1,8 @@
 <script setup>
 import { useProblemStore } from "@/stores/problem";
-import { onMounted, ref, defineProps } from "vue";
-import IncorrectListItem from "./IncorrectListItem.vue";
+import { defineProps, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
+import IncorrectListItem from "./IncorrectListItem.vue";
 
 const emit = defineEmits(["clickEvent"]);
 
@@ -11,21 +11,18 @@ const route = useRoute();
 const incorrectList = ref();
 
 const props = defineProps({
-    groupId : Number,
-    memberId : String,
-
-})
-
-
+    groupId: String,
+    memberId: String,
+});
 
 function getWrongProblems() {
     let problemList;
-    console.log('다른 사람 아이디',route.params.memberId)
+    console.log("다른 사람 아이디", route.params.memberId);
     if (route.params.memberId) {
-        problemList = problemStore.getWrongProblemsByadmin(props.groupId,props.memberId);
-        console.log("호이ㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣ")
-    } else {
-        console.log('내가 불렸어')
+        problemList = problemStore.getWrongProblemsByadmin(
+            props.groupId,
+            props.memberId
+        );
         problemList = problemStore.getMyWrongProblems();
     }
 
@@ -36,14 +33,12 @@ function getWrongProblems() {
 
 function completeWrongProblem() {
     emit("clickEvent");
-
     // 갱신된 오답노트 재요청
     getWrongProblems();
 }
 
 onMounted(() => {
     // 오답노트 가져오기
-
     getWrongProblems();
 });
 </script>
