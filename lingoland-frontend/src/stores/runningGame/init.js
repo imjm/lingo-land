@@ -12,7 +12,7 @@ import {
   handleShoeMovement,
 } from "./model";
 import { useGameStore } from "./gameStore";
-import { updateTimer } from "./time";
+import { updateTimer, countdown } from "./time";
 
 let renderer, scene, mixer, camera, controls, chickModel, coinSound, shoeSound;
 const coinScore = ref(0);
@@ -56,7 +56,7 @@ function initDraw() {
   loadShoeSound(camera);
 
   let startTime = Date.now(); // 타이머 시작 시간
-
+  let start = false;
   window.addEventListener("resize", onWindowResize, false);
 
   function animate() {
@@ -70,8 +70,15 @@ function initDraw() {
     controls.update(); // 마우스 조작 업데이트
 
     updateCameraPosition();
-
-    updateTimer(startTime);
+    if (countdown.value == 0) {
+      if (start == false) {
+        startTime = Date.now();
+        start = true;
+        updateTimer(startTime);
+      } else {
+        updateTimer(startTime);
+      }
+    }
 
     handleChickMovement(keysPressed, coordinatesElement);
     checkForCoinCollisions(); // 코인 충돌 감지 및 처리
