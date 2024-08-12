@@ -4,11 +4,15 @@ import TaleList from "@/components/tale/TaleList.vue";
 </script>
 
 <template>
-    <BackButton />
-    <div class="d-flex justify-center align-center">
-        <TaleList class="my-3" />
+    <div style="background-color: white;">
+
+        <BackButton />
+        <div class="d-flex justify-center align-center" >
+            <TaleList class="my-3" />
+        </div>
     </div>
 </template>
 
 <style scoped>
+
 </style>
