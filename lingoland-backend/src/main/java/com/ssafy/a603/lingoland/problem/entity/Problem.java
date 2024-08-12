@@ -1,6 +1,7 @@
 package com.ssafy.a603.lingoland.problem.entity;
 
 import com.ssafy.a603.lingoland.global.entity.BaseTimeEntity;
+import com.ssafy.a603.lingoland.problem.dto.GetProblemDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -66,6 +67,15 @@ public class Problem extends BaseTimeEntity {
             private int num;
             private String text;
         }
+    }
+
+    public GetProblemDto toDto() {
+        return GetProblemDto.builder()
+                .problem(this.detail.getProblem())
+                .choices(this.detail.getChoices())
+                .answer(this.detail.getAnswer())
+                .explanation(this.detail.getExplanation())
+                .build();
     }
 
 }
