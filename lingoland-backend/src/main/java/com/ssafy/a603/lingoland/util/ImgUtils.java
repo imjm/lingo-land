@@ -1,12 +1,5 @@
 package com.ssafy.a603.lingoland.util;
 
-import com.ssafy.a603.lingoland.global.error.entity.ErrorCode;
-import com.ssafy.a603.lingoland.global.error.exception.InvalidInputException;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -17,6 +10,15 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.ssafy.a603.lingoland.global.error.entity.ErrorCode;
+import com.ssafy.a603.lingoland.global.error.exception.InvalidInputException;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -59,7 +61,7 @@ public class ImgUtils {
 	}
 
 	public void deleteImage(String imgPath) {
-		if(imgPath.endsWith(DEFAULT_IMAGE)) {
+		if (imgPath.endsWith(DEFAULT_IMAGE)) {
 			return;
 		}
 		Path filePath = Paths.get(imgPath);
@@ -78,6 +80,9 @@ public class ImgUtils {
 	}
 
 	public String saveBase64Image(String base64String, String path) {
+		if (base64String.equals(DEFAULT_IMAGE)) {
+			return IMAGE_PATH + path + '/' + DEFAULT_IMAGE;
+		}
 		String[] parts = base64String.split(",");
 		String imageString = parts.length > 1 ? parts[1] : parts[0];
 
