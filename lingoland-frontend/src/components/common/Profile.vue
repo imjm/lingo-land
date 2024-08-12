@@ -53,12 +53,7 @@ onMounted(() => {
         userProfile.value.nickname = getValue.nickname;
         userProfile.value.experiencePoint = getValue.experiencePoint;
         userProfile.value.rank = getValue.rank;
-
-        if (getValue.profileImage === 'default.jpg') {
-            userProfile.value.profileImage = sampleImage;
-        } else {
-            userProfile.value.profileImage = getValue.profileImage;
-        }
+        userProfile.value.profileImage = getValue.profileImage;
     });
 });
 </script>
