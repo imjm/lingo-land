@@ -6,6 +6,8 @@ import { useUserStore } from "@/stores/user";
 import { defineProps, onMounted } from "vue";
 import { useRoute } from "vue-router";
 
+const { VITE_SERVER_IMAGE_URL } = import.meta.env;
+
 const route = useRoute();
 const groupStore = useGroupStore();
 const userStore = useUserStore();
@@ -19,8 +21,12 @@ const props = defineProps({
 });
 
 onMounted(() => {
-    if (props.groupMember.profileImage === null) {
+    // 이미지 파일명 확인 후 기본이미지 혹은 경로 추가 설정
+    if (props.groupMember.profileImage === "member/default.jpg") {
         props.groupMember.profileImage = sampleImage;
+    } else {
+        props.groupMember.profileImage =
+            VITE_SERVER_IMAGE_URL + props.groupMember.profileImage;
     }
     console.log(props.groupMember);
 });
