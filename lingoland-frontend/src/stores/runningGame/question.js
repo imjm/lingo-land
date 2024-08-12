@@ -11,6 +11,7 @@ const currentQuestion = ref(null);
 const options = ref([]);
 const isCorrect = ref(null);
 const gameRanks = ref([]);
+const wrongProblem = ref([]);
 
 const openviduStore = useOpenviduStore();
 const { session } = openviduStore;
@@ -20,6 +21,7 @@ for (const participant of reparticipants.value) {
     connectionId: participant.connectionId,
     userId: participant.userId,
     score: 0,
+    problemList:wrongProblem,
   });
 }
 let answer = null;
@@ -38,9 +40,16 @@ const checkProblem = () => {
         score: isCorrect.value ? 1 : 0, // 점수
         isCorrect: isCorrect.value, // 문제를 맞췄다. 틀렸다. (T/F)
         answer: answer, // 내가 작성한 답
+        wrongProblem:{problemId:currentQuestion.value.pk,
+          answer:answer
+        }
       }),
     })
     .then(() => {
+      wrongProblem.push({
+        problemId:currentQuestion.value.pk,
+        answer:answer
+      })
       // console.log("**********************문제를 풀었다 시그널");
     });
 };
@@ -56,9 +65,10 @@ session.on("signal:checkProblem", (event) => {
   let lenPar = reparticipants.value.length;
   for (let i = 0; i < lenPar; i++) {
     if (gameRanks.value[i].connectionId === event.from.connectionId) {
+      console.log(problemResult)
       gameRanks.value[i].score += problemResult.score;
       gameRanks.value[i].score += coinScore.value;
-      coinScore.value = 0
+      coinScore.value = 0;
       break;
     }
   }
@@ -69,7 +79,7 @@ session.on("signal:checkProblem", (event) => {
   );
   // console.log("****************problemResult", problemResult);
   console.log("***************시그널 보낸애 점수 점수점수", gameRanks.value);
-  console.log("점수점수 refcoinScore",coinScore.value)
+  console.log("점수점수 refcoinScore", coinScore.value);
 });
 
 const questionCountDown = ref(5);
@@ -93,9 +103,10 @@ async function loadQuestions() {
     withCredentials: true,
   })
     .then((response) => {
-      console.log(response.data.problems);
+      console.log(response);
+      console.log("문제를 받아영", response);
 
-      questions.value = response.data.problems;
+      questions.value = response.data;
       //   console.log(22222, questions.value);
     })
     .catch((error) => {
@@ -130,10 +141,11 @@ function updateQuestion() {
 function loadQuestion() {
   if (questions.value.length > 0 && index < questions.value.length) {
     currentQuestion.value = questions.value[index];
+    console.log("currentquestion", currentQuestion.value.choices[0]);
     options.value = [
-      currentQuestion.value["1"],
-      currentQuestion.value["2"],
-      currentQuestion.value["3"],
+      currentQuestion.value.choices[0]["text"],
+      currentQuestion.value.choices[1]["text"],
+      currentQuestion.value.choices[2]["text"],
     ];
     isCorrect.value = null; // 초기화
     // if (answerTimeout) clearTimeout(answerTimeout);

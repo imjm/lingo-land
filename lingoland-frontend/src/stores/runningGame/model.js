@@ -7,7 +7,7 @@ import { checkAnswer } from "./question";
 import { countdown } from "./time";
 const openviduStore = useOpenviduStore();
 const { session, mynum } = openviduStore;
-
+const autoForwardSpeed = ref(0);
 const models = [
   {
     name: "chick",
@@ -94,12 +94,12 @@ function loadChickModel(scene, renderer, callback) {
 
 function handleChickMovement(keysPressed, coordinatesElement) {
   const moveSpeed = 10;
-  const autoForwardSpeed = 0.5; // 자동으로 앞으로 가는 속도
   const gameStore = useGameStore();
+  // autoForwardSpeed.value=0.5
 
   if (chickModel && countdown.value === 0 && !gameStore.isGameEnded) {
     // 자동으로 z축을 따라 앞으로 이동
-    chickModel.position.z += autoForwardSpeed;
+    chickModel.position.z += autoForwardSpeed.value; // 현재 속도 값에 따른 이동
 
     // 키 입력에 따른 옆으로 이동 처리
     if (moveSide.value !== 0) {
@@ -139,4 +139,53 @@ function handleChickMovement(keysPressed, coordinatesElement) {
   }
 }
 
-export { handleChickMovement, loadChickModel, moveSide };
+function handleShoeMovement(keysPressed, coordinatesElement) {
+  const moveSpeed = 10;
+  // autoForwardSpeed.value = 2; // 자동으로 앞으로 가는 속도
+  const gameStore = useGameStore();
+
+  if (chickModel && countdown.value === 0 && !gameStore.isGameEnded) {
+    // 자동으로 z축을 따라 앞으로 이동
+    chickModel.position.z += autoForwardSpeed.value;
+
+    // 키 입력에 따른 옆으로 이동 처리
+    if (moveSide.value !== 0) {
+      const sideDirection = new THREE.Vector3(moveSide.value, 0, 0); // 옆 방향
+      chickModel.position.add(sideDirection); // moveSide 값을 직접 사용
+      moveSide.value = 0; // 한 번 이동한 후 상태 리셋
+    }
+
+    // x축 이동 범위 제한
+    chickModel.position.x = Math.max(
+      -4.0,
+      Math.min(4.0, chickModel.position.x)
+    );
+
+    const { x, y, z } = chickModel.position;
+    coordinatesElement.textContent = `X: ${x.toFixed(2)}, Y: ${y.toFixed(
+      2
+    )}, Z: ${z.toFixed(2)}`;
+
+    // x축 위치에 따른 정답 체크
+    if (x.toFixed(2) == -4.0) {
+      checkAnswer(3);
+    } else if (x.toFixed(2) == 0) {
+      checkAnswer(2);
+    } else if (x.toFixed(2) == 4.0) {
+      checkAnswer(1);
+    }
+
+    // z 좌표가 9000이 되면 경기 종료
+    if (z >= 4500) {
+      gameStore.endGame(); // 경기 종료 함수 호출
+      alert("경기 종료!");
+      setInterval(() => {
+        showRunningGameResult();
+      }, 5000);
+    }
+  }
+}
+
+export { handleChickMovement, loadChickModel, moveSide, autoForwardSpeed ,handleShoeMovement};
+
+
