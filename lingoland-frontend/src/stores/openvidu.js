@@ -140,7 +140,10 @@ export const useOpenviduStore = defineStore("openvidu", () => {
     // 이야기 배열 초기화
     function initalizeStoryList() {
         for (let index = 0; index < reparticipants.value.length; index++) {
-            storyList.value.push({ story: [] });
+            storyList.value.push({
+                storyId: reparticipants.value[index].userId,
+                story: [],
+            });
         }
     }
 
@@ -151,12 +154,17 @@ export const useOpenviduStore = defineStore("openvidu", () => {
             let orderList = [];
 
             // 페이지 수만큼 반복
+            // 이야기 아이디는 로그인 아이디를 기준으로 만듦
             for (
                 let orderIndex = index;
                 orderIndex < Number(index) + Number(pageCount.value);
                 orderIndex++
             ) {
-                orderList.push(orderIndex % reparticipants.value.length);
+                orderList.push(
+                    reparticipants.value[
+                        orderIndex % reparticipants.value.length
+                    ].userId
+                );
             }
 
             storyOrderList.value.push({
@@ -174,7 +182,7 @@ export const useOpenviduStore = defineStore("openvidu", () => {
         // 받은 이벤트로부터 스토리 아이디를 찾고
         // 스토리 리스트에서 해당하는 스토리 아이디에 이야기를 추가한다.
         for (let index = 0; index < storyList.value.length; index++) {
-            if (index === writingGameSignal.storyId) {
+            if (storyList.value[index].storyId === writingGameSignal.storyId) {
                 storyList.value[index].story.push(writingGameSignal.story);
                 return;
             }
