@@ -38,7 +38,7 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
 			.loginId(signUpRequest.getLoginId())
 			.nickname(signUpRequest.getNickname())
 			.password(passwordEncoder.encode(signUpRequest.getPassword()))
-			.profileImage(imgUtils.getDefaultImage())
+			.profileImage(imgUtils.getImagePathWithDefaultImage(MEMBER_IMAGE_PATH))
 			.rank(Rank.CHAMBONG)
 			.role(Role.ROLE_USER)
 			.build();
@@ -88,7 +88,7 @@ public class MemberServiceImpl implements UserDetailsService, MemberService {
 		Member member = getMember(loginId);
 		return GetMemberInfoDto.builder()
 			.nickname(member.getNickname())
-			.profileImage(imgUtils.getImagePathWithDefaultImage(MEMBER_IMAGE_PATH))
+			.profileImage(member.getProfileImage())
 			.maxExperiencePoint(member.getRank().getMaxExperience())
 			.experiencePoint(member.getExperiencePoint())
 			.rank(member.getRank().getGrade())
