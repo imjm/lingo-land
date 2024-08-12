@@ -1,5 +1,4 @@
 <script setup>
-import defaultGroupImage from "@/assets/sampleImg.jpg";
 import { useGroupStore } from "@/stores/groups";
 import { storeToRefs } from "pinia";
 import { onMounted, ref } from "vue";

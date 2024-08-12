@@ -1,5 +1,4 @@
 <script setup>
-import sampleImage from "@/assets/sampleImg.jpg";
 import { useUserStore } from "@/stores/user";
 import { defineEmits, defineProps, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";

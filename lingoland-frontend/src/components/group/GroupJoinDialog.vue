@@ -1,5 +1,4 @@
 <script setup>
-import defaultImage from "@/assets/sampleImg.jpg";
 import { useGroupStore } from "@/stores/groups";
 import { ref } from "vue";
 import GenericButton from "../common/GenericButton.vue";
@@ -25,12 +24,12 @@ function joinGroup(groupId) {
 
 <template>
     <v-dialog v-model="model.isOpen" width="850" height="600">
-        <NameTag data="그룹가입하기" />
+        <NameTag data="그룹 가입하기" />
         <v-sheet width="850" height="600" class="d-flex align-center pa-15">
             <v-row>
                 <v-col>
                     <v-row class="d-flex align-center justify-center">
-                        <ImageBox :source="defaultImage" />
+                        <ImageBox :source="model.groupInfo.groupImage" />
                     </v-row>
 
                     <v-row class="d-flex align-center justify-center">
