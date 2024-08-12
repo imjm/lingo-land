@@ -7,6 +7,7 @@ import java.util.List;
 
 @Builder
 public record GetProblemDto(
+        Integer problemId,
         String problem,
         List<Problem.Detail.Choice> choices,
         int answer,
