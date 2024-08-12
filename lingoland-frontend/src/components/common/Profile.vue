@@ -1,9 +1,9 @@
 <script setup>
 import sampleImage from "@/assets/sampleImg.jpg";
 import { useUserStore } from "@/stores/user";
-import { onMounted, ref, defineProps, defineEmits } from "vue";
-import ImageBox from "./ImageBox.vue";
+import { defineEmits, defineProps, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import ImageBox from "./ImageBox.vue";
 
 const userStore = useUserStore();
 
@@ -70,10 +70,10 @@ onMounted(() => {
         class="d-flex align-center"
         max-height="100vh"
     >
-
         <v-row class="d-flex flex-column pa-6">
             <v-col class="d-flex flex-column align-center justify-center">
                 <v-select
+                    v-if="!props.others"
                     class="fixed-select"
                     max-width="45"
                     density="compact"
