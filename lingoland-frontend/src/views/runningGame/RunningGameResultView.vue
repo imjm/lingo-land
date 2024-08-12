@@ -8,8 +8,9 @@ import { useGroupMemberStore } from "@/stores/groupMember";
 import RankListItem from "./RankListItem.vue";
 // import { sortedRanks } from "./RunningGameView.vue";
 import { useResultStore } from "@/stores/runningGame/resultStore";
-import { wrongProblem } from "@/stores/runningGame/question";
+import { wrongProblem, coinTotalScore } from "@/stores/runningGame/question";
 import { useGameStore } from "@/stores/runningGame/gameStore";
+// import {  } from "@/stores/runningGame/init";
 
 const groupMemberStore = useGroupMemberStore();
 // 카운트다운 & 타이머
@@ -27,7 +28,10 @@ onMounted(() => {
 
   const result = {
     problemList: wrongProblem.value,
+    coinCount: coinTotalScore.value,
+  
   };
+
 
   gameStore.saveResult(result);
 });
