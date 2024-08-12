@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import { ref } from "vue";
 import GenericButton from "../common/GenericButton.vue";
 import NameTag from "../common/NameTag.vue";
+import incorrectImg from "@/assets/오답노트2.png"
 
 const dialog = ref(false);
 
@@ -27,7 +28,7 @@ function completeProblem() {
     <PageNavigationButton
         background-color="#BF5847"
         data="오답노트"
-        source="\src\assets\오답노트2.png"
+        :source="incorrectImg"
         @click-event="
             () => {
                 dialog = true;

@@ -4,12 +4,19 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { ref } from "vue";
 import { addLights } from "./light";
 import { loadMapSection, loadNewMapSection } from "./map";
-import { handleChickMovement, loadChickModel, moveSide } from "./model";
+import {
+  handleChickMovement,
+  loadChickModel,
+  moveSide,
+  autoForwardSpeed,
+  handleShoeMovement,
+} from "./model";
 import { useGameStore } from "./gameStore";
-import { updateTimer } from "./time";
+import { updateTimer, countdown } from "./time";
 
-let renderer, scene, mixer, camera, controls, chickModel, coinSound;
+let renderer, scene, mixer, camera, controls, chickModel, coinSound, shoeSound;
 const coinScore = ref(0);
+const coinTotalScore = ref(0);
 const gameStore = useGameStore();
 
 // 카메라 설정
@@ -41,12 +48,15 @@ function initDraw() {
     chickModel = model;
     mixer = animMixer;
   });
+  autoForwardSpeed.value = 0.5;
   loadAndPlayBackgroundMusic(camera); // 음악 재생 함수 호출
   loadCoinSound(camera); // 코인 사운드 로드
   initCoinModels(); // 코인 모델 초기화
+  initShoeModels();
+  loadShoeSound(camera);
 
   let startTime = Date.now(); // 타이머 시작 시간
-
+  let start = false;
   window.addEventListener("resize", onWindowResize, false);
 
   function animate() {
@@ -60,10 +70,21 @@ function initDraw() {
     controls.update(); // 마우스 조작 업데이트
 
     updateCameraPosition();
+    if (countdown.value == 0) {
+      if (start == false) {
+        startTime = Date.now();
+        start = true;
+        updateTimer(startTime);
+      } else {
+        updateTimer(startTime);
+      }
+    }
 
-    updateTimer(startTime);
     handleChickMovement(keysPressed, coordinatesElement);
     checkForCoinCollisions(); // 코인 충돌 감지 및 처리
+    checkForShoeCollisions();
+    // handleChickMovement();
+    handleShoeMovement(keysPressed, coordinatesElement);
 
     renderer.render(scene, camera);
   }
@@ -104,16 +125,42 @@ function loadCoinModel(x, z) {
     coinModel.userData = { isCoin: true }; // 충돌 체크를 위한 플래그 설정
   });
 }
+function loadShoeModel(x, z) {
+  let loader = new GLTFLoader();
+  loader.load("/hermes_shoe/scene.gltf", function (gltf) {
+    gltf.scene.traverse((child) => {
+      if (child.isMesh) {
+        child.material.needsUpdate = true;
+        if (child.material.map) {
+          child.material.map.anisotropy =
+            renderer.capabilities.getMaxAnisotropy();
+          child.material.map.needsUpdate = true;
+        }
+      }
+    });
 
+    let shoeModel = gltf.scene;
+    shoeModel.scale.set(0.5, 0.5, 0.5);
+    shoeModel.position.set(x, 2, z); // 위치 설정
+    scene.add(shoeModel);
+
+    // mixer = new THREE.AnimationMixer(coinModel);
+    // const action = mixer.clipAction(gltf.animations[0]);
+    // action.setLoop(THREE.LoopRepeat);
+    // action.play();
+
+    shoeModel.userData = { isShoe: true }; // 충돌 체크를 위한 플래그 설정
+  });
+}
 function initCoinModels() {
   const xPositions = [-4, 0, 4]; // 가능한 x 위치
   const generatedCoins = {}; // 각 z 좌표에 대해 생성된 x 위치를 추적하는 객체
 
-  for (let zBase = 0; zBase < 9000; zBase += 1000) {
+  for (let zBase = 0; zBase < 4500; zBase += 1000) {
     // 1000 단위로 반복
     let coinCount = 0;
 
-    while (coinCount < 100) {
+    while (coinCount < 25) {
       // 각 구간마다 최소 100개의 코인 생성
       const z = zBase + Math.random() * 1000; // 현재 구간 내에서 z 좌표를 랜덤하게 설정
 
@@ -141,7 +188,33 @@ function initCoinModels() {
     }
   }
 }
+function initShoeModels() {
+  const xPositions = [-4, 0, 4]; // 가능한 x 위치
+  const generatedShoes = {}; // 각 z 좌표에 대해 생성된 x 위치를 추적하는 객체
 
+  for (let zBase = 0; zBase < 4500; zBase += 1400) {
+    // 1000 단위로 반복
+    let shoeCount = 0;
+
+    while (shoeCount < 1) {
+      // 각 구간마다 최소 100개의 코인 생성
+      const z = zBase + Math.random() * 1400; // 현재 구간 내에서 z 좌표를 랜덤하게 설정
+
+      if (!generatedShoes[z]) {
+        generatedShoes[z] = []; // z 좌표에 대한 배열 초기화
+      }
+
+      let x;
+      do {
+        x = xPositions[Math.floor(Math.random() * xPositions.length)]; // x 좌표를 랜덤하게 선택
+      } while (generatedShoes[z].includes(x)); // 동일한 z 좌표에서 이미 생성된 x 위치는 제외
+
+      loadShoeModel(x, z);
+      generatedShoes[z].push(x); // 생성된 x 위치 저장
+      shoeCount++;
+    }
+  }
+}
 function initRenderer(canvas) {
   const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
@@ -261,6 +334,21 @@ function loadCoinSound(camera) {
   });
 }
 
+function loadShoeSound(camera) {
+  // 오디오 리스너 추가 (카메라에 붙임)
+  const listener = new THREE.AudioListener();
+  camera.add(listener);
+
+  // 코인 소리 객체 생성
+  shoeSound = new THREE.Audio(listener);
+
+  // 오디오 로더로 코인 소리 파일 로드
+  const audioLoader = new THREE.AudioLoader();
+  audioLoader.load("/item.mp3", function (buffer) {
+    shoeSound.setBuffer(buffer);
+    shoeSound.setVolume(0.05); // 볼륨 설정
+  });
+}
 function checkForCoinCollisions() {
   if (!chickModel) return;
 
@@ -274,11 +362,50 @@ function checkForCoinCollisions() {
       if (chickBB.intersectsBox(coinBB)) {
         // 캐릭터와 코인의 충돌 감지
         coinScore.value += 0.01;
+        coinTotalScore.value += 0.01;
         scene.remove(child); // 충돌 시 코인을 씬에서 제거
         if (coinSound.isPlaying) {
           coinSound.stop(); // 이전 사운드가 재생 중이면 정지
         }
         coinSound.play(); // 코인 획득 소리 재생
+      }
+    }
+  });
+}
+
+let speedTimeout = null; // 속도 복구 타이머를 저장할 변수
+
+function checkForShoeCollisions() {
+  if (!chickModel) return;
+
+  const chickBB = new THREE.Box3().setFromObject(chickModel); // 캐릭터의 바운딩 박스 계산
+
+  scene.children.forEach((child) => {
+    if (child.userData.isShoe) {
+      const shoeBB = new THREE.Box3().setFromObject(child);
+
+      if (chickBB.intersectsBox(shoeBB)) {
+        scene.remove(child);
+
+        // 이전 타이머가 실행 중이면 취소
+        if (speedTimeout) {
+          clearTimeout(speedTimeout);
+        }
+
+        autoForwardSpeed.value = 1.0; // 속도 증가
+        console.log("속도 증가:", autoForwardSpeed.value);
+
+        if (shoeSound.isPlaying) {
+          shoeSound.stop();
+        }
+        shoeSound.play();
+
+        // 5초 후에 속도를 복구하는 타이머 설정
+        speedTimeout = setTimeout(() => {
+          autoForwardSpeed.value = 0.5; // 속도 복구
+          console.log("속도 복구:", autoForwardSpeed.value);
+          speedTimeout = null; // 타이머 리셋
+        }, 3000);
       }
     }
   });
@@ -305,4 +432,6 @@ export {
   initDraw,
   setupKeyListeners,
   coinScore,
+  coinTotalScore,
+  autoForwardSpeed,
 };

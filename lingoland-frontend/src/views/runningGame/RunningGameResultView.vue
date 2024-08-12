@@ -8,17 +8,30 @@ import { useGroupMemberStore } from "@/stores/groupMember";
 import RankListItem from "./RankListItem.vue";
 // import { sortedRanks } from "./RunningGameView.vue";
 import { useResultStore } from "@/stores/runningGame/resultStore";
+import { wrongProblem, coinTotalScore } from "@/stores/runningGame/question";
+import { useGameStore } from "@/stores/runningGame/gameStore";
+// import {  } from "@/stores/runningGame/init";
+
 const groupMemberStore = useGroupMemberStore();
 // 카운트다운 & 타이머
 // const result = sortedRanks
 // 문제
 const resultStore = useResultStore();
-const {sortedRanks} = storeToRefs(resultStore)
+const { sortedRanks } = storeToRefs(resultStore);
 const OV = new OpenVidu();
 const session = OV.initSession();
+const gameStore = useGameStore(); // 삭제 예정
 
 onMounted(() => {
   initDraw();
+  // 삭제 예정
+
+  const result = {
+    problemList: wrongProblem.value,
+    coinCount: coinTotalScore.value,
+  };
+
+  gameStore.saveResult(result);
 });
 </script>
 <template>
@@ -28,7 +41,11 @@ onMounted(() => {
 
     <!-- Leaderboard card -->
     <div id="leaderboard-container">
-      <v-card class="pt-3 ma-30" height="75vh">
+      <v-card
+        class="pt-3 ma-30"
+        height="75vh"
+        style="background-color: transparent"
+      >
         <v-row>
           <v-col>
             <h1 class="ml-10">달리기 결과</h1>
@@ -43,9 +60,17 @@ onMounted(() => {
             v-for="(rank, i) in sortedRanks"
             :key="i"
             hide-actions
+            bg-color="#FFD700"
           >
+            <v-row class="d-flex align-center px-5">
+              <v-col cols="2">
+                <span>{{ i + 1 }}등 </span>
+              </v-col>
+              <v-col>
+                <RankListItem :rank="rank" style="color: black" />
+              </v-col>
+            </v-row>
             <!-- 아직 변수 값을 몰라 임의로 작성하였습니다. 데이터는 store에 임의로 작성하여 구성했습니다. -->
-            {{ i + 1 }}등<RankListItem :rank="rank" />
           </v-expansion-panel>
         </v-expansion-panels>
       </v-card>

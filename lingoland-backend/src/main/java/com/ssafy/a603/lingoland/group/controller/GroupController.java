@@ -29,6 +29,7 @@ import com.ssafy.a603.lingoland.group.entity.Group;
 import com.ssafy.a603.lingoland.group.service.GroupService;
 import com.ssafy.a603.lingoland.group.validator.CreateGroupValidator;
 import com.ssafy.a603.lingoland.group.validator.GroupPasswordValidator;
+import com.ssafy.a603.lingoland.group.validator.UpdateGroupValidator;
 import com.ssafy.a603.lingoland.member.security.CurrentUser;
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 
@@ -42,6 +43,7 @@ public class GroupController {
 	private final GroupService groupService;
 	private final CreateGroupValidator createGroupValidator;
 	private final GroupPasswordValidator groupPasswordValidator;
+	private final UpdateGroupValidator updateGroupValidator;
 
 	@PostMapping
 	public ResponseEntity<?> createGroup(@RequestBody CreateGroupDTO createGroupDTO,
@@ -100,7 +102,16 @@ public class GroupController {
 	public ResponseEntity<?> updateGroupInfo(@PathVariable("groupId") Integer groupId,
 		@RequestPart(value = "updateGroup") UpdateGroupDTO updateGroupDTO,
 		@RequestPart(value = "groupImage", required = false) MultipartFile groupImage,
-		@CurrentUser CustomUserDetails customUserDetails) {
+		@CurrentUser CustomUserDetails customUserDetails, BindingResult bindingResult) {
+		updateGroupValidator.validate(updateGroupDTO, bindingResult, customUserDetails);
+		if (bindingResult.hasErrors()) {
+			List<String> errors = bindingResult.getAllErrors()
+				.stream()
+				.map(ObjectError::getCode)
+				.collect(Collectors.toList());
+			return ResponseEntity.badRequest().body(errors);
+		}
+
 		groupService.update(groupId, updateGroupDTO, groupImage, customUserDetails);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}

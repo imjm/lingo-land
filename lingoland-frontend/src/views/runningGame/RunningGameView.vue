@@ -1,17 +1,18 @@
 <script setup>
 import { useGameStore } from "@/stores/runningGame/gameStore";
 import { storeToRefs } from "pinia";
-import { computed, onMounted } from "vue";
+import { computed, onMounted, watch, ref } from "vue";
 import { useResultStore } from "@/stores/runningGame/resultStore";
 // 초기 세팅
 import { useOpenviduStore } from "@/stores/openvidu";
-
+import { selectedAnswerIndex } from "@/stores/runningGame/model";
 import { initDraw } from "@/stores/runningGame/init";
 const openviduStore = useOpenviduStore();
 
 const { OV, session } = openviduStore;
+
 const resultStore = useResultStore();
-const { sortedRanks } = storeToRefs(resultStore)
+const { sortedRanks } = storeToRefs(resultStore);
 // 카운트다운 & 타이머
 import { countdown, startCountdown } from "@/stores/runningGame/time";
 
@@ -30,7 +31,7 @@ const gameStore = useGameStore();
 const { zCoordinate } = storeToRefs(gameStore);
 
 // 게임진행률
-const zDivided = computed(() => zCoordinate.value / 90);
+const zDivided = computed(() => zCoordinate.value / 45);
 
 // const sortedRanks = computed(() => {
 //   return [...gameRanks.value].sort((a, b) => b.score - a.score);
@@ -81,26 +82,36 @@ onMounted(() => {
       <h2>{{ currentQuestion.problem }}</h2>
       <div v-if="questionCountDown > 0">{{ questionCountDown }}</div>
       <ul class="no_dot d-flex justify-center">
-        <li v-for="(option, index) in options" :key="index">
+        <li
+          v-for="(option, index) in options"
+          :key="index"
+          :class="{ highlighted: selectedAnswerIndex === index }"
+        >
           <button>
             {{ option }}
           </button>
         </li>
       </ul>
     </div>
-    <div v-if="isCorrect != null" id="quiz-container">
-      <h2>
-        {{ isCorrect ? "정답입니다!" : "틀렸습니다!" }}
-      </h2>
+    <div v-if="isCorrect !== null" id="quiz-containers">
+      <img
+        v-if="isCorrect"
+        src="/correct.png"
+        alt="Correct"
+        class="result-image"
+      />
+      <img v-else src="/wrong.png" alt="Wrong" class="result-image" />
     </div>
+
     <div v-if="questions === null" id="quiz-container">
       <p>퀴즈가 완료되었습니다!</p>
     </div>
-    <div id="ranks-container">
+    <div id="ranks-container" class="gamja-flower-regular">
       <h2>게임 순위</h2>
       <ul class="no_dot">
         <li v-for="(rank, index) in sortedRanks" :key="rank.connectionId">
-          {{ index + 1 }}. {{ rank.userId }}: {{ Math.floor(rank.score*100) }} 점
+          {{ index + 1 }}. {{ rank.userId }}:
+          {{ Math.floor(rank.score * 100) }} 점
         </li>
       </ul>
     </div>
@@ -122,14 +133,19 @@ onMounted(() => {
 /* Add any additional styles here */
 #ranks-container {
   position: absolute;
-  top: 300px;
+  top: 15%;
   bottom: auto;
   right: auto;
-  left: 10px;
+  left: 25px;
+  width: 150px;
   background-color: white;
   color: black;
   padding: 10px;
   border-radius: 5px;
+}
+.highlighted button {
+  background-color: yellow;
+  color: black;
 }
 .no_dot {
   list-style-type: none;
@@ -175,11 +191,24 @@ onMounted(() => {
   background-color: rgba(0, 0, 0, 0.7); /* 배경 색상 */
   border-radius: 10px; /* 모서리 둥글게 */
   text-align: center; /*텍스트 중앙 정렬 */
-  justify-content: center;
+  justify-content: bottom;
   color: white;
   z-index: 1000;
 }
-
+#quiz-containers {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 중앙 정렬 */
+  /*width: 1000px;  원하는 너비 
+  padding: 20px;*/
+  /* background-color: rgba(0, 0, 0, 0.7); /* 배경 색상 */
+  /* border-radius: 10px; 모서리 둥글게 */
+  text-align: center; /*텍스트 중앙 정렬 */
+  justify-content: center;
+  /* color: white; */
+  z-index: 1000;
+}
 button {
   margin: 5px;
   padding: 10px 20px;
@@ -219,5 +248,10 @@ p {
   background-color: rgba(0, 0, 0, 0.5);
   padding: 20px;
   border-radius: 10px;
+}
+
+.result-image {
+  width: 800px;
+  height: auto;
 }
 </style>

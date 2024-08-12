@@ -10,7 +10,6 @@ import { useRoute, useRouter } from "vue-router";
 import GenericButton from "../common/GenericButton.vue";
 import GenericInput from "../common/GenericInput.vue";
 import NameTag from "../common/NameTag.vue";
-import MainPageButton from "../common/MainPageButton.vue";
 
 window.Swal = Swal;
 
@@ -20,6 +19,7 @@ const router = useRouter();
 const openviduStore = useOpenviduStore();
 const writingGameStore = useWritingGameStore();
 
+const { participants } = storeToRefs(openviduStore);
 const { pageCount } = storeToRefs(writingGameStore);
 const { session } = openviduStore;
 
@@ -79,7 +79,7 @@ const startWritingGame = () => {
 
     // 글쓰기 게임 시작 서버로 API 호출
     writingGameStore.setWritingGame(route.params.roomId, {
-        numPart: openviduStore.participants.value.length,
+        numPart: participants.value.length,
         maxTurn: pageCount.value,
     });
 
@@ -87,7 +87,7 @@ const startWritingGame = () => {
     session
         .signal({
             type: "gameStart",
-            data: JSON.stringify({ type: 2, data: "writing game" }),
+            data: JSON.stringify({ type: 2, data: pageCount.value }),
         })
         .then(() => {
             console.log("******************Game start writing signal sent");
