@@ -6,7 +6,7 @@ import incorrectDialog from "@/components/incorrect/IncorrectDialog.vue";
 import router from "@/router";
 import GroupList from "../group/GroupList.vue";
 import MainPageButton from "../common/MainPageButton.vue";
-import taleImg from "@/assets/내동화.png"
+import taleImg from "@/assets/mystory.png"
 
 function clickTales() {
     router.push({ name: "bookList" });
