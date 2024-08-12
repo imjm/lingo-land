@@ -116,7 +116,11 @@ public class WritingGameServiceImpl implements WritingGameService {
 	private void processSingleStory(String sessionId, DrawingRequestDTO request) {
 		String story = request.story();
 		String imgUrl = handleStoryTranslation(story);
-		String savedImgUrl = imgUtils.saveBase64Image(imgUrl, FAIRY_TALE_IMAGE_PATH);
+		String savedImgUrl = null;
+		if (imgUrl.equals(imgUtils.getDefaultImage()))
+			savedImgUrl = imgUtils.getImagePathWithDefaultImage(FAIRY_TALE_IMAGE_PATH);
+		else
+			savedImgUrl = imgUtils.saveBase64Image(imgUrl, FAIRY_TALE_IMAGE_PATH);
 		saveStoryToRedis(request.key(), request, savedImgUrl);
 	}
 
@@ -230,7 +234,8 @@ public class WritingGameServiceImpl implements WritingGameService {
 		}
 
 		AllamaSummaryResponseDTO titleWithSummary = null;
-		String imgUrl = null;
+		String imgUrl;
+		String savedImgUrl = null;
 
 		try {
 			titleWithSummary = makeTitleWithSummary(allStories.toString());
@@ -246,14 +251,13 @@ public class WritingGameServiceImpl implements WritingGameService {
 		boolean isValidSummary = titleWithSummary.summary() != null && !titleWithSummary.summary().equals("No summary");
 		boolean isValidContent = titleWithSummary.content() != null;
 
-		if (isValidTitle && isValidSummary && isValidContent) {
-			imgUrl = generateImageWithFallback(titleWithSummary.content().toString());
-		} else {
+		if (!isValidTitle || !isValidSummary || !isValidContent) {
 			log.warn("Skipping image generation due to invalid title or summary.");
-			imgUrl = imgUtils.getDefaultImage();
+			savedImgUrl = imgUtils.getImagePathWithDefaultImage(FAIRY_TALE_IMAGE_PATH);
+		} else {
+			imgUrl = generateImageWithFallback(titleWithSummary.content().toString());
+			savedImgUrl = imgUtils.saveBase64Image(imgUrl, FAIRY_TALE_IMAGE_PATH);
 		}
-
-		String savedImgUrl = imgUtils.saveBase64Image(imgUrl, FAIRY_TALE_IMAGE_PATH);
 		return fairyTaleService.createFairyTale(titleWithSummary.title(), savedImgUrl, titleWithSummary.summary(),
 			stories, writers);
 	}

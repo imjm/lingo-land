@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +40,7 @@ public class ProblemServiceImpl implements ProblemService {
     @Override
     public void createGameResults(CreateGameResultsDto createGameResultsDto, CustomUserDetails customUserDetails) {
         Member member = getMember(customUserDetails);
+        AtomicInteger correctAnswerCount = new AtomicInteger(0);
 
         createGameResultsDto.getProblemList().forEach(problemDto -> {
             Problem problem = problemRepository.findById(problemDto.getProblemId())
@@ -56,10 +58,17 @@ public class ProblemServiceImpl implements ProblemService {
                         .build();
             }
 
-            updateProblemMemberAndProblem(problem, problemMember, problemDto.getAnswer());
+            boolean isCorrect = updateProblemMemberAndProblem(problem, problemMember, problemDto.getAnswer());
+
+            if(isCorrect) {
+                correctAnswerCount.incrementAndGet();
+            }
 
             problemMemberRepository.save(problemMember);
         });
+        int problemPoint = correctAnswerCount.get() * 5;
+        int coinPoint = createGameResultsDto.getCoinCount() / 10;
+        member.updateExperiencePoint(problemPoint + coinPoint);
     }
 
     @Override
@@ -108,13 +117,15 @@ public class ProblemServiceImpl implements ProblemService {
         problemMemberRepository.deleteByMemberIdAndProblemId(problemId, customUserDetails.getMemberId());
     }
 
-    private void updateProblemMemberAndProblem(Problem problem, ProblemMember problemMember, int answer) {
+    private boolean updateProblemMemberAndProblem(Problem problem, ProblemMember problemMember, int answer) {
         if (answer == problem.getDetail().getAnswer()) {
             problemMember.updateCorrectAnswer();
             problem.updateCorrectAnswerCount();
+            return true;
         } else {
             problemMember.updateInCorrectAnswer();
             problem.updateInCorrectAnswerCount();
+            return false;
         }
     }
 

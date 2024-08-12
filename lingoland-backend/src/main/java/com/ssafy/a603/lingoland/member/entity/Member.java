@@ -1,14 +1,9 @@
 package com.ssafy.a603.lingoland.member.entity;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ssafy.a603.lingoland.fairyTale.entity.FairyTaleMember;
 import com.ssafy.a603.lingoland.global.entity.BaseEntity;
 import com.ssafy.a603.lingoland.group.entity.GroupMember;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -24,6 +19,10 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -103,16 +102,13 @@ public class Member extends BaseEntity {
 
 	public void updateExperiencePoint(long points) {
 		this.experiencePoint += points;
-		checkRankUp(points);
+		checkRankUp();
 	}
 
-	private void checkRankUp(long points) {
-		long currentLevel = this.experiencePoint / 1000;
-		long previousLevel = (this.experiencePoint - points) / 1000;
-		if(currentLevel > previousLevel) {
-			for(long i = previousLevel; i < currentLevel; i++) {
-				this.rank = this.rank.nextRank();
-			}
+	private void checkRankUp() {
+		if(this.experiencePoint >= this.rank.getMaxExperience()) {
+			this.experiencePoint -= this.rank.getMaxExperience();
+			this.rank = this.rank.nextRank();
 		}
 	}
 }
