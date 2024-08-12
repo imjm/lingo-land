@@ -1,31 +1,29 @@
 package com.ssafy.a603.lingolandbatch.problem;
 
+import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+@Getter
+@Builder
+@ToString
 public class ProblemDTO {
 
-    private Problem.Detail detail;
+    private long correctAnswerCount;
 
-    @Getter
-    public static class DetailDTO {
-        private String problem;
-        private List<Problem.Detail.Choice> choices;
-        private int answer;
-        private String explanation;
+    private long incorrectAnswerCount;
 
-        @Getter
-        public static class Choice {
-            private int num;
-            private String text;
-        }
+    private LocalDateTime deletedAt;
 
-        @Override
-        public String toString(){
+    private boolean isDeleted;
 
-            return "problem " + getProblem() + " answer " + getAnswer()
-                    + " explanation " + getExplanation() + " choice num " + choices.size();
-        }
-    }
+    private String inspector;
+
+    private String creator;
+
+    private DetailDTO detailDTO;
+
 }

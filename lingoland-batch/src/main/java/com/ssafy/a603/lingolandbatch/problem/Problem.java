@@ -37,8 +37,7 @@ public class Problem {
 
     private Detail detail;
 
-    @JsonSerialize
-    @JsonDeserialize
+    @Builder
     public static class Detail {
         private String problem;
         private List<Choice> choices;
@@ -47,6 +46,8 @@ public class Problem {
 
         @Getter
         @NoArgsConstructor(access = AccessLevel.PROTECTED)
+        @AllArgsConstructor
+        @Builder
         public static class Choice {
             private int num;
             private String text;

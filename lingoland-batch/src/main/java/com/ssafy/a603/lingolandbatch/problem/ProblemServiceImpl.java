@@ -1,15 +1,13 @@
 package com.ssafy.a603.lingolandbatch.problem;
 
-import com.ssafy.a603.lingolandbatch.config.WebClientConfig;
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientException;
-import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,12 +17,15 @@ public class ProblemServiceImpl implements ProblemService{
 
     private final ProblemRepository problemRepository;
     private final WebClient webClient;
+    private final ObjectMapper objectMapper;
 
-    private ProblemServiceImpl(ProblemRepository repository, WebClient.Builder webClient){
+    private ProblemServiceImpl(ProblemRepository repository, WebClient.Builder webClient, ObjectMapper objectMapper){
         this.problemRepository = repository;
         this.webClient = webClient
 
                 .build();
+
+        this.objectMapper = objectMapper;
     }
     @Override
     public void makeProblem() {
@@ -46,25 +47,90 @@ public class ProblemServiceImpl implements ProblemService{
 //                    ) {
 //                    });
 //        })
-                .bodyToMono(new ParameterizedTypeReference<List<Problem.Detail>>() {})
+                .bodyToMono(String.class)
                 .subscribe(
-                        details -> {
+                        messageBody -> {
                             log.info("request success");
+                            System.out.println(messageBody);
 
-                            // store
+                            try {
+                                JsonNode jsonNode = objectMapper.readTree(messageBody);
+                                JsonNode choiceNode = jsonNode.path("choices");
+                                JsonNode messageNode = choiceNode.get(0).path("message");
+                                String content = messageNode.path("content").asText();
+                                String jsonString = content.replaceAll("```json\\n", "").replaceAll("\\n```", "");
+                                JsonNode contentNode = objectMapper.readTree(jsonString);
+                                JsonNode problemsNode = contentNode.path("problems");
 
-                            for(Problem.Detail detail : details) {
-                                problemRepository.save(Problem.builder()
-                                        .correctAnswerCount(0)
-                                        .isDeleted(false)
-                                        .inspector(null)
-                                        .creator("chatGPT")
-                                        .deletedAt(null)
-                                        .incorrectAnswerCount(0)
-                                        .detail(detail)
-                                        .build());
-                                log.info(detail.toString());
+                                JsonNode usageNode = jsonNode.path("usage");
+                                int totalToken = usageNode.path("total_tokens").asInt();
+
+                                System.out.println("total token " + totalToken);
+                                for(JsonNode problemNode : problemsNode){
+
+                                    System.out.println("********" + "********");
+
+                                    List<ChoiceDTO> choiceDTOs = new ArrayList<>();
+                                    JsonNode detailNode = problemNode.path("detail");
+                                    for(int j = 0; j < 3; j++) {
+                                        choiceDTOs.add(
+                                                ChoiceDTO.builder()
+                                                .num(j+1)
+                                                .text(detailNode.path(String.valueOf(j+1)).asText())
+                                                .build());
+                                    }
+                                    DetailDTO detailDTO = DetailDTO.builder()
+                                            .answer(problemNode.path("answer").asInt())
+                                            .explanation(problemNode.path("explanation").asText())
+                                            .choiceDTOS(choiceDTOs)
+                                                    .build();
+
+                                    ProblemDTO problemDTO = ProblemDTO.builder()
+                                            .detailDTO(detailDTO)
+                                            .correctAnswerCount(0)
+                                            .isDeleted(false)
+                                            .inspector(null)
+                                            .creator("chatGPT")
+                                            .deletedAt(null)
+                                            .incorrectAnswerCount(0)
+                                            .build();
+
+                                    List<Problem.Detail.Choice> choices = new ArrayList<>();
+                                    for(int j = 0; j < 3; j++){
+                                        choices.add(Problem.Detail.Choice.builder()
+                                                .num(choiceDTOs.get(j).getNum())
+                                                .text(choiceDTOs.get(j).getText())
+                                                .build());
+                                    }
+
+                                    Problem.Detail detail = Problem.Detail.builder()
+                                            .answer(detailDTO.getAnswer())
+                                            .choices(choices)
+                                            .explanation(detailDTO.getExplanation())
+                                            .problem(detailDTO.getProblem())
+                                            .build();
+
+                                    System.out.println(problemDTO);
+                                    System.out.println(detailDTO);
+                                    for(int j = 0; j < 3; j++){
+                                        System.out.println(choiceDTOs.get(j));
+                                    }
+
+                                    problemRepository.save(Problem.builder()
+                                            .correctAnswerCount(problemDTO.getCorrectAnswerCount())
+                                            .isDeleted(problemDTO.isDeleted())
+                                            .inspector(problemDTO.getInspector())
+                                            .creator(problemDTO.getCreator())
+                                            .deletedAt(problemDTO.getDeletedAt())
+                                            .incorrectAnswerCount(problemDTO.getIncorrectAnswerCount())
+                                            .detail(detail)
+                                            .build());
+                                }
+                            } catch (JsonProcessingException e) {
+                                throw new RuntimeException(e);
                             }
+
+
 
                             log.info("store success");
                         },
@@ -72,9 +138,5 @@ public class ProblemServiceImpl implements ProblemService{
                             log.info("request failed {}", error.getMessage());
                         }
                 );
-    }
-
-    private Problem fromDTO(ProblemDTO problemDTO){
-        return null;
     }
 }
