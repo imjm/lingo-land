@@ -10,6 +10,8 @@ import { useOpenviduStore } from "@/stores/openvidu";
 import { useGameStore } from "@/stores/runningGame/gameStore";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import makingRoomImg from "@/assets/animal/ANIMALS2.png"
+
 
 const router = useRouter();
 
@@ -126,7 +128,7 @@ function joinRoom() {
                                 <PageNavigationButton
                                     background-color="#CCCBFF"
                                     data="방 만들기"
-                                    source="\src\assets\animal\ANIMALS2.png"
+                                    :source="makingRoomImg"
                                     @click-event="makeRoom"
                                     height="45vh"
                                 />
