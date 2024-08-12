@@ -15,7 +15,7 @@ public record AllamaStoryDTO(String model, String prompt, boolean stream, String
 				+ "\n"
 				+ "Analyze the following sentences: \"{{SENTENCES}}\"\n"
 				+ "\n"
-				+ "Return the results in the following JSON format, ensuring that the medium is always set to 'fairytale illustration' and the descriptions are in English:\n"
+				+ "Return the results in the following JSON format, ensuring that the medium is always set to 'fairytale illustration' and the descriptions are in English. If a specific content field cannot be filled, leave it as an empty string, but **never** omit any key from the structure:\n"
 				+ "{\n"
 				+ "  \"medium\": \"fairytale illustration\",\n"
 				+ "  \"character\": \"character description\",\n"
