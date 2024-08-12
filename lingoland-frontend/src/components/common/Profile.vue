@@ -54,7 +54,7 @@ onMounted(() => {
         userProfile.value.experiencePoint = getValue.experiencePoint;
         userProfile.value.rank = getValue.rank;
 
-        if (getValue.profileImage === null) {
+        if (getValue.profileImage === 'default.jpg') {
             userProfile.value.profileImage = sampleImage;
         } else {
             userProfile.value.profileImage = getValue.profileImage;
