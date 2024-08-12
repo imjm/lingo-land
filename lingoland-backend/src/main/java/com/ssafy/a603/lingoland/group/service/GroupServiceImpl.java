@@ -99,18 +99,6 @@ public class GroupServiceImpl implements GroupService {
 		CustomUserDetails customUserDetails) {
 		log.info("Updating group with ID: {}", groupId);
 		Group group = getGroupById(request.id());
-
-		if (group.isDeleted()) {
-			log.error("Attempt to update a deleted group with ID: {}", groupId);
-			throw new InvalidInputException(ErrorCode.GROUP_INVALID_INPUT);
-		}
-
-		if (!isGroupLeader(group, customUserDetails.getMemberId())) {
-			log.error("Member with ID: {} is not the leader of group ID: {}", customUserDetails.getMemberId(),
-				groupId);
-			throw new ForbiddenException(ErrorCode.GROUP_NOT_LEADER);
-		}
-
 		group.updateGroup(request);
 		imgUtils.deleteImage(group.getGroupImage());
 		group.setGroupImagePath(imgUtils.saveImage(groupImage, GROUP_IMAGE_PATH));
