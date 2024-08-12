@@ -18,5 +18,5 @@ import TaleList from "@/components/tale/TaleList.vue";
     height: 100vh;
     width: 100vw;
     background-color: white;
-}
+} 
 </style>
