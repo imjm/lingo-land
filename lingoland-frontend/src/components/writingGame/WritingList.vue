@@ -72,4 +72,15 @@ const computedStorys = computed(() => {
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.image {
+    background-image: url("/balloon1.png");
+    height: 100%;
+    width : 700px;  
+    background-size: contain;
+    background-position: center 75%;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    
+}
+</style>

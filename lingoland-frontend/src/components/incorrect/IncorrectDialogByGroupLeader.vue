@@ -48,11 +48,4 @@ const props = defineProps({
 </template>
 
 <style>
-@import url("https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap");
-.gowun-batang-regular {
-    font-family: "Gowun Batang", serif;
-    font-weight: 700;
-    font-style: normal;
-    font-size: large;
-}
 </style>

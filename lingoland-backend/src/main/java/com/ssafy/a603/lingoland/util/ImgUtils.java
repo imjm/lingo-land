@@ -43,7 +43,7 @@ public class ImgUtils {
 		validateFileExtension(extension);
 
 		String savedFilename = generateUniqueFilename(extension);
-		String savedPath = STORE_PATH + path + '/' + savedFilename;
+		String savedPath = STORE_PATH + '/' + path + '/' + savedFilename;
 		String findPath = path + '/' + savedFilename;
 		ensureDirectoryExists(path);
 
@@ -62,7 +62,7 @@ public class ImgUtils {
 		if (imgPath.endsWith(DEFAULT_IMAGE)) {
 			return;
 		}
-		Path filePath = Paths.get(imgPath);
+		Path filePath = Paths.get(STORE_PATH + '/' + imgPath);
 		try {
 			Files.delete(filePath);
 			log.info("Image deleted successfully at {}", imgPath);
@@ -88,7 +88,7 @@ public class ImgUtils {
 		byte[] imageBytes = Base64.getDecoder().decode(imageString);
 
 		String savedFilename = generateUniqueFilename("webp");
-		String savedPath = STORE_PATH + path + '/' + savedFilename;
+		String savedPath = STORE_PATH + '/' + path + '/' + savedFilename;
 		log.info("save Path : {}", savedPath);
 		String findPath = path + '/' + savedFilename;
 		log.info("nginx path : {}", findPath);
@@ -125,7 +125,7 @@ public class ImgUtils {
 	}
 
 	private void ensureDirectoryExists(String path) {
-		File dir = new File(STORE_PATH + path);
+		File dir = new File(STORE_PATH + '/' + path);
 		if (!dir.exists()) {
 			dir.mkdirs();
 			log.info("Created directory: {}", dir.getAbsolutePath());

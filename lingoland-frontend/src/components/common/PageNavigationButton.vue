@@ -24,19 +24,19 @@ const props = defineProps({
             :height="height"
             @click="$emit('clickEvent')"
         >
-            <div class="d-flex flex-column">
+            <div class="d-flex flex-column mt-5">
                 <div style="font-size:xx-large; font-weight: 700;"> 
                     {{ data }}
                 </div>
-                <div class="d-flex justify-center align-center pa-1" style="flex: 1">
+                <div class="d-flex justify-center align-center pa-1">
                     <img
                         v-if="source"
                         :src="source"
                         style="
-                            max-width: 100%;
-                            height: 150px;
-                            max-height:90%;
+                            max-width: 80%;
+                            max-height: 90%;
                             object-fit: contain;
+                            padding-bottom: 10px;
                         "
                         alt="Icon"
                     />
