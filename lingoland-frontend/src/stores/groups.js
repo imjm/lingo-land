@@ -159,14 +159,10 @@ export const useGroupStore = defineStore("group", () => {
             .then((response) => {
                 if (response.status === httpStatus.NOCONTENT) {
                     Swal.fire({
-                        title: "그룹 정보 수정 성공!",
-                        icon: "success",
-                        confirmButtonText: "완료",
+                        title: "그룹 정보 수정이 완료되었어요",
+                        icon: "success",                        
                     }).then(() => {
-                        router.replace({
-                            name: "groupDetail",
-                            params: { groupId: groupInfo.id },
-                        });
+                        router.go(0);
                     });
                 } else {
                     Swal.fire({
