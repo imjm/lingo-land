@@ -9,7 +9,7 @@ import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
-window.Swal = swal;
+window.Swal = swal;   
 
 const groupMemberStore = useGroupMemberStore();
 const groupStore = useGroupStore();

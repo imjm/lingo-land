@@ -3,7 +3,6 @@ import { ref, onMounted } from "vue";
 import BackButton from "@/components/common/BackButton.vue";
 import TaleList from "@/components/tale/TaleList.vue";
 
-
 </script>
 
 <template>
