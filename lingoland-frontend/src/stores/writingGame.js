@@ -42,7 +42,23 @@ export const useWritingGameStore = defineStore("writingGameStore", () => {
             })
             .then((response) => {
                 if (response.status === httpStatus.OK) {
-                    console.log(response);
+                    console.log("***********글쓰기 게임 제출", response);
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
+    // 글쓰기 게임 첫 턴일 때 제목 제출
+    const submitTitle = async (sessionId, title) => {
+        await axios
+            .post(`/writing-game/request/${sessionId}`, title, {
+                withCredentials: true,
+            })
+            .then((response) => {
+                if (response.status === httpStatus.OK) {
+                    console.log("***********글쓰기 게임 제목 제출", response);
                 }
             })
             .catch((error) => {
@@ -56,5 +72,6 @@ export const useWritingGameStore = defineStore("writingGameStore", () => {
         totalTime,
         setWritingGame,
         submitStory,
+        submitTitle,
     };
 });
