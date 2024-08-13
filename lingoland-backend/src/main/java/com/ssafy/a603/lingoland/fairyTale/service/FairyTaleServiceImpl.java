@@ -7,17 +7,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.a603.lingoland.fairyTale.dto.FairyTaleListResponseDTO;
+import com.ssafy.a603.lingoland.fairyTale.dto.UpdateFairyTaleRequestDTO;
 import com.ssafy.a603.lingoland.fairyTale.entity.FairyTale;
 import com.ssafy.a603.lingoland.fairyTale.entity.FairyTaleMember;
 import com.ssafy.a603.lingoland.fairyTale.entity.FairyTaleMemberId;
 import com.ssafy.a603.lingoland.fairyTale.repository.FairyTaleMemberRepository;
 import com.ssafy.a603.lingoland.fairyTale.repository.FairyTaleRepository;
+import com.ssafy.a603.lingoland.global.error.entity.ErrorCode;
+import com.ssafy.a603.lingoland.global.error.exception.NotFoundException;
 import com.ssafy.a603.lingoland.member.entity.Member;
 import com.ssafy.a603.lingoland.member.repository.MemberRepository;
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FairyTaleServiceImpl implements FairyTaleService {
@@ -59,6 +64,7 @@ public class FairyTaleServiceImpl implements FairyTaleService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<FairyTaleListResponseDTO> findFairyTaleListByLoginId(CustomUserDetails customUserDetails) {
 		return fairyTaleRepository.findAllFairyTalesByMemberId(customUserDetails.getMemberId());
 	}
@@ -69,6 +75,15 @@ public class FairyTaleServiceImpl implements FairyTaleService {
 		FairyTale fairyTale = fairyTaleRepository.findById(fairyTaleId)
 			.orElseThrow(() -> new NoSuchElementException("no such fairyTale"));
 		return fairyTale;
+	}
+
+	@Override
+	@Transactional
+	public void updateFairyTale(UpdateFairyTaleRequestDTO request) {
+		FairyTale fairyTale = fairyTaleRepository.findById(request.id())
+			.orElseThrow(() -> new NoSuchElementException("no such fairyTale"));
+
+		fairyTale.update(request);
 	}
 
 	@Override
@@ -86,8 +101,10 @@ public class FairyTaleServiceImpl implements FairyTaleService {
 	}
 
 	private Member getMemberFromUserDetails(CustomUserDetails customUserDetails) {
-		String loginId = customUserDetails.getUsername();
-		return memberRepository.findByLoginId(loginId)
-			.orElseThrow(() -> new NoSuchElementException("no such member"));
+		return memberRepository.findById(customUserDetails.getMemberId())
+			.orElseThrow(() -> {
+				log.error("Not found member with ID {}", customUserDetails.getMemberId());
+				return new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
+			});
 	}
 }
