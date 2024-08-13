@@ -26,12 +26,10 @@ public class ImgUtils {
 	private final String STORE_PATH;
 	private static final List<String> ALLOWED_EXTENSIONS = Arrays.asList("webp", "jpg", "jpeg", "png", "gif");
 	private final String DEFAULT_IMAGE = "default.jpg";
-	private final String IMAGE_PATH;
 
-	public ImgUtils(@Value("${image.store-url}") String STORE_PATH, @Value("${image.find-url}") String IMAGE_PATH) {
+	public ImgUtils(@Value("${image.store-url}") String STORE_PATH) {
 		this.STORE_PATH = STORE_PATH;
-		this.IMAGE_PATH = IMAGE_PATH;
-		log.info("ImgUtils initialized with STORE_PATH: {} and IMAGE_PATH: {}", STORE_PATH, IMAGE_PATH);
+		log.info("ImgUtils initialized with STORE_PATH: {}", STORE_PATH);
 	}
 
 	public String saveImage(MultipartFile img, String path) {
@@ -45,8 +43,8 @@ public class ImgUtils {
 		validateFileExtension(extension);
 
 		String savedFilename = generateUniqueFilename(extension);
-		String savedPath = STORE_PATH + path + '/' + savedFilename;
-		String findPath = IMAGE_PATH + path + '/' + savedFilename;
+		String savedPath = STORE_PATH + '/' + path + '/' + savedFilename;
+		String findPath = path + '/' + savedFilename;
 		ensureDirectoryExists(path);
 
 		File file = new File(savedPath);
@@ -61,7 +59,10 @@ public class ImgUtils {
 	}
 
 	public void deleteImage(String imgPath) {
-		Path filePath = Paths.get(imgPath);
+		if (imgPath.endsWith(DEFAULT_IMAGE)) {
+			return;
+		}
+		Path filePath = Paths.get(STORE_PATH + '/' + imgPath);
 		try {
 			Files.delete(filePath);
 			log.info("Image deleted successfully at {}", imgPath);
@@ -76,6 +77,10 @@ public class ImgUtils {
 		return this.DEFAULT_IMAGE;
 	}
 
+	public String getImagePathWithDefaultImage(String path) {
+		return path + '/' + DEFAULT_IMAGE;
+	}
+
 	public String saveBase64Image(String base64String, String path) {
 		String[] parts = base64String.split(",");
 		String imageString = parts.length > 1 ? parts[1] : parts[0];
@@ -83,9 +88,9 @@ public class ImgUtils {
 		byte[] imageBytes = Base64.getDecoder().decode(imageString);
 
 		String savedFilename = generateUniqueFilename("webp");
-		String savedPath = STORE_PATH + path + '/' + savedFilename;
+		String savedPath = STORE_PATH + '/' + path + '/' + savedFilename;
 		log.info("save Path : {}", savedPath);
-		String findPath = IMAGE_PATH + path + '/' + savedFilename;
+		String findPath = path + '/' + savedFilename;
 		log.info("nginx path : {}", findPath);
 		ensureDirectoryExists(path);
 
@@ -120,7 +125,7 @@ public class ImgUtils {
 	}
 
 	private void ensureDirectoryExists(String path) {
-		File dir = new File(STORE_PATH + path);
+		File dir = new File(STORE_PATH + '/' + path);
 		if (!dir.exists()) {
 			dir.mkdirs();
 			log.info("Created directory: {}", dir.getAbsolutePath());

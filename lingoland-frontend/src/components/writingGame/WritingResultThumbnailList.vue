@@ -6,6 +6,12 @@ import freeImage from "@/assets/free.png";
 const drawer = ref(true);
 const rail = ref(true);
 
+const tails = ref([{
+    title: "집에 가고 싶어요",
+    cover: "/balloon.png",
+}
+])
+
 </script>
 
 <template>
@@ -15,29 +21,17 @@ const rail = ref(true);
                 <v-list-item prepend-avatar="https://randomuser.me/api/portraits/men/85.jpg" title="다른 동화보기"
                     value="home">
                     <template v-slot:append>
-                        <v-btn variant="text" @click.stop="rail = !rail"><span class="material-symbols-outlined">
+                        <v-btn variant="text" @click.stop="rail = !rail">
+                            <span class="material-symbols-outlined">
                                 logout
-                            </span></v-btn>
+                            </span>
+                        </v-btn>
                     </template>
                 </v-list-item>
-
-                <v-list-item title="My Account" value="account">
-                    <v-avatar rounded="0">
-                        <v-img :src="freeImage" cover></v-img>
-                    </v-avatar>
+                <v-list-item v-for="tail in tails" :key="tail" :title="tail.title">
+                    <v-img :src="tail.cover" cover></v-img>
                 </v-list-item>
 
-                <v-list-item title="My Account" value="account">
-                    <v-avatar rounded="0">
-                        <v-img :src="freeImage" cover></v-img>
-                    </v-avatar>
-                </v-list-item>
-
-                <v-list-item title="My Account" value="account">
-                    <v-avatar rounded="0">
-                        <v-img :src="freeImage" cover></v-img>
-                    </v-avatar>
-                </v-list-item>
             </v-list>
         </v-navigation-drawer>
         <v-main>

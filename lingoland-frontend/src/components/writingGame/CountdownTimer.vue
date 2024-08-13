@@ -1,8 +1,13 @@
 <script setup>
-import { computed, defineEmits, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, defineEmits, onBeforeUnmount, onMounted, watch } from "vue";
+import { useWritingGameStore } from "@/stores/writingGame";
+import { storeToRefs } from "pinia";
 
 const emit = defineEmits(["timesUp"]);
-const totalTime = ref(120); // 2분 = 120초
+
+const writingGameStore = useWritingGameStore();
+const { totalTime } = storeToRefs(writingGameStore);
+
 let timer = null;
 
 const minutes = computed(() => {
@@ -16,6 +21,7 @@ const seconds = computed(() => {
 });
 
 const startTimer = () => {
+    // 1초마다 함수를 실행
     timer = setInterval(() => {
         if (totalTime.value > 0) {
             totalTime.value--;
@@ -32,6 +38,13 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
     clearInterval(timer);
+});
+
+watch(totalTime, (newValue, oldValue) => {
+    if (oldValue === 0 && newValue === 15) {
+        console.log("*********reset timer");
+        startTimer();
+    }
 });
 </script>
 

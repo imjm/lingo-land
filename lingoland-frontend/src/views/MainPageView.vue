@@ -10,6 +10,8 @@ import { useOpenviduStore } from "@/stores/openvidu";
 import { useGameStore } from "@/stores/runningGame/gameStore";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import makingRoomImg from "@/assets/animal/ANIMALS2.png"
+
 
 const router = useRouter();
 
@@ -69,35 +71,35 @@ function joinRoom() {
     });
 }
 
-// 삭제 예정
-onMounted(() => {
-    const result = {
-        problemList: [
-            {
-                problemId: 1,
-                answer: 2,
-            },
-            {
-                problemId: 2,
-                answer: 2,
-            },
-            {
-                problemId: 3,
-                answer: 3,
-            },
-            {
-                problemId: 4,
-                answer: 2,
-            },
-            {
-                problemId: 5,
-                answer: 3,
-            },
-        ],
-    };
+// // 삭제 예정
+// onMounted(() => {
+//     const result = {
+//         problemList: [
+//             {
+//                 problemId: 1,
+//                 answer: 2,
+//             },
+//             {
+//                 problemId: 2,
+//                 answer: 2,
+//             },
+//             {
+//                 problemId: 3,
+//                 answer: 3,
+//             },
+//             {
+//                 problemId: 4,
+//                 answer: 2,
+//             },
+//             {
+//                 problemId: 5,
+//                 answer: 3,
+//             },
+//         ],
+//     };
 
-    gameStore.saveResult(result);
-});
+//     gameStore.saveResult(result);
+// });
 </script>
 
 <template>
@@ -126,7 +128,7 @@ onMounted(() => {
                                 <PageNavigationButton
                                     background-color="#CCCBFF"
                                     data="방 만들기"
-                                    source="\src\assets\animal\ANIMALS2.png"
+                                    :source="makingRoomImg"
                                     @click-event="makeRoom"
                                     height="45vh"
                                 />

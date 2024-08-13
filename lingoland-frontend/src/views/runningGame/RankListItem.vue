@@ -22,7 +22,7 @@ const props = defineProps({
                 </v-avatar>
             </v-col> -->
             <v-col class="hidden-xs-only text-left ms-2">
-                <strong v-html="rank.userId"></strong>
+                <strong>{{ rank.userId }}</strong>
             </v-col>
 
             <!-- <v-col class="text-no-wrap text-left text-grey">

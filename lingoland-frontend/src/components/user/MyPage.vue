@@ -6,6 +6,7 @@ import incorrectDialog from "@/components/incorrect/IncorrectDialog.vue";
 import router from "@/router";
 import GroupList from "../group/GroupList.vue";
 import MainPageButton from "../common/MainPageButton.vue";
+import taleImg from "@/assets/mystory.png"
 
 function clickTales() {
     router.push({ name: "bookList" });
@@ -89,7 +90,7 @@ function clickTales() {
                             <PageNavigationButton
                                 background-color="#537960"
                                 data="ㅇㅇㅇ의 동화"
-                                source="src\assets\내동화.png"
+                                :source="taleImg"
                                 @click-event="clickTales"
                                 height="30vh"
 

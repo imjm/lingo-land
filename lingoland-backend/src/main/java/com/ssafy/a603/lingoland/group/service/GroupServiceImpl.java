@@ -50,7 +50,7 @@ public class GroupServiceImpl implements GroupService {
 			.leader(member)
 			.build();
 
-		group.setGroupImagePath(imgUtils.getDefaultImage());
+		group.setGroupImagePath(imgUtils.getImagePathWithDefaultImage(GROUP_IMAGE_PATH));
 		Group createdGroup = groupRepository.save(group);
 
 		addMemberToGroup(group, member, "그룹장 입니다.");
@@ -99,21 +99,11 @@ public class GroupServiceImpl implements GroupService {
 		CustomUserDetails customUserDetails) {
 		log.info("Updating group with ID: {}", groupId);
 		Group group = getGroupById(request.id());
-
-		if (group.isDeleted()) {
-			log.error("Attempt to update a deleted group with ID: {}", groupId);
-			throw new InvalidInputException(ErrorCode.GROUP_INVALID_INPUT);
-		}
-
-		if (!isGroupLeader(group, customUserDetails.getMemberId())) {
-			log.error("Member with ID: {} is not the leader of group ID: {}", customUserDetails.getMemberId(),
-				groupId);
-			throw new ForbiddenException(ErrorCode.GROUP_NOT_LEADER);
-		}
-
 		group.updateGroup(request);
-		imgUtils.deleteImage(group.getGroupImage());
-		group.setGroupImagePath(imgUtils.saveImage(groupImage, GROUP_IMAGE_PATH));
+		if (groupImage != null) {
+			imgUtils.deleteImage(group.getGroupImage());
+			group.setGroupImagePath(imgUtils.saveImage(groupImage, GROUP_IMAGE_PATH));
+		}
 
 		log.info("Group with ID: {} updated successfully.", groupId);
 	}

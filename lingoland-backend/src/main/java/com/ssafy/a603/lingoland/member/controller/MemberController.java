@@ -1,12 +1,14 @@
 package com.ssafy.a603.lingoland.member.controller;
 
-import com.ssafy.a603.lingoland.member.dto.*;
+import com.ssafy.a603.lingoland.member.dto.GetMemberInfoDto;
+import com.ssafy.a603.lingoland.member.dto.SignUpDto;
+import com.ssafy.a603.lingoland.member.dto.UpdateNicknameDto;
+import com.ssafy.a603.lingoland.member.dto.UpdatePasswordDto;
+import com.ssafy.a603.lingoland.member.entity.Member;
 import com.ssafy.a603.lingoland.member.security.CurrentUser;
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 import com.ssafy.a603.lingoland.member.service.MemberService;
-import com.ssafy.a603.lingoland.member.service.MemberServiceImpl;
 import com.ssafy.a603.lingoland.member.validator.SignUpValidator;
-import com.ssafy.a603.lingoland.member.entity.Member;
 import com.ssafy.a603.lingoland.member.validator.UpdatePasswordValidator;
 import com.ssafy.a603.lingoland.member.validator.UpdateProfileImageValidator;
 import jakarta.validation.Valid;
@@ -15,7 +17,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -88,19 +98,10 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @PutMapping("/profile-image")
-    public ResponseEntity<?> updateProfileImage(@RequestBody UpdateProfileImageDto updateProfileImageDto,
-                                                @CurrentUser CustomUserDetails customUserDetails,
-                                                BindingResult bindingResult) {
-        updateProfileImageValidator.validate(updateProfileImageDto, bindingResult);
-        if(bindingResult.hasErrors()) {
-            List<String> errors = bindingResult.getAllErrors()
-                    .stream()
-                    .map(ObjectError::getCode)
-                    .collect(Collectors.toList());
-            return ResponseEntity.badRequest().body(errors);
-        }
-        memberService.updateProfileImage(updateProfileImageDto, customUserDetails);
+    @PutMapping(path = "/profile-image", produces = "application/json", consumes = "multipart/form-data")
+    public ResponseEntity<?> updateProfileImage(@RequestPart(value = "profileImage") MultipartFile profileImage,
+                                                @CurrentUser CustomUserDetails customUserDetails) {
+        memberService.updateProfileImage(profileImage, customUserDetails);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
