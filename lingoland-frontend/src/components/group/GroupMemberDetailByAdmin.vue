@@ -36,7 +36,7 @@ onMounted(() => {
                 </v-col>
 
                 <v-col cols="7">
-                    <TaleList :others="true" :id="userId" :style="{width :'100%'}" />
+                    <TaleList :others="true" :id="userId" :items-per-page=8 cols="3" :items-per-bar=4 :style="{width :'100%'}" />
                 </v-col>
             </v-row>
         </v-container>

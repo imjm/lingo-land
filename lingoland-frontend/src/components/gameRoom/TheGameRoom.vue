@@ -209,23 +209,27 @@ function outSession() {
                                     </div>
                                 </v-col>
                                 <v-col>
-                                    <GenericInput
-                                        v-model="pageCount"
-                                        hint="페이지 수를 입력하세요"
-                                        class="mx-2"
-                                        type="number"
-                                        min="1"
-                                        max="10"
-                                    />
-                                </v-col>
-                                <v-col
-                                    class="d-flex justify-center align-center"
-                                >
-                                    <GenericButton
-                                        width="90%"
-                                        data="시작하기"
-                                        @click-event="startWritingGame"
-                                    />
+                                    <v-row class="d-flex justify-center">
+                                        <v-col cols="8" class="pl-5"> 
+                                            <GenericInput
+                                                v-model="pageCount"
+                                                hint="페이지 수 입력"
+                                                class="mx-2"
+                                                type="number"
+                                                min="1"
+                                                max="10"
+                                            />
+                                        </v-col>
+                                        <v-col cols="4" class="pl-1"
+                                        >
+                                            <GenericButton
+                                                width="75%"
+                                                height="70%"
+                                                data="시작하기"
+                                                @click-event="startWritingGame"
+                                            />
+                                        </v-col>
+                                    </v-row>
                                 </v-col>
                             </v-row>
                         </v-card>
