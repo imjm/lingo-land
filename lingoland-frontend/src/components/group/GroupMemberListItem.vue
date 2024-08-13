@@ -1,13 +1,17 @@
 <script setup>
-import { defineProps, onMounted } from "vue";
 import sampleImage from "@/assets/sampleImg.jpg";
 import router from "@/router";
 import { useGroupStore } from "@/stores/groups";
-import { useRoute } from "vue-router";
 import { useUserStore } from "@/stores/user";
-const groupStore = useGroupStore();
+import { defineProps, onMounted } from "vue";
+import { useRoute } from "vue-router";
+
+const { VITE_SERVER_IMAGE_URL } = import.meta.env;
+
 const route = useRoute();
+const groupStore = useGroupStore();
 const userStore = useUserStore();
+
 const props = defineProps({
     groupMember: {
         type: Object,
@@ -17,8 +21,12 @@ const props = defineProps({
 });
 
 onMounted(() => {
-    if (props.groupMember.profileImage === null) {
+    // 이미지 파일명 확인 후 기본이미지 혹은 경로 추가 설정
+    if (props.groupMember.profileImage === "member/default.jpg") {
         props.groupMember.profileImage = sampleImage;
+    } else {
+        props.groupMember.profileImage =
+            VITE_SERVER_IMAGE_URL + props.groupMember.profileImage;
     }
     console.log(props.groupMember);
 });
@@ -31,25 +39,32 @@ async function memberDetail() {
             return;
         }
 
-        const isLeader = await groupStore.checkGroupLeader(route.params.groupId);
+        const isLeader = await groupStore.checkGroupLeader(
+            route.params.groupId
+        );
         if (isLeader) {
             console.log("byAdmin");
             router.push({
                 name: "groupMemberDetailByAdmin",
-                params: { memberId: props.groupMember.loginId, groupId: props.group.id },
+                params: {
+                    memberId: props.groupMember.loginId,
+                    groupId: props.group.id,
+                },
             });
         } else {
             console.log("justMember");
             router.push({
                 name: "groupMemberDetail",
-                params: { memberId: props.groupMember.loginId, groupId: props.group.id },
+                params: {
+                    memberId: props.groupMember.loginId,
+                    groupId: props.group.id,
+                },
             });
         }
     } catch (error) {
         console.error("An error occurred:", error);
     }
 }
-
 </script>
 
 <template>

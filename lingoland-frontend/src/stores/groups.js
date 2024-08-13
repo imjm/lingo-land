@@ -1,8 +1,11 @@
 import { httpStatus } from "@/apis/http-status";
+import defaultGroupImage from "@/assets/sampleImg.jpg";
 import { defineStore } from "pinia";
 import swal from "sweetalert2";
 import { inject, ref } from "vue";
 import { useRouter } from "vue-router";
+
+const { VITE_SERVER_IMAGE_URL } = import.meta.env;
 
 export const useGroupStore = defineStore("group", () => {
     /**
@@ -22,6 +25,16 @@ export const useGroupStore = defineStore("group", () => {
     /**
      * actions
      */
+
+    // 이미지 얻어왔을 때 기본 이미지 넣어주는 함수 & 이미지 경로 넣어주는 함수 구현
+    function checkImagePath(groupImage) {
+        if (groupImage === "group/default.jpg") {
+            return defaultGroupImage;
+        } else {
+            return VITE_SERVER_IMAGE_URL + groupImage;
+        }
+    }
+
     function checkPassword(checkPassword, originPassword) {
         if (originPassword === checkPassword) {
             passwordCheck.value = false;
@@ -133,9 +146,8 @@ export const useGroupStore = defineStore("group", () => {
             "updateGroup",
             new Blob([JSON.stringify(groupInfo)], { type: "application/json" })
         );
-        if (groupImage) {
-            formData.append("groupImage", groupImage);
-        }
+
+        formData.append("groupImage", groupImage);
 
         axios
             .put(`/groups/${groupInfo.id}`, formData, {
@@ -147,14 +159,10 @@ export const useGroupStore = defineStore("group", () => {
             .then((response) => {
                 if (response.status === httpStatus.NOCONTENT) {
                     Swal.fire({
-                        title: "그룹 정보 수정 성공!",
-                        icon: "success",
-                        confirmButtonText: "완료",
+                        title: "그룹 정보 수정이 완료되었어요",
+                        icon: "success",                        
                     }).then(() => {
-                        router.replace({
-                            name: "groupDetail",
-                            params: { groupId: groupInfo.id },
-                        });
+                        router.go(0);
                     });
                 } else {
                     Swal.fire({
@@ -195,6 +203,9 @@ export const useGroupStore = defineStore("group", () => {
             .get(`/groups/${groupId}`, { withCredentials: true })
             .then((response) => {
                 if (response.status === httpStatus.OK) {
+                    response.data.groupImage = checkImagePath(
+                        response.data.groupImage
+                    );
                     return Promise.resolve(response.data);
                 }
             })

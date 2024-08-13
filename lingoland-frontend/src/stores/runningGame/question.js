@@ -17,12 +17,14 @@ let currentProblemId;
 const openviduStore = useOpenviduStore();
 const { session } = openviduStore;
 const { reparticipants } = storeToRefs(openviduStore);
+console.log("@@@@@@@@@@@@@",reparticipants)
 for (const participant of reparticipants.value) {
   gameRanks.value.push({
     connectionId: participant.connectionId,
     userId: participant.userId,
     score: 0,
     coin: 0,
+    nickname:participant.userProfile.nickname,
     problemList: wrongProblem,
   });
 }
@@ -183,7 +185,7 @@ function checkAnswerAndTime() {
     checkProblem(); // 문제를 풀었을 때 시그널을 보낸다.
     isCorrect.value = null; // 정답 여부 초기화
     resetQuestionOnExit();
-  }, 2000);
+  }, 1000);
   // 정답 여부 표시 후 2초 뒤에 문제 창 닫기
 }
 

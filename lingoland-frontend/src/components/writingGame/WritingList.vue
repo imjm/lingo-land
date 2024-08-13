@@ -63,10 +63,11 @@ const computedStorys = computed(() => {
 </script>
 
 <template>
+
     <div
         v-for="(story, index) in computedStorys"
         :key="index"
-        class="text-h6 text-white"
+        class="image d-flex justify-center align-center"
     >
         {{ story }}
     </div>
@@ -75,12 +76,10 @@ const computedStorys = computed(() => {
 <style scoped>
 .image {
     background-image: url("/balloon1.png");
-    height: 100%;
-    width : 700px;  
-    background-size: contain;
-    background-position: center 75%;
-    background-repeat: no-repeat;
-    overflow: hidden;
-    
+    /* height: 200px; */
+    /* width: 80%; */
+    background-size: cover;
+    background-position: center;
+
 }
 </style>

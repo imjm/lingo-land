@@ -8,7 +8,7 @@ import RankList from "@/components/rank/RankList.vue";
 import { useGameRoomStore } from "@/stores/gameRoom";
 import { useOpenviduStore } from "@/stores/openvidu";
 import { useGameStore } from "@/stores/runningGame/gameStore";
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import makingRoomImg from "@/assets/animal/ANIMALS2.png"
 
@@ -70,36 +70,6 @@ function joinRoom() {
             });
     });
 }
-
-// // 삭제 예정
-// onMounted(() => {
-//     const result = {
-//         problemList: [
-//             {
-//                 problemId: 1,
-//                 answer: 2,
-//             },
-//             {
-//                 problemId: 2,
-//                 answer: 2,
-//             },
-//             {
-//                 problemId: 3,
-//                 answer: 3,
-//             },
-//             {
-//                 problemId: 4,
-//                 answer: 2,
-//             },
-//             {
-//                 problemId: 5,
-//                 answer: 3,
-//             },
-//         ],
-//     };
-
-//     gameStore.saveResult(result);
-// });
 </script>
 
 <template>

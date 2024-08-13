@@ -41,26 +41,27 @@ const openviduStore = useOpenviduStore();
 const { reparticipants } = storeToRefs(openviduStore);
 const resultStore = useResultStore();
 const { sortedRanks } = storeToRefs(resultStore);
-console.log('참가자들결과',reparticipants.value)
-console.log('결과',sortedRanks)
+console.log("참가자들결과", reparticipants.value);
+console.log("결과", sortedRanks);
 let resultlen;
-const resultlst = ref([])
-if (sortedRanks.value.length<3) {
-    resultlen=sortedRanks.value.length
-}else{
-    resultlen=3
+const resultlst = ref([]);
+if (sortedRanks.value.length < 3) {
+  resultlen = sortedRanks.value.length;
+} else {
+  resultlen = 3;
 }
 
-for (let i=0;i<resultlen;i++) {
-    for (let j =0;j<reparticipants.value.length;j++) {
-        if (sortedRanks.value[i].connectionId == reparticipants.value[j].connectionId) {
-            resultlst.value.push({
-                winnerInfo:models[j]
-            
-            })
-            break;
-        }
+for (let i = 0; i < resultlen; i++) {
+  for (let j = 0; j < reparticipants.value.length; j++) {
+    if (
+      sortedRanks.value[i].connectionId == reparticipants.value[j].connectionId
+    ) {
+      resultlst.value.push({
+        winnerInfo: models[j],
+      });
+      break;
     }
+  }
 }
 
 let renderer, scene, mixer, camera, controls, podiumModel;
@@ -89,12 +90,11 @@ function initDraw() {
 
   // 카메라 애니메이션 시작
   startCameraRotationAnimation();
-  console.log(resultlst.value)
-  console.log(resultlen)
-  for (let k = 0; k<resultlen;k++){
-    console.log('헤헤 이게 위너정보입니답쇼@@@',resultlst.value[k])
-      loadWinners(resultlst.value[k].winnerInfo,k);
-
+  console.log(resultlst.value);
+  console.log(resultlen);
+  for (let k = 0; k < resultlen; k++) {
+    console.log("헤헤 이게 위너정보입니답쇼@@@", resultlst.value[k]);
+    loadWinners(resultlst.value[k].winnerInfo, k);
   }
   function animate() {
     requestAnimationFrame(animate);
@@ -107,7 +107,6 @@ function initDraw() {
 
   animate();
 }
-
 
 function loadWinners(modelInfo, index) {
   let loader = new GLTFLoader();
@@ -129,27 +128,26 @@ function loadWinners(modelInfo, index) {
     mixer = new THREE.AnimationMixer(winnerModel);
     const action = mixer.clipAction(gltf.animations[0]);
     action.play();
-    winnerModel.rotation.y =Math.PI / 3 + modelInfo.rotation; // 90도 회전 (왼쪽을 보던 방향을 정면으로 조정)
+    winnerModel.rotation.y = Math.PI / 3 + modelInfo.rotation; // 90도 회전 (왼쪽을 보던 방향을 정면으로 조정)
 
     const winnerBoundingBox = new THREE.Box3().setFromObject(winnerModel);
     const winnerHeight = winnerBoundingBox.max.y - winnerBoundingBox.min.y;
     const podiumBoundingBox = new THREE.Box3().setFromObject(podiumModel);
     const podiumHeight = podiumBoundingBox.max.y - podiumBoundingBox.min.y;
-    
-    if (index===0) {
-    winnerModel.position.y = podiumBoundingBox.max.y+0.5;
-    winnerModel.position.z -= 5; // 맵 바닥 위로 위치 조정
-    winnerModel.position.x += 4;}
 
-    else if (index==1)
-    {
-      winnerModel.position.y = podiumBoundingBox.max.y+0.5-1.05;
-      winnerModel.position.z += -3.5 -1*2*Math.sin(Math.PI/3)+4; // 맵 바닥 위로 위치 조정
-      winnerModel.position.x += 2.8 + -1*2*Math.cos(Math.PI/3);
+    if (index === 0) {
+      winnerModel.position.y = podiumBoundingBox.max.y + 0.5;
+      winnerModel.position.z -= 5; // 맵 바닥 위로 위치 조정
+      winnerModel.position.x += 4;
+    } else if (index == 1) {
+      winnerModel.position.y = podiumBoundingBox.max.y + 0.5 - 1.05;
+      winnerModel.position.z += -3.5 - 1 * 2 * Math.sin(Math.PI / 3) + 4; // 맵 바닥 위로 위치 조정
+      winnerModel.position.x += 2.8 + -1 * 2 * Math.cos(Math.PI / 3);
+    } else {
+      winnerModel.position.y = podiumBoundingBox.max.y + 0.5 - 1.7;
+      winnerModel.position.z += -10.7 - 1 * 2 * Math.sin(Math.PI / 3) + 4; // 맵 바닥 위로 위치 조정
+      winnerModel.position.x += 7 + -1 * 2 * Math.cos(Math.PI / 3);
     }
-    else {      winnerModel.position.y = podiumBoundingBox.max.y+0.5-1.7;
-      winnerModel.position.z += -10.7 -1*2*Math.sin(Math.PI/3)+4; // 맵 바닥 위로 위치 조정
-      winnerModel.position.x += 7 + -1*2*Math.cos(Math.PI/3); }
   });
 }
 

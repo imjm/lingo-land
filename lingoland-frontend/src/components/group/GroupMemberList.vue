@@ -6,10 +6,6 @@ const props = defineProps({
     groupMemberList: Object,
     group: Object,
 });
-
-onMounted(()=> {
-    console.log(props.groupMemberList)
-})
 </script>
 
 <template>
@@ -19,10 +15,7 @@ onMounted(()=> {
             :key="i"
             hide-actions
         >
-            <GroupMemberListItem
-                :groupMember="groupMember"
-                :group="group"
-            />
+            <GroupMemberListItem :groupMember="groupMember" :group="group" />
         </v-expansion-panel>
     </v-expansion-panels>
 </template>

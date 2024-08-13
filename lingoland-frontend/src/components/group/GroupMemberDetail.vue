@@ -1,17 +1,15 @@
 <script setup>
 import Profile from "@/components/common/Profile.vue";
-import TaleList from "../tale/TaleList.vue";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
-import BackButton from "../common/BackButton.vue";
-const route = useRoute()
-const userId = ref(null)
+import TaleList from "../tale/TaleList.vue";
+const route = useRoute();
+const userId = ref(null);
 
-onMounted(()=> {
-    userId.value= route.params.memberId
-    console.log('유저아이디',userId.value)
-})
-
+onMounted(() => {
+    userId.value = route.params.memberId;
+    console.log("유저아이디", userId.value);
+});
 </script>
 
 <template>
@@ -19,7 +17,11 @@ onMounted(()=> {
         <v-container>
             <v-row>
                 <v-col cols="5">
-                    <Profile :others="true" :id="userId" :style="{height : '90vh'}"/>
+                    <Profile
+                        :others="true"
+                        :id="userId"
+                        :style="{ height: '90vh' }"
+                    />
                 </v-col>
 
                 <v-col cols="7" >

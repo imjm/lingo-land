@@ -3,7 +3,7 @@ package com.ssafy.a603.lingoland.writingGame.dto;
 import lombok.Builder;
 
 @Builder
-public record AllamaStoryResponseDTO(String medium, String character, String environment, String lighting, String color,
+public record OllamaStoryResponseDTO(String medium, String character, String environment, String lighting, String color,
 									 String mood, String composition) {
 	@Override
 	public String toString() {

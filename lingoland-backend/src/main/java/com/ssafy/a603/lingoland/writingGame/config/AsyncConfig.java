@@ -34,7 +34,7 @@ public class AsyncConfig implements AsyncConfigurer {
 		return Executors.newThreadPerTaskExecutor(factory);
 	}
 
-	@Bean(name = "sampleExecutor")
+	@Bean(name = "asyncExecutor")
 	public AsyncTaskExecutor applicationTaskExecutor() {
 		return new TaskExecutorAdapter(getAsyncExecutor());
 	}

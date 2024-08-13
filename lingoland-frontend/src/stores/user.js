@@ -1,8 +1,11 @@
 import { httpStatus } from "@/apis/http-status";
+import defaultGroupImage from "@/assets/sampleImg.jpg";
 import { defineStore } from "pinia";
 import swal from "sweetalert2";
 import { inject } from "vue";
 import { useRouter } from "vue-router";
+
+const { VITE_SERVER_IMAGE_URL } = import.meta.env;
 
 export const useUserStore = defineStore("userStore", () => {
     /**
@@ -16,6 +19,15 @@ export const useUserStore = defineStore("userStore", () => {
     /**
      * actions
      */
+    // 이미지 얻어왔을 때 기본 이미지 넣어주는 함수 & 이미지 경로 넣어주는 함수 구현
+    function checkImagePath(profileImage) {
+        if (profileImage === "member/default.jpg") {
+            return defaultGroupImage;
+        } else {
+            return VITE_SERVER_IMAGE_URL + profileImage;
+        }
+    }
+
     function checkPassword(originPassword, checkPassword) {
         // 비밀번호와 비밀번호 확인이 일치한지 확인
         if (originPassword === checkPassword) {
@@ -36,7 +48,7 @@ export const useUserStore = defineStore("userStore", () => {
                 }
             })
             .catch((error) => {
-                console.log(error)
+                console.log(error);
                 if (error.response.status === httpStatus.CONFLICT) {
                     return_value = false;
                 }
@@ -115,6 +127,9 @@ export const useUserStore = defineStore("userStore", () => {
             .get("/users", { withCredentials: true })
             .then((response) => {
                 if (response.status === httpStatus.OK) {
+                    response.data.profileImage = checkImagePath(
+                        response.data.profileImage
+                    );
                     return Promise.resolve(response.data);
                 }
             })
@@ -131,6 +146,9 @@ export const useUserStore = defineStore("userStore", () => {
             .get(`/users/${loginId}`, { withCredentials: true })
             .then((response) => {
                 if (response.status === httpStatus.OK) {
+                    response.data.profileImage = checkImagePath(
+                        response.data.profileImage
+                    );
                     return Promise.resolve(response.data);
                 }
             })
@@ -193,6 +211,40 @@ export const useUserStore = defineStore("userStore", () => {
             });
     };
 
+    // 유저 이미지 수정
+    const modifyProfileImage = async (profileImage) => {
+        const formData = new FormData();
+
+        formData.append("profileImage", profileImage);
+
+        await axios
+            .put("/users/profile-image", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+                withCredentials: true,
+            })
+            .then((response) => {
+                if (response.status === httpStatus.OK) {
+                    Swal.fire({
+                        title: "이미지 수정이 완료되었어요",
+                        icon: "success",
+                    }).then(() => {
+                        router.go(0);
+                    });
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                if (error.response.status === httpStatus.BADREQUEST) {
+                    Swal.fire({
+                        title: error.response.data,
+                        icon: "error",
+                    });
+                }
+            });
+    };
+
     return {
         checkPassword,
         checkDuplicate,
@@ -203,5 +255,6 @@ export const useUserStore = defineStore("userStore", () => {
         getProfileById,
         modifyNickname,
         modifyPassword,
+        modifyProfileImage,
     };
 });
