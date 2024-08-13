@@ -185,7 +185,7 @@ function checkAnswerAndTime() {
     checkProblem(); // 문제를 풀었을 때 시그널을 보낸다.
     isCorrect.value = null; // 정답 여부 초기화
     resetQuestionOnExit();
-  }, 2000);
+  }, 1000);
   // 정답 여부 표시 후 2초 뒤에 문제 창 닫기
 }
 

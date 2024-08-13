@@ -190,7 +190,7 @@ onMounted(() => {
   transform: translate(-50%, -50%); /* 중앙 정렬 */
   width: 1000px; /* 원하는 너비 */
   padding: 20px;
-  background-color: rgba(0, 0, 0, 0.7); /* 배경 색상 */
+  background-color: rgba(0, 0, 0, 0.3); /* 배경 색상 */
   border-radius: 10px; /* 모서리 둥글게 */
   text-align: center; /*텍스트 중앙 정렬 */
   justify-content: bottom;
