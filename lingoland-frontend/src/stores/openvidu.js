@@ -108,9 +108,9 @@ export const useOpenviduStore = defineStore("openvidu", () => {
         const resultType = JSON.parse(event.data);
 
         if (resultType.type === 1) {
-            router.replace({ name: "runningGameResult" });
+            router.push({ name: "runningGameResult", });
         } else if (resultType.type === 2) {
-            router.replace({ name: "writingGameResult" });
+            router.push({ name: "writingGameResult" });
         }
     });
 
