@@ -17,12 +17,14 @@ let currentProblemId;
 const openviduStore = useOpenviduStore();
 const { session } = openviduStore;
 const { reparticipants } = storeToRefs(openviduStore);
+console.log("@@@@@@@@@@@@@",reparticipants)
 for (const participant of reparticipants.value) {
   gameRanks.value.push({
     connectionId: participant.connectionId,
     userId: participant.userId,
     score: 0,
     coin: 0,
+    nickname:participant.userProfile.nickname,
     problemList: wrongProblem,
   });
 }

@@ -6,7 +6,7 @@ import { useResultStore } from "@/stores/runningGame/resultStore";
 // 초기 세팅
 import { useOpenviduStore } from "@/stores/openvidu";
 import { selectedAnswerIndex } from "@/stores/runningGame/model";
-import { initDraw } from "@/stores/runningGame/init";
+import { initDraw, startfunc } from "@/stores/runningGame/init";
 const openviduStore = useOpenviduStore();
 
 const { OV, session } = openviduStore;
@@ -15,7 +15,7 @@ const resultStore = useResultStore();
 const { sortedRanks } = storeToRefs(resultStore);
 // 카운트다운 & 타이머
 import { countdown, startCountdown } from "@/stores/runningGame/time";
-
+// import { startfunc } from "@/stores/runningGame/init";
 // 문제
 import {
   currentQuestion,
@@ -31,14 +31,14 @@ const gameStore = useGameStore();
 const { zCoordinate } = storeToRefs(gameStore);
 
 // 게임진행률
-const zDivided = computed(() => zCoordinate.value / 45);
+const zDivided = computed(() => zCoordinate.value / 75);
 
 // const sortedRanks = computed(() => {
 //   return [...gameRanks.value].sort((a, b) => b.score - a.score);
 // });
 
 onMounted(() => {
-  startCountdown();
+  // startCountdown();
   initDraw();
   loadQuestions(); // 문제 로드
 
@@ -56,7 +56,9 @@ onMounted(() => {
     <div id="game-container">
       <canvas id="c"></canvas>
       <div id="timer">00:00:00</div>
-      <div id="countdown" v-if="countdown > 0">{{ countdown }}</div>
+      <div id="countdown" v-if="countdown > 0 && startfunc == true">
+        {{ countdown }}
+      </div>
 
       <v-row>
         <v-col class="d-flex align-center justify-center text-h5 my-1">
@@ -110,7 +112,7 @@ onMounted(() => {
       <h2>게임 순위</h2>
       <ul class="no_dot">
         <li v-for="(rank, index) in sortedRanks" :key="rank.connectionId">
-          {{ index + 1 }}. {{ rank.userId }}:
+          {{ index + 1 }}등 {{ rank.nickname }} ({{ rank.userId }}):
           {{ Math.floor(rank.score * 100) }} 점
         </li>
       </ul>
@@ -137,7 +139,7 @@ onMounted(() => {
   bottom: auto;
   right: auto;
   left: 25px;
-  width: 150px;
+  width: 200px;
   background-color: white;
   color: black;
   padding: 10px;
