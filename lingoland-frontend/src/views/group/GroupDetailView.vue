@@ -16,25 +16,27 @@ const groupStore = useGroupStore();
 
 const groupMemberList = ref();
 const groupInfo = ref({
-    name: "",
-    id: "",
     description: "",
-    memberCount: "",
+    groupImage: "",
+    id: "",
     leaderNickname: "",
+    memberCount: "",
+    name: "",
 });
 
-onMounted(async () => {
+onMounted(() => {
     const groupMemberPromise = groupMemberStore.getMyGroupMembers(
         route.params.groupId
     );
 
-    groupMemberPromise.then(async (promise) => {
+    groupMemberPromise.then((promise) => {
         groupMemberList.value = promise;
     });
 
     const groupPromise = groupStore.getGroup(route.params.groupId);
 
     groupPromise.then((promise) => {
+        console.log("******************groupPromise", groupPromise);
         groupInfo.value = promise;
     });
 });
@@ -43,8 +45,10 @@ function modify() {
     // 그룹장인 경우만 수정되도록
     groupStore.checkGroupLeader(groupInfo.value.id).then((responseValue) => {
         if (responseValue) {
-            router.push({ name: "groupModify", params: groupInfo.value.id });
-            console.log("true!!!!!!!!!!!!!");
+            router.push({
+                name: "groupModify",
+                params: { groupId: groupInfo.value.id },
+            });
         } else {
             Swal.fire({
                 title: "그룹장이 아닙니다.",

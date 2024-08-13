@@ -17,11 +17,11 @@ const { passwordFormat, passwordCheck, groupDiscriptionFormat } =
 
 //보낼 DTO
 const updateGroup = ref(null);
+const imageSource = ref();
 
-let imageSource = ref();
 function handleFileChange(event) {
     const file = event.target.files[0];
-    // console.log('file', file)
+
     if (file) {
         updateGroup.value.groupImage = file;
         const reader = new FileReader();
@@ -30,17 +30,46 @@ function handleFileChange(event) {
         };
         reader.readAsDataURL(file);
         console.log("Selected file:", file);
+
+        modifyGroupImage();
     }
 }
 
-function modifyGroup() {
-    groupStore.modifyGroup(updateGroup.value, updateGroup.value.groupImage);
+function modifyGroupDescription() {
+    const modifyDTO = ref({
+        id: updateGroup.value.id,
+        name: "",
+        password: "",
+        description: updateGroup.value.description,
+    });
+    groupStore.modifyGroup(modifyDTO.value, null);
+}
+
+function modifyGroupPassword() {
+    const modifyDTO = ref({
+        id: updateGroup.value.id,
+        name: "",
+        password: updateGroup.value.password,
+        description: "",
+    });
+
+    groupStore.modifyGroup(modifyDTO.value, null);
+}
+
+function modifyGroupImage() {
+    const modifyDTO = ref({
+        id: updateGroup.value.id,
+        name: "",
+        password: "",
+        description: "",
+    });
+
+    groupStore.modifyGroup(modifyDTO.value, updateGroup.value.groupImage);
 }
 
 onMounted(() => {
     groupStore.getGroup(route.params.groupId).then((responseValue) => {
         updateGroup.value = responseValue;
-        console.log(updateGroup.value);
     });
 });
 </script>
@@ -51,16 +80,12 @@ onMounted(() => {
         <div>
             <NameTag data="그룹 수정하기" :style="{ width: '220px' }" />
             <v-card width="1200">
-                <!-- 하나의 행을 만듬 -->
-                <v-row>
+                <v-row class="d-flex align-center justify-center">
                     <v-col
                         cols="6"
                         class="d-flex flex-column align-center justify-center"
                     >
-                        <ImageBox
-                            :source="imageSource"
-                            setting="align-center justify-center rounded-circle"
-                        />
+                        <ImageBox :source="updateGroup.groupImage" />
                         <v-file-input
                             prepend-icon="mdi-camera"
                             hide-input
@@ -94,6 +119,14 @@ onMounted(() => {
                             >
                                 그룹 소개는 200자 이내로 작성 가능해요
                             </div>
+
+                            <SubmitButton
+                                id="signUp"
+                                data="그룹 소개 수정"
+                                width="100%"
+                                @click-event="modifyGroupDescription"
+                                class="mb-5"
+                            />
 
                             <GenericInput
                                 type="password"
@@ -131,9 +164,9 @@ onMounted(() => {
 
                             <SubmitButton
                                 id="signUp"
-                                data="그룹 수정"
+                                data="그룹 비밀번호 수정"
                                 width="100%"
-                                @click-event="modifyGroup"
+                                @click-event="modifyGroupPassword"
                             />
                         </div>
                     </v-col>
