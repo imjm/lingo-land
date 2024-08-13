@@ -1,38 +1,60 @@
 package com.ssafy.a603.lingoland.room.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-
-import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.ssafy.a603.lingoland.fairyTale.entity.FairyTale;
+import com.ssafy.a603.lingoland.global.entity.BaseTimeEntity;
+import com.ssafy.a603.lingoland.member.entity.Member;
+
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Getter
-public class Room implements Serializable {
+public class Room extends BaseTimeEntity {
+	@EmbeddedId
+	private RoomId id;
 
-    // sequence setting required
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "room_seq")
-    @SequenceGenerator(name = "room_seq", sequenceName = "room_id_seq", allocationSize = 1)
-    private Integer id;
+	@OneToMany
+	private List<Member> contributer;
 
-    @Transient
-    private String code;
+	@OneToOne
+	private FairyTale fairyTale;
 
-    @Transient
-    private int memberCount = 1;
+	private Boolean isDeleted;
 
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+	private LocalDateTime deletedAt;
 
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
+	@Builder
+	public Room(String sessionId, Member starter) {
+		this.id = new RoomId(sessionId, starter.getId());
+		this.contributer = new ArrayList<>();
+		this.isDeleted = false;
+	}
 
-    @Builder
-    public Room(String code){
-        this.code = code;
-    }
+	public void setFairyTale(FairyTale fairyTale) {
+		this.fairyTale = fairyTale;
+	}
 
+	public void addContributer(Member member) {
+		contributer.add(member);
+	}
+
+	public void removeContributer(Member member) {
+		contributer.remove(member);
+	}
+
+	public void delete() {
+		this.isDeleted = true;
+		this.deletedAt = LocalDateTime.now();
+	}
 }

@@ -112,7 +112,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 	}
 
 	@Async("asyncExecutor")
-	private CompletableFuture<Void> processStoriesAsync(String sessionId, List<DrawingRequestDTO> requests,
+	protected CompletableFuture<Void> processStoriesAsync(String sessionId, List<DrawingRequestDTO> requests,
 		WritingGameStartRequestDTO sessionInfo) {
 		log.info("Processing stories asynchronously for session: {}", sessionId);
 		List<CompletableFuture<Void>> futures = new ArrayList<>();
@@ -196,7 +196,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 	}
 
 	@Async("asyncExecutor")
-	private List<FairyTale> end(List<DrawingRequestDTO> requests) {
+	protected List<FairyTale> end(List<DrawingRequestDTO> requests) {
 		log.info("Ending game session with {} requests", requests.size());
 
 		List<String> writers = requests.stream()

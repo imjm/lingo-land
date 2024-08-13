@@ -20,11 +20,13 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@EqualsAndHashCode(of = "id", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FairyTale extends BaseEntity {
 	@Id
@@ -47,7 +49,9 @@ public class FairyTale extends BaseEntity {
 
 	@OneToMany(mappedBy = "fairyTale")
 	@JsonIgnore
-	private List<FairyTaleMember> fairyTaleMembers = new ArrayList<>();
+	private List<FairyTaleMember> fairyTaleMembers;
+
+	private Boolean isComplete;
 
 	@Builder
 	protected FairyTale(String title, String cover, String summary, List<Story> content) {
@@ -55,6 +59,20 @@ public class FairyTale extends BaseEntity {
 		this.cover = cover;
 		this.summary = summary;
 		this.content = content;
+		this.fairyTaleMembers = new ArrayList<>();
+		this.isComplete = false;
+	}
+
+	public void complete() {
+		this.isComplete = true;
+	}
+
+	public void inComplete() {
+		this.isComplete = false;
+	}
+
+	public void addContent(FairyTale.Story story) {
+		this.content.add(story);
 	}
 
 	public void update(UpdateFairyTaleRequestDTO request) {
