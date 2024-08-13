@@ -1,7 +1,7 @@
 package com.ssafy.a603.lingoland.writingGame.dto;
 
-public record AllamaStoryDTO(String model, String prompt, boolean stream, String format) {
-	public AllamaStoryDTO(String prompt) {
+public record OllamaStoryDTO(String model, String prompt, boolean stream, String format) {
+	public OllamaStoryDTO(String prompt) {
 		this("llama3.1", keyword(prompt), false, "json");
 	}
 
