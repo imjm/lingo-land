@@ -17,18 +17,20 @@ const props = defineProps({
 
 function getWrongProblems() {
     let problemList;
-    console.log("다른 사람 아이디", route.params.memberId);
     if (route.params.memberId) {
         problemList = problemStore.getWrongProblemsByadmin(
             props.groupId,
             props.memberId
         );
+    } else {
         problemList = problemStore.getMyWrongProblems();
     }
 
-    problemList.then((getvalue) => {
-        incorrectList.value = getvalue;
-    });
+    if (problemList) {
+        problemList.then((getvalue) => {
+            incorrectList.value = getvalue;
+        });
+    }
 }
 
 function completeWrongProblem() {
