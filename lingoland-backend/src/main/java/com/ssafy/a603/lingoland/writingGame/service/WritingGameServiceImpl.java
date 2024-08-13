@@ -26,6 +26,7 @@ import com.ssafy.a603.lingoland.fairyTale.service.FairyTaleService;
 import com.ssafy.a603.lingoland.global.error.entity.ErrorCode;
 import com.ssafy.a603.lingoland.global.error.exception.BaseException;
 import com.ssafy.a603.lingoland.global.error.exception.InvalidInputException;
+import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 import com.ssafy.a603.lingoland.util.ImgUtils;
 import com.ssafy.a603.lingoland.writingGame.dto.DrawingRequestDTO;
 import com.ssafy.a603.lingoland.writingGame.dto.KarloDTO;
@@ -68,6 +69,12 @@ public class WritingGameServiceImpl implements WritingGameService {
 		int[] randomList = randomNumList(request.numPart());
 		log.debug("Generated random list: {} for session: {}", Arrays.toString(randomList), sessionId);
 		return randomList;
+	}
+
+	@Override
+	public void setTitle(String title, CustomUserDetails customUserDetails) {
+		String redisKey = "lingoland:fairyTale:" + customUserDetails.getUsername() + ":title";
+		serializeToRedis(redisKey, title);
 	}
 
 	@Override
@@ -188,25 +195,6 @@ public class WritingGameServiceImpl implements WritingGameService {
 		}) : new ArrayList<>();
 	}
 
-	private <T> void serializeToRedis(String key, T value) {
-		try {
-			redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(value));
-		} catch (JsonProcessingException e) {
-			log.error("Failed to serialize object to Redis", e);
-			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
-		}
-	}
-
-	private <T> T deserializeFromRedis(String key, Class<T> valueType) {
-		String json = (String)redisTemplate.opsForValue().get(key);
-		try {
-			return objectMapper.readValue(json, valueType);
-		} catch (JsonProcessingException e) {
-			log.error("Failed to deserialize object from Redis", e);
-			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
-		}
-	}
-
 	@Async("asyncExecutor")
 	private List<FairyTale> end(List<DrawingRequestDTO> requests) {
 		log.info("Ending game session with {} requests", requests.size());
@@ -286,7 +274,9 @@ public class WritingGameServiceImpl implements WritingGameService {
 			log.debug("Saved generated image at: {}", savedImgUrl);
 		}
 
-		FairyTale fairyTale = fairyTaleService.createFairyTale(titleWithSummary.title(), savedImgUrl,
+		String title = deserializeFromRedis("lingoland:fairyTale:" + request.key() + ":title", String.class);
+
+		FairyTale fairyTale = fairyTaleService.createFairyTale(title, savedImgUrl,
 			titleWithSummary.summary(), stories, writers);
 		log.info("Fairy tale created with title: {}", titleWithSummary.title());
 
@@ -347,6 +337,25 @@ public class WritingGameServiceImpl implements WritingGameService {
 		}
 		log.error("Failed to generate image for translated text: {}", translated);
 		throw new InvalidInputException(ErrorCode.INVALID_INPUT_VALUE);
+	}
+
+	private <T> void serializeToRedis(String key, T value) {
+		try {
+			redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(value));
+		} catch (JsonProcessingException e) {
+			log.error("Failed to serialize object to Redis", e);
+			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
+		}
+	}
+
+	private <T> T deserializeFromRedis(String key, Class<T> valueType) {
+		String json = (String)redisTemplate.opsForValue().get(key);
+		try {
+			return objectMapper.readValue(json, valueType);
+		} catch (JsonProcessingException e) {
+			log.error("Failed to deserialize object from Redis", e);
+			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
+		}
 	}
 
 	private int[] randomNumList(int n) {
