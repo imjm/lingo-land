@@ -8,8 +8,9 @@ import { useGroupMemberStore } from "@/stores/groupMember";
 import RankListItem from "./RankListItem.vue";
 // import { sortedRanks } from "./RunningGameView.vue";
 import { useResultStore } from "@/stores/runningGame/resultStore";
-import { wrongProblem } from "@/stores/runningGame/question";
+import { wrongProblem, coinTotalScore } from "@/stores/runningGame/question";
 import { useGameStore } from "@/stores/runningGame/gameStore";
+// import {  } from "@/stores/runningGame/init";
 
 const groupMemberStore = useGroupMemberStore();
 // 카운트다운 & 타이머
@@ -27,6 +28,7 @@ onMounted(() => {
 
   const result = {
     problemList: wrongProblem.value,
+    coinCount: coinTotalScore.value,
   };
 
   gameStore.saveResult(result);
@@ -39,7 +41,11 @@ onMounted(() => {
 
     <!-- Leaderboard card -->
     <div id="leaderboard-container">
-      <v-card class="pt-3 ma-30" height="75vh" style="background-color: transparent;">
+      <v-card
+        class="pt-3 ma-30"
+        height="75vh"
+        style="background-color: transparent"
+      >
         <v-row>
           <v-col>
             <h1 class="ml-10">달리기 결과</h1>
@@ -61,10 +67,7 @@ onMounted(() => {
                 <span>{{ i + 1 }}등 </span>
               </v-col>
               <v-col>
-                <RankListItem
-                  :rank="rank"
-                  style="color: black;"
-                />
+                <RankListItem :rank="rank" style="color: black" />
               </v-col>
             </v-row>
             <!-- 아직 변수 값을 몰라 임의로 작성하였습니다. 데이터는 store에 임의로 작성하여 구성했습니다. -->

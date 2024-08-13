@@ -205,4 +205,5 @@ export {
   updateQuestion,
   gameRanks,
   wrongProblem,
+  coinTotalScore
 };
