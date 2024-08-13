@@ -25,8 +25,8 @@ function joinGroup(groupId) {
 <template>
     <v-dialog v-model="model.isOpen" width="850" height="600">
         <NameTag data="그룹 가입하기" />
-        <v-sheet width="850" height="600" class="d-flex align-center pa-15">
-            <v-row>
+        <v-sheet midth="850" height="600" class="d-flex align-center pa-15">
+            <v-row class="mt-10">
                 <v-col>
                     <v-row class="d-flex align-center justify-center">
                         <ImageBox :source="model.groupInfo.groupImage" />
