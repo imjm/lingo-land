@@ -211,6 +211,40 @@ export const useUserStore = defineStore("userStore", () => {
             });
     };
 
+    // 유저 이미지 수정
+    const modifyProfileImage = async (profileImage) => {
+        const formData = new FormData();
+
+        formData.append("profileImage", profileImage);
+
+        await axios
+            .put("/users/profile-image", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+                withCredentials: true,
+            })
+            .then((response) => {
+                if (response.status === httpStatus.OK) {
+                    Swal.fire({
+                        title: "이미지 수정이 완료되었어요",
+                        icon: "success",
+                    }).then(() => {
+                        router.go(0);
+                    });
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                if (error.response.status === httpStatus.BADREQUEST) {
+                    Swal.fire({
+                        title: error.response.data,
+                        icon: "error",
+                    });
+                }
+            });
+    };
+
     return {
         checkPassword,
         checkDuplicate,
@@ -221,5 +255,6 @@ export const useUserStore = defineStore("userStore", () => {
         getProfileById,
         modifyNickname,
         modifyPassword,
+        modifyProfileImage,
     };
 });

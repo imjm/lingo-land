@@ -17,7 +17,6 @@ const { passwordFormat, passwordCheck, groupDiscriptionFormat } =
 
 //보낼 DTO
 const updateGroup = ref(null);
-const imageSource = ref();
 
 function handleFileChange(event) {
     const file = event.target.files[0];
@@ -25,11 +24,7 @@ function handleFileChange(event) {
     if (file) {
         updateGroup.value.groupImage = file;
         const reader = new FileReader();
-        reader.onload = (e) => {
-            imageSource.value = e.target.result;
-        };
         reader.readAsDataURL(file);
-        console.log("Selected file:", file);
 
         modifyGroupImage();
     }
