@@ -13,6 +13,8 @@ import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.job.flow.FlowExecutionStatus;
+import org.springframework.batch.core.job.flow.JobExecutionDecider;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.support.TaskExecutorJobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
@@ -43,7 +45,12 @@ public class BatchConfig {
     public Job helloworldJob() {
         return new JobBuilder("helloworldJob", jobRepository)
                 .listener(jobExecutionListener())
-                .start(helloworldStep()).build();
+                .start(helloworldStep())
+                .next(jobExecutionDecider())
+                .from(jobExecutionDecider()).on("CONTINUE").to(helloworldStep())
+                .from(jobExecutionDecider()).on("FINISH").end()
+                .build()
+                .build();
     }
 
     @Bean
@@ -63,8 +70,23 @@ public class BatchConfig {
             @Override
             public void afterJob(JobExecution jobExecution) {
                 log.info("job end");
-                executionCnt = 0;
             }
         };
+    }
+
+    @Bean
+    public JobExecutionDecider jobExecutionDecider(){
+        return ((jobExecution, stepExecution) -> {
+            executionCnt++;
+            if (executionCnt < 1) {
+                return new FlowExecutionStatus("CONTINUE");
+            } else{
+                return new FlowExecutionStatus("FINISH");
+            }
+        });
+    }
+
+    public static void setExecutionCntWhenError(){
+        executionCnt = 10;
     }
 }

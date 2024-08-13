@@ -33,6 +33,16 @@ spring:
             descriptor:
               sql: trace
 
+      reactor.core.publisher: DEBUG
+      io.r2dbc.postgresql: DEBUG
+      org.springframework.data.r2dbc: DEBUG
+
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
   batch:
     jdbc:
       initialize-schema: always

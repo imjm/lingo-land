@@ -19,8 +19,11 @@ public class HelloworldTasklet implements Tasklet {
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         log.info("tasklet start");
         for(int i = 0; i < 1; i++){
-            System.out.println("hello world");
-            problemService.makeProblem();
+            System.out.println("hello world " + i);
+//            problemService.makeProblem();
+            problemService.test1();
+            System.out.println("*****************************");
+            problemService.test2();
         }
         log.info("tasklet end");
         return RepeatStatus.FINISHED;

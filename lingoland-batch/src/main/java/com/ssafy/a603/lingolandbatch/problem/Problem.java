@@ -35,34 +35,34 @@ public class Problem {
 
     private String creator;
 
-    private Detail detail;
+    private String detail;
 
-    @Builder
-    public static class Detail {
-        private String problem;
-        private List<Choice> choices;
-        private int answer;
-        private String explanation;
+//    @Builder
+//    public static class Detail {
+//        private String problem;
+//        private List<Choice> choices;
+//        private int answer;
+//        private String explanation;
+//
+//        @Getter
+//        @NoArgsConstructor(access = AccessLevel.PROTECTED)
+//        @AllArgsConstructor
+//        @Builder
+//        public static class Choice {
+//            private int num;
+//            private String text;
+//        }
+//    }
 
-        @Getter
-        @NoArgsConstructor(access = AccessLevel.PROTECTED)
-        @AllArgsConstructor
-        @Builder
-        public static class Choice {
-            private int num;
-            private String text;
-        }
-    }
-
-    public Problem fromDTO(ProblemDTO problemDTO){
-        return Problem.builder()
-                .correctAnswerCount(0)
-                .incorrectAnswerCount(0)
-                .isDeleted(false)
-                .inspector(null)
-                .creator("ChatGPT")
-
-                .build();
-    }
+//    public Problem fromDTO(ProblemDTO problemDTO){
+//        return Problem.builder()
+//                .correctAnswerCount(0)
+//                .incorrectAnswerCount(0)
+//                .isDeleted(false)
+//                .inspector(null)
+//                .creator("ChatGPT")
+//
+//                .build();
+//    }
 
 }

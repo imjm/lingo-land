@@ -17,7 +17,8 @@ public class WebClientConfig {
         return WebClient.builder()
                 .baseUrl("https://api.openai.com/v1/chat/completions")
                 .defaultHeader("Authorization", "Bearer " + apiKey)
-                .defaultHeader("Content-Type", "application/json");
+                .defaultHeader("Content-Type", "application/json; charset=utf-8");
+//                .defaultHeader("Content-Type", "application/json");
 
     }
 }
