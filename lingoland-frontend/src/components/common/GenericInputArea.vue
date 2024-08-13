@@ -19,6 +19,7 @@ const props = defineProps({
             variant="outlined"
             :placeholder="placeholder"
             @blur="$emit('blurEvent')"
+            hide-details
         ></v-textarea>
     </div>
 </template>

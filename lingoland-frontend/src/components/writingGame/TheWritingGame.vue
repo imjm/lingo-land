@@ -6,7 +6,6 @@ import WritingList from "@/components/writingGame/WritingList.vue";
 <template>
     <v-main class="background-image gowun-batang-regular pa-10">
         <v-row>
-            <!-- 글 리스트 -->
             <v-col
                 cols="6"
                 class="image d-flex flex-column justify-start align-start"
@@ -14,7 +13,6 @@ import WritingList from "@/components/writingGame/WritingList.vue";
                 <WritingList />
             </v-col>
 
-            <!-- 글쓰는 곳 -->
             <v-col
                 cols="6"
                 class="d-flex flex-column align-center"
