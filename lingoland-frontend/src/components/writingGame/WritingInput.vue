@@ -6,6 +6,7 @@ import { ref } from "vue";
 import { useRoute } from "vue-router";
 import GenericInputArea from "../common/GenericInputArea.vue";
 import CountdownTimer from "./CountdownTimer.vue";
+import GenericInput from "../common/GenericInput.vue";
 
 const route = useRoute();
 
@@ -16,16 +17,11 @@ const openviduStore = useOpenviduStore();
 const { session, findCurrentStoryId, findMyLoginId } = openviduStore;
 
 const textareaValue = ref("");
-const isSubmit = ref(false);
+const title = ref("");
 
-const handleTimesUp = () => {
-    // 타임아웃이므로 강제로 제출
-    // 아직 제출하지 않았으면 제출시킨다.
-    if (!isSubmit.value) {
-        sumbit();
-    }
-
-    isSubmit.value = false;
+const handleTimesUp = async () => {
+    // 타임아웃이므로 제출
+    await submit();
 
     let currentStoryId = findCurrentStoryId();
 
@@ -33,7 +29,7 @@ const handleTimesUp = () => {
 
     // 시그널 보내기
     if (turn.value + 1 < pageCount.value) {
-        session
+        await session
             .signal({
                 type: "writingGame",
                 data: JSON.stringify({
@@ -49,7 +45,7 @@ const handleTimesUp = () => {
             });
     } else {
         // 마지막 페이지일 때 글쓰기 게임 종료
-        session
+        await session
             .signal({ type: "gameEnd", data: JSON.stringify({ type: 2 }) })
             .then(() => {
                 console.log("***********************writingGame end");
@@ -66,7 +62,7 @@ const handleTimesUp = () => {
     turn.value++;
 };
 
-function sumbit() {
+function submit() {
     let myLoginId = findMyLoginId();
 
     const drawingDTO = {
@@ -76,10 +72,15 @@ function sumbit() {
     };
 
     console.log("*******drawDTO", drawingDTO);
+
+    // 첫번째 턴이면 제목을 제출한다.
+    if (turn.value === 0) {
+        // API 요청 보내기
+        writingGameStore.submitTitle(route.params.roomId, title.value);
+    }
+
     // API 요청 보내기
     writingGameStore.submitStory(route.params.roomId, drawingDTO);
-
-    isSubmit.value = true;
 }
 </script>
 
@@ -99,15 +100,18 @@ function sumbit() {
         >
             <CountdownTimer @timesUp="handleTimesUp" />
 
+            <GenericInput
+                v-if="turn == 0"
+                hint="동화에 제목을 입력하세요"
+                v-model="title"
+                class="textarea"
+            />
+
             <GenericInputArea
-                class="textarea custom-textarea"
+                class="textarea"
                 v-model="textareaValue"
                 placeholder="글을 작성해주세요"
             />
-            <!-- <v-textarea
-                placeholder="글을 작성해주세요"
-                hide-details
-            ></v-textarea> -->
         </v-card>
     </div>
 </template>
