@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.a603.lingoland.member.security.CurrentUser;
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
 import com.ssafy.a603.lingoland.writingGame.dto.DrawingRequestDTO;
+import com.ssafy.a603.lingoland.writingGame.dto.ExitRequestDTO;
 import com.ssafy.a603.lingoland.writingGame.dto.TitleDTO;
 import com.ssafy.a603.lingoland.writingGame.dto.WritingGameStartRequestDTO;
 import com.ssafy.a603.lingoland.writingGame.service.WritingGameService;
@@ -25,18 +26,28 @@ public class WritingGameController {
 
 	@PostMapping("/start/{sessionId}")
 	public ResponseEntity<?> start(@PathVariable("sessionId") String sessionId,
-		@RequestBody WritingGameStartRequestDTO dto) {
-		return ResponseEntity.status(HttpStatus.OK).body(writingGameService.start(sessionId, dto));
+		@RequestBody WritingGameStartRequestDTO request) {
+		writingGameService.start(sessionId, request);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
 	@PostMapping("/title")
-	public ResponseEntity<?> setTitle(@RequestBody TitleDTO request, @CurrentUser CustomUserDetails customUserDetails) {
-		writingGameService.setTitle(request.title(), customUserDetails);
+	public ResponseEntity<?> setTitle(String sessionId, @RequestBody TitleDTO request,
+		@CurrentUser CustomUserDetails customUserDetails) {
+		writingGameService.setTitle(sessionId, customUserDetails, request.title());
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
 	@PostMapping("/request/{sessionId}")
-	public ResponseEntity<?> request(@PathVariable("sessionId") String sessionId, @RequestBody DrawingRequestDTO dto) {
-		return ResponseEntity.status(HttpStatus.OK).body(writingGameService.submitStory(sessionId, dto));
+	public ResponseEntity<?> request(@PathVariable("sessionId") String sessionId, @RequestBody DrawingRequestDTO dto,
+		@CurrentUser CustomUserDetails customUserDetails) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(writingGameService.submitStory(sessionId, dto, customUserDetails));
+	}
+
+	@PostMapping("/exit/{sessionId}")
+	public ResponseEntity<?> exit(@PathVariable("sessionId") String sessionId, @RequestBody ExitRequestDTO request) {
+		return ResponseEntity.status(HttpStatus.OK).body(writingGameService.exit(sessionId, request.exitLoginId(),
+			request.order()));
 	}
 }

@@ -54,7 +54,7 @@ public class FairyTale extends BaseEntity {
 	private Integer isComplete;
 
 	@Builder
-	protected FairyTale(String title, String cover, String summary, List<Story> content) {
+	public FairyTale(String title, String cover, String summary, List<Story> content) {
 		this.title = title;
 		this.cover = cover;
 		this.summary = summary;
@@ -82,6 +82,11 @@ public class FairyTale extends BaseEntity {
 			this.summary = request.summary();
 	}
 
+	public void completeBefore(String cover, String summary) {
+		this.cover = cover;
+		this.summary = summary;
+	}
+
 	@Getter
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	public static class Story {
@@ -89,7 +94,7 @@ public class FairyTale extends BaseEntity {
 		private String story;
 
 		@Builder
-		protected Story(@JsonProperty("illustration") String illustration,
+		public Story(@JsonProperty("illustration") String illustration,
 			@JsonProperty("story") String story) {
 			this.illustration = illustration;
 			this.story = story;
