@@ -19,7 +19,9 @@ public interface RoomService {
 
 	void fairytaleInComplete(String sessionId, String starterLoginId);
 
-	void endRoom(String sessionId);
+	void endRooms(String sessionId);
+
+	void endRoom(String sessionId, String starterLoginId);
 
 	FairyTale findFairyTale(String sessionId, String loginId);
 

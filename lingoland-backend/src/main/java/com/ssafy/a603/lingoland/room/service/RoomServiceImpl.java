@@ -86,9 +86,16 @@ public class RoomServiceImpl implements RoomService {
 
 	@Override
 	@Transactional
-	public void endRoom(String sessionId) {
+	public void endRooms(String sessionId) {
 		List<Room> rooms = roomRepository.findByIdSessionId(sessionId);
 		rooms.forEach(Room::delete);
+	}
+
+	@Override
+	@Transactional
+	public void endRoom(String sessionId, String starterLoginId) {
+		Room room = findRoomByRoomId(sessionId, starterLoginId);
+		room.delete();
 	}
 
 	@Override

@@ -103,12 +103,14 @@ public class WritingGameServiceImpl implements WritingGameService {
 		if (sessionInfo.getMaxTurn() == request.order()) {
 			//마지막 턴의 경우 list 리턴 + true false return
 			//일단 표지 그려라 요청
-			CompletableFuture.runAsync(() -> endProcess(sessionId, request, customUserDetails), executor);
+			CompletableFuture.runAsync(() -> endProcess(sessionId, request, customUserDetails), executor)
+				.thenRunAsync(() -> {
+					redisTemplate.delete(makeRedisMemberAliveKey(sessionId, customUserDetails.getUsername()));
+					redisTemplate.delete(makeRedisMemberSubmitKey(sessionId, customUserDetails.getUsername()));
+					roomService.endRoom(sessionId, request.key());
+				}, executor);
 			// end -> list를 가져온다.
 			fairyTales = roomService.findFairyTalesInSession(sessionId);
-			// 기존의 게임 룸에 대한 redis, room entity 제거
-			deleteKeysByPattern(makeRedisRoomKey(sessionId));
-			roomService.endRoom(sessionId);
 		} else {
 			fairyTales = null;
 		}
@@ -117,6 +119,10 @@ public class WritingGameServiceImpl implements WritingGameService {
 			for (String participant : sessionInfo.getParticipants()) {
 				redisSubmitKey = makeRedisMemberSubmitKey(sessionId, participant);
 				serializeToRedis(redisSubmitKey, false);
+			}
+			if (fairyTales != null) {
+				deleteKeysByPattern(makeRedisRoomKey(sessionId));
+				roomService.endRooms(sessionId);
 			}
 			return SubmitStoryResponseDTO.builder()
 				.fairyTales(fairyTales)
@@ -137,14 +143,14 @@ public class WritingGameServiceImpl implements WritingGameService {
 		String redisRoomKey = makeRedisRoomKey(sessionId);
 		SessionInfo sessionInfo = deserializeFromRedis(redisRoomKey, new TypeReference<SessionInfo>() {
 		});
-		if (order != sessionInfo.getMaxTurn()) {
-			String redisSubmitKey = makeRedisMemberSubmitKey(sessionId, exitLoginId);
-			Boolean isSubmit = deserializeFromRedis(redisSubmitKey, new TypeReference<Boolean>() {
-			});
-			if (!isSubmit) {
-				roomService.fairytaleInComplete(sessionId, exitLoginId);
-			}
-		}
+		// if (order != sessionInfo.getMaxTurn()) {
+		// 	String redisSubmitKey = makeRedisMemberSubmitKey(sessionId, exitLoginId);
+		// 	Boolean isSubmit = deserializeFromRedis(redisSubmitKey, new TypeReference<Boolean>() {
+		// 	});
+		// 	if (!isSubmit) {
+		// 		roomService.fairytaleInComplete(sessionId, exitLoginId);
+		// 	}
+		// }
 		return isAllEnd(sessionId, sessionInfo);
 	}
 
