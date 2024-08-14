@@ -61,9 +61,9 @@ watch(activePage, (newPage) => {
                 }"
                 @click="(event) => handlePageClick(event, 1)"
             >
-                <div class="front">
-                    <h1>집에 가고 싶어요</h1>
-                    <img class="qr" :src="tale.cover" />
+                <div class="front-cover">
+                    <h1>{{ tale.title }}</h1>
+                    <img class="cover-qr" :src="tale.cover" />
                     <div id="carbon-block"></div>
                 </div>
                 <div class="back">
@@ -170,10 +170,22 @@ h3 {
     position: absolute;
     width: 100%;
     height: 100%;
-    padding: 2% 5% 5%;
+    padding: 1% 1% 1% 1%;
     box-sizing: border-box;
     backface-visibility: hidden;
     background: linear-gradient(to bottom right, #fff1c2, #ffffff);
+}
+
+.front-cover {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    padding: 5% 5% 5%;
+    box-sizing: border-box;
+    box-shadow : -5px -5px 15px rgb(0,0,0,0.8);
+    backface-visibility: hidden;
+    background-image: url(/bookCover.jpg);
+    background-size: cover;
 }
 
 .back {
@@ -200,9 +212,17 @@ p {
 
 .qr {
     display: block;
-    margin: 50px auto;
+    margin: 10px auto;
     max-width: 100%;
-    height: 70%;
-    max-height: 70%;
+    height: 90%;
+    max-height: 95%;
+}
+
+.cover-qr {
+    display: block;
+    margin: 10px auto;
+    max-width: 100%;
+    height: 80%;
+    /* max-height: 95%; */
 }
 </style>

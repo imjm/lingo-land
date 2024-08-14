@@ -3,12 +3,11 @@ import { storeToRefs } from "pinia";
 import { onMounted } from "vue";
 
 // 초기 세팅
-import router from "@/router";
 import { useGameStore } from "@/stores/runningGame/gameStore";
-import { coinTotalScore } from "@/stores/runningGame/question";
 import { initDraw } from "@/stores/runningGame/resultinit";
 import { useRoute } from "vue-router";
 import RankListItem from "./RankListItem.vue";
+import router from "@/router";
 
 const route = useRoute();
 
@@ -17,7 +16,7 @@ const route = useRoute();
 // 문제
 
 const gameStore = useGameStore();
-const { sortedRanks, wrongProblem } = storeToRefs(gameStore);
+const { sortedRanks, wrongProblem, coinTotalScore } = storeToRefs(gameStore);
 
 onMounted(() => {
     initDraw();
@@ -28,7 +27,9 @@ onMounted(() => {
     };
 
     gameStore.saveResult(result);
+
     setTimeout(() => {
+        console.log('게임룸으로 푸쉬')
         router.push({
             name: "gameRoom",
             params: { roomId: route.params.roomId },
@@ -50,7 +51,12 @@ onMounted(() => {
             >
                 <v-row>
                     <v-col>
-                        <h1 class="ml-10">달리기 결과</h1>
+                        <h1 class="ml-10" style="color: aliceblue">
+                            <span class="material-symbols-outlined" style="font-size : xx-large">
+                                military_tech
+                            </span>
+                            순위
+                        </h1>
                     </v-col>
                 </v-row>
                 <v-expansion-panels
@@ -62,7 +68,7 @@ onMounted(() => {
                         v-for="(rank, i) in sortedRanks"
                         :key="i"
                         hide-actions
-                        bg-color="#FFD700"
+                        bg-color="#5c822f"
                     >
                         <v-row class="d-flex align-center px-5">
                             <v-col cols="2">
@@ -81,6 +87,10 @@ onMounted(() => {
             </v-card>
         </div>
     </div>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
 </template>
 
 <style scoped>
@@ -113,14 +123,15 @@ onMounted(() => {
 #leaderboard-container {
     position: absolute;
     top: 70px; /* Adjust vertical position */
-    left: 70px; /* Adjust horizontal position */
-    width: 500px; /* Width of the leaderboard card */
-    background-color: rgba(
+    left: 120px; /* Adjust horizontal position */
+    width: 450px; /* Width of the leaderboard card */
+    /* background-color: rgba(
         172,
         204,
         124,
         0.5
-    ); /* Semi-transparent background */
+    ); Semi-transparent background */
+    background-color: rgb(67, 54, 49, 0.8);
     z-index: 10; /* Ensure it's above the canvas */
     padding: 10px; /* Add padding if needed */
     border-radius: 8px; /* Optional: rounded corners */

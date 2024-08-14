@@ -5,6 +5,7 @@ import { useUserStore } from "@/stores/user";
 import GameRoomView from "@/views/GameRoomView.vue";
 import GroupListView from "@/views/group/GroupListView.vue";
 import GroupView from "@/views/group/GroupView.vue";
+import LoadingView from "@/views/loading/LoadingView.vue";
 import LoginView from "@/views/LoginView.vue";
 import MainPageView from "@/views/MainPageView.vue";
 import MyPageView from "@/views/MyPageView.vue";
@@ -21,27 +22,23 @@ const router = createRouter({
             redirect: "/login", // 기본 경로를 로그인 페이지로 리디렉션
         },
         {
+            path: "/loading",
+            name: "loading",
+            component: LoadingView,
+        },
+        {
             path: "/login",
             name: "login",
             component: LoginView,
-            meta: {
-                requiresAuth: false,
-            },
         },
         {
             path: "/signup",
             name: "signUp",
             component: SignUpView,
-            meta: {
-                requiresAuth: false,
-            },
         },
         {
             path: "/game-room",
             component: GameRoomView,
-            meta: {
-                requiresAuth: true,
-            },
             children: [
                 {
                     path: ":roomId",
@@ -80,16 +77,10 @@ const router = createRouter({
             path: "/main-page",
             name: "mainPage",
             component: MainPageView,
-            meta: {
-                requiresAuth: true,
-            },
         },
         {
             path: "/my-page",
             component: MyPageView,
-            meta: {
-                requiresAuth: true,
-            },
             children: [
                 {
                     path: "",
@@ -123,9 +114,6 @@ const router = createRouter({
         {
             path: "/group",
             component: GroupView,
-            meta: {
-                requiresAuth: true,
-            },
             children: [
                 {
                     path: "list",
