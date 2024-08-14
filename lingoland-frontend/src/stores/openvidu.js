@@ -13,7 +13,7 @@ export const useOpenviduStore = defineStore("openvidu", () => {
     const router = useRouter();
     const userStore = useUserStore();
     const participants = ref([]);
-    const mynum = ref("");
+    const myCharacterIndex = ref();
 
     const reparticipants = ref([]);
     const storyList = ref([]);
@@ -81,7 +81,7 @@ export const useOpenviduStore = defineStore("openvidu", () => {
                     reparticipants.value[i].connectionId ==
                     event.target.connection.connectionId
                 ) {
-                    mynum.value = i;
+                    myCharacterIndex.value = i;
                     break;
                 }
             }
@@ -108,7 +108,7 @@ export const useOpenviduStore = defineStore("openvidu", () => {
         const resultType = JSON.parse(event.data);
 
         if (resultType.type === 1) {
-            router.push({ name: "runningGameResult", });
+            router.push({ name: "runningGameResult" });
         } else if (resultType.type === 2) {
             router.push({ name: "writingGameResult" });
         }
@@ -225,7 +225,7 @@ export const useOpenviduStore = defineStore("openvidu", () => {
         session,
         participants,
         reparticipants,
-        mynum,
+        myCharacterIndex,
         storyList,
         storyOrderList,
         resetParticipants,
