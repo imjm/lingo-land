@@ -1,4 +1,4 @@
-import { httpStatus } from "@/apis/http-status";
+import { httpStatus } from "@/configuration/http-status";
 import defaultGroupImage from "@/assets/sampleImg.jpg";
 import { defineStore } from "pinia";
 import swal from "sweetalert2";

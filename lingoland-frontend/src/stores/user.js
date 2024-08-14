@@ -1,8 +1,8 @@
-import { httpStatus } from "@/apis/http-status";
+import { httpStatus } from "@/configuration/http-status";
 import defaultGroupImage from "@/assets/sampleImg.jpg";
 import { defineStore } from "pinia";
 import swal from "sweetalert2";
-import { inject } from "vue";
+import { inject, ref } from "vue";
 import { useRouter } from "vue-router";
 
 const { VITE_SERVER_IMAGE_URL } = import.meta.env;
@@ -15,6 +15,7 @@ export const useUserStore = defineStore("userStore", () => {
 
     const router = useRouter();
     const axios = inject("axios");
+    const isAuthenticated = ref(false);
 
     /**
      * actions
@@ -88,6 +89,8 @@ export const useUserStore = defineStore("userStore", () => {
             .post("/login", userInfo, { withCredentials: true })
             .then((response) => {
                 if (response.status === httpStatus.OK) {
+                    isAuthenticated.value = true;
+
                     // axios 요청 header에 access token 추가
                     axios.defaults.headers.common["Authorization"] =
                         response.headers.authorization;
@@ -111,7 +114,7 @@ export const useUserStore = defineStore("userStore", () => {
         await axios
             .put("/logout", {}, { withCredentials: true })
             .then((response) => {
-                console.log(response);
+                isAuthenticated.value = false;
                 sessionStorage.removeItem("accessToken");
                 delete axios.defaults.headers.common["Authorization"];
                 router.replace({ name: "login" });
@@ -246,6 +249,7 @@ export const useUserStore = defineStore("userStore", () => {
     };
 
     return {
+        isAuthenticated,
         checkPassword,
         checkDuplicate,
         signUp,
