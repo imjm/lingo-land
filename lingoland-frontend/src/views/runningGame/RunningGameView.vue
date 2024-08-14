@@ -25,36 +25,44 @@ onMounted(() => {
 
 import { useGameStore } from "@/stores/runningGame/gameStore";
 import { storeToRefs } from "pinia";
-import { computed, onMounted, watch, ref } from "vue";
-import { useResultStore } from "@/stores/runningGame/resultStore";
+import { onMounted } from "vue";
+
 // 초기 세팅
-import { useOpenviduStore } from "@/stores/openvidu";
+import { initDraw, startfunc } from "@/stores/runningGame/init";
 import { selectedAnswerIndex } from "@/stores/runningGame/model";
-const openviduStore = useOpenviduStore();
 
-const { OV, session } = openviduStore;
-
-const resultStore = useResultStore();
-const { sortedRanks } = storeToRefs(resultStore);
 // 카운트다운 & 타이머
-import { countdown, startCountdown } from "@/stores/runningGame/time";
-// import { startfunc } from "@/stores/runningGame/init";
+import { countdown } from "@/stores/runningGame/time";
+
+// 문제
+import {
+    currentQuestion,
+    isCorrect,
+    loadQuestions,
+    options,
+    questionCountDown,
+    updateQuestion,
+} from "@/stores/runningGame/question";
 
 const gameStore = useGameStore();
-const { zCoordinate } = storeToRefs(gameStore);
+const { sortedRanks, zDivided } = storeToRefs(gameStore);
 
-// 게임진행률
-const zDivided = computed(() => zCoordinate.value / 75);
+onMounted(() => {
+    initDraw();
+    loadQuestions(); // 문제 로드
+    gameStore.setGameRanks(); // 게임 참가로 랭킹 초기화
 
-// const sortedRanks = computed(() => {
-//   return [...gameRanks.value].sort((a, b) => b.score - a.score);
-// });
-
+    // 문제를 9초마다 부름
+    setInterval(() => {
+        updateQuestion();
+        console.log("문제 부름");
+        console.log(currentQuestion.value);
+    }, 9000);
+});
 </script>
 
 <template>
     <div class="gowun-batang-regular">
-        <!-- Canvas와 타이머를 포함하는 상위 div -->
         <div id="game-container">
             <canvas id="c"></canvas>
             <div id="timer">00:00:00</div>
@@ -109,9 +117,6 @@ const zDivided = computed(() => zCoordinate.value / 75);
             <img v-else src="/wrong.png" alt="Wrong" class="result-image" />
         </div>
 
-        <div v-if="questions === null" id="quiz-container">
-            <p>퀴즈가 완료되었습니다!</p>
-        </div>
         <div id="ranks-container" class="gamja-flower-regular">
             <h2>게임 순위</h2>
             <ul class="no_dot">

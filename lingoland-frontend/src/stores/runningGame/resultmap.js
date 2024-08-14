@@ -1,13 +1,15 @@
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import * as THREE from "three";
-import { scene,renderer } from "./resultinit";
+import { renderer, scene } from "./resultinit";
+import { useThreeJsStore } from "./threeStore";
+
+const threeJsStore = useThreeJsStore();
+const { loader } = threeJsStore;
 
 function loadMapSection(zPosition) {
-    let mapLoader = new GLTFLoader();
     const clipPlanes = [
         new THREE.Plane(new THREE.Vector3(0, 0, -1), zPosition + 1050),
     ];
-    mapLoader.load("/pirate/scene.gltf", function (gltf) {
+    loader.load("/pirate/scene.gltf", function (gltf) {
         gltf.scene.traverse((child) => {
             if (child.isMesh) {
                 child.material.needsUpdate = true;
@@ -27,11 +29,10 @@ function loadMapSection(zPosition) {
 }
 
 function loadNewMapSection(zPosition) {
-    let newMapLoader = new GLTFLoader();
     const clipPlanes = [
         new THREE.Plane(new THREE.Vector3(0, 0, -1), zPosition + 1050),
     ];
-    newMapLoader.load("/pirate/scene.gltf", function (gltf) {
+    loader.load("/pirate/scene.gltf", function (gltf) {
         gltf.scene.traverse((child) => {
             if (child.isMesh) {
                 child.material.needsUpdate = true;
