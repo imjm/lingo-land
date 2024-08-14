@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.a603.lingolandbatch.config.BatchConfig;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -28,75 +29,11 @@ public class ProblemServiceImpl implements ProblemService{
     private ProblemServiceImpl(ProblemRepository repository, WebClient.Builder webClient, ObjectMapper objectMapper){
         this.problemRepository = repository;
         this.webClient = webClient
-
                 .build();
-
         this.objectMapper = objectMapper;
     }
 
-    @Override
-    public void test1(){
-        webClient.post()
-                .headers(headers -> {
-                    headers.setContentType(MediaType.APPLICATION_JSON);
-                    headers.setAcceptCharset(List.of(StandardCharsets.UTF_8));
-                })
 
-                        .
-        bodyValue("{\n" +
-                "    \"model\": \"gpt-4o-mini\",\n" +
-                "    \"messages\": [\n" +
-                "      {\n" +
-                "        \"role\" : \"system\",\n" +
-                "        \"content\" : \"what is religion?\"  }\n" +
-                "    ]\n" +
-                "  }")
-                .exchangeToMono(response -> {
-                    // 응답 헤더 출력
-                    response.headers().asHttpHeaders().forEach((name, values) -> {
-                        values.forEach(value -> System.out.println(name + ": " + value));
-                    });
-
-                    // 응답 본문 처리
-                    return response.bodyToMono(String.class);
-                })
-                .subscribe(
-                        System.out::println,
-                        error -> System.err.println("Error: " + error.getMessage())
-                );
-    }
-
-    @Override
-    public void test2(){
-        webClient.post()
-                .headers(headers -> {
-                    headers.setContentType(MediaType.APPLICATION_JSON);
-                    headers.setAcceptCharset(List.of(StandardCharsets.UTF_8));
-                })
-
-                        .
-                bodyValue("{\n" +
-                        "    \"model\": \"gpt-4o-mini\",\n" +
-                        "    \"messages\": [\n" +
-                        "      {\n" +
-                        "        \"role\" : \"system\",\n" +
-                        "        \"content\" : \"종교란 뭔가?\"  }\n" +
-                        "    ]\n" +
-                        "  }")
-                .exchangeToMono(response -> {
-                    // 응답 헤더 출력
-                    response.headers().asHttpHeaders().forEach((name, values) -> {
-                        values.forEach(value -> System.out.println(name + ": " + value));
-                    });
-
-                    // 응답 본문 처리
-                    return response.bodyToMono(String.class);
-                })
-                .subscribe(
-                        System.out::println,
-                        error -> System.err.println("Error: " + error.getMessage())
-                );
-    }
     @Override
     public void makeProblem() {
 
@@ -104,9 +41,6 @@ public class ProblemServiceImpl implements ProblemService{
                 .headers(headers -> {
                     headers.setContentType(MediaType.APPLICATION_JSON);
                     headers.setAcceptCharset(Collections.singletonList(StandardCharsets.UTF_8));
-                    headers.forEach((name, values) -> {
-                        values.forEach(value -> System.out.println(name + ": " + value));
-                    });
                 })
                 .bodyValue("{\n" +
                         "    \"model\": \"gpt-4o-mini\",\n" +
@@ -119,10 +53,10 @@ public class ProblemServiceImpl implements ProblemService{
                         "  }")
                 .retrieve()
                 .onStatus(
-                        status -> status.isError(),
+                        HttpStatusCode::isError,
                         response -> response.bodyToMono(String.class)
                                 .flatMap(body -> {
-                                    System.err.println("Error response body: " + body);
+                                    log.info("{}", body);
                                     BatchConfig.setExecutionCntWhenError();
                                     return Mono.error(new WebClientResponseException(
                                             response.statusCode().value(),
@@ -137,11 +71,7 @@ public class ProblemServiceImpl implements ProblemService{
                 .subscribe(
                         messageBody -> {
                             log.info("request success");
-                            System.out.println(messageBody);
-
-//                            byte[] utf8Bytes = messageBody.getBytes(StandardCharsets.UTF_8);
-//                            String utf8String = new String(utf8Bytes, StandardCharsets.UTF_8);
-//                            System.out.println("Decoded UTF-8 String: " + utf8String);
+                            log.info("{}",messageBody);
 
                             try {
                                 JsonNode jsonNode = objectMapper.readTree(messageBody);
@@ -155,10 +85,8 @@ public class ProblemServiceImpl implements ProblemService{
                                 JsonNode usageNode = jsonNode.path("usage");
                                 int totalToken = usageNode.path("total_tokens").asInt();
 
-                                System.out.println("total token " + totalToken);
+                                log.info("total token spent {}", totalToken);
                                 for(JsonNode problemNode : problemsNode){
-
-                                    System.out.println("********" + "********");
 
                                     List<Problem.Detail.Choice> choices = new ArrayList<>();
                                     for(int j = 0; j < 3; j++) {
