@@ -6,7 +6,7 @@ import incorrectDialog from "@/components/incorrect/IncorrectDialog.vue";
 import router from "@/router";
 import GroupList from "../group/GroupList.vue";
 import MainPageButton from "../common/MainPageButton.vue";
-import taleImg from "@/assets/mystory.png"
+import taleImg from "@/assets/mystory.png";
 
 function clickTales() {
     router.push({ name: "bookList" });
@@ -19,7 +19,14 @@ function clickTales() {
         <v-container>
             <v-row>
                 <v-col cols="5" class="d-flex justify-center">
-                    <Profile :style="{width:'80%'}"/>
+                    <Profile
+                        @click-event="
+                            () => {
+                                router.push({ name: 'mainPage' });
+                            }
+                        "
+                        :style="{ width: '80%' }"
+                    />
                 </v-col>
 
                 <v-col cols="7">
@@ -93,7 +100,6 @@ function clickTales() {
                                 :source="taleImg"
                                 @click-event="clickTales"
                                 height="30vh"
-
                             />
                         </v-col>
                     </v-row>

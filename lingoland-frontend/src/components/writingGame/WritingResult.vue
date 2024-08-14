@@ -1,15 +1,27 @@
 <script setup>
-import { useTaleStore } from "@/stores/tales";
-import { onMounted, ref, watch } from "vue";
+import { ref, computed, watch, defineProps } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
-const taleStore = useTaleStore();
-const tale = ref(null);
 const activePage = ref(1);
 
+const props = defineProps({
+    tale: Object,
+});
+
+const tale = ref(props.tale); // Initialize with the initial value of props.tale
+
+// Watch for changes to props.tale and update the tale ref accordingly
+watch(
+    () => props.tale,
+    (newVal) => {
+        tale.value = newVal; // Update the tale ref with the new value
+        activePage.value = 1;
+    },
+    { immediate: true, deep: true } // Options to handle immediate update and deep watching
+);
+
 const nextPage = () => {
-    console.log("나옴")
     if (activePage.value < tale.value.content.length + 1) {
         activePage.value++;
     }
@@ -22,20 +34,12 @@ const prevPage = () => {
 };
 
 const handlePageClick = (event, pageNumber) => {
-    console.log("눌림")
     if (pageNumber === activePage.value) {
         nextPage();
     } else if (pageNumber === activePage.value - 1) {
         prevPage();
     }
 };
-
-onMounted(() => {
-    taleStore.oneTaleById(route.params.bookId).then((responseValue) => {
-        tale.value = responseValue;
-        console.log("tale", tale.value);
-    });
-});
 
 watch(activePage, (newPage) => {
     const sceneElement = document.querySelector(".scene");
@@ -50,7 +54,7 @@ watch(activePage, (newPage) => {
 <template>
     <!-- 뒤로가기 -->
     <!-- 책 -->
-    <div v-if="tale" class="scene centered gowun-batang-regular ">
+    <div v-if="tale" class="scene centered gowun-batang-regular">
         <div class="book" ref="book">
             <!-- 첫 번째 페이지 (커버) -->
             <div
@@ -61,8 +65,8 @@ watch(activePage, (newPage) => {
                 }"
                 @click="(event) => handlePageClick(event, 1)"
             >
-                <div class="front">
-                    <h1>집에 가고 싶어요</h1>
+                <div class="front-cover">
+                    <h1>{{ tale.title }}</h1>
                     <img class="qr" :src="tale.cover" />
                     <div id="carbon-block"></div>
                 </div>
@@ -84,12 +88,18 @@ watch(activePage, (newPage) => {
                 @click="(event) => handlePageClick(event, index + 2)"
             >
                 <div class="front d-flex justify-center align-center">
-                    <p>
+                    <p style="max-height: 500px; overflow-y: auto">
                         {{ content.story }}Lorem ipsum dolor sit amet,
                         consectetur adipiscing elit. Ut porta placerat lacus nec
                         dapibus. In rhoncus dui metus, ut efficitur urna aliquam
                         ut. In hac habitasse platea dictumst. Cras dictum
                         commodo pellentesque. Donec placerat massa sit amet
+                        sapien sollicitudin, id molestie est malesuada.
+                        Suspendisse potenti. Proin leo mi, eleifend at nibh id,
+                        dignissim luctus sem. Donec placerat massa sit amet
+                        sapien sollicitudin, id molestie est malesuada.
+                        Suspendisse potenti. Proin leo mi, eleifend at nibh id,
+                        dignissim luctus sem.Donec placerat massa sit amet
                         sapien sollicitudin, id molestie est malesuada.
                         Suspendisse potenti. Proin leo mi, eleifend at nibh id,
                         dignissim luctus sem.
@@ -109,8 +119,6 @@ watch(activePage, (newPage) => {
 </template>
 
 <style scoped>
-
-
 @import url("https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap");
 .gowun-batang-regular {
     font-family: "Gowun Batang", serif;
@@ -139,12 +147,29 @@ h3 {
     margin: 2% 2% 2% 50%;
     perspective: 1000px;
     transition: transform 1.5s ease;
+    border-radius: 5px;
 }
 
 .scene.centered {
     position: fixed;
     transform: translateX(-50%);
-    left : 10px;
+    left: 2px;
+    box-shadow: 10px 10px 10px rgb(0, 0, 0, 0.5);
+    border-radius: 5px;
+    background-image: url(/bookCover.jpg) !important;
+    background-color: transparent;
+}
+
+.front-cover {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    padding: 5% 5% 5%;
+    box-sizing: border-box;
+    box-shadow : -5px -5px 15px rgb(0,0,0,0.8);
+    backface-visibility: hidden;
+    background-image: url(/bookCover.jpg);
+    background-size: cover;
 }
 
 .book {
