@@ -1,12 +1,15 @@
 package com.ssafy.a603.lingoland.openvidu;
 
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
-import com.ssafy.a603.lingoland.openvidu.dto.ConnectionDto;
-import io.openvidu.java.client.*;
+import io.openvidu.java.client.ConnectionProperties;
+import io.openvidu.java.client.OpenVidu;
+import io.openvidu.java.client.OpenViduHttpException;
+import io.openvidu.java.client.OpenViduJavaClientException;
+import io.openvidu.java.client.OpenViduRole;
+import io.openvidu.java.client.Session;
+import io.openvidu.java.client.SessionProperties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class OpenViduService {
@@ -34,7 +37,6 @@ public class OpenViduService {
     public String generateToken(String sessionId, CustomUserDetails customUserDetails, int role) throws OpenViduJavaClientException, OpenViduHttpException {
         Session session = openVidu.getActiveSession(sessionId);
         String loginId = customUserDetails.getUsername();
-
         ConnectionProperties properties = new ConnectionProperties.Builder().data(loginId).role(role == 1 ? OpenViduRole.MODERATOR : OpenViduRole.PUBLISHER).build();
         return session.createConnection(properties).getToken();
     }
