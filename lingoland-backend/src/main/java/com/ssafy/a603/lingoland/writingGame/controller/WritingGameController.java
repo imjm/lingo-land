@@ -31,8 +31,8 @@ public class WritingGameController {
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
-	@PostMapping("/title")
-	public ResponseEntity<?> setTitle(String sessionId, @RequestBody TitleDTO request,
+	@PostMapping("/title/{sessionId}")
+	public ResponseEntity<?> setTitle(@PathVariable("sessionId") String sessionId, @RequestBody TitleDTO request,
 		@CurrentUser CustomUserDetails customUserDetails) {
 		writingGameService.setTitle(sessionId, customUserDetails, request.title());
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
