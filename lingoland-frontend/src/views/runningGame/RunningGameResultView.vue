@@ -35,12 +35,12 @@ onMounted(() => {
     };
 
     gameStore.saveResult(result);
-    setTimeout(() => {
-        router.push({
-            name: "gameRoom",
-            params: { roomId: route.params.roomId },
-        });
-    }, 10000);
+    // setTimeout(() => {
+    //     router.push({
+    //         name: "gameRoom",
+    //         params: { roomId: route.params.roomId },
+    //     });
+    // }, 10000);
 });
 </script>
 <template>
@@ -57,7 +57,12 @@ onMounted(() => {
             >
                 <v-row>
                     <v-col>
-                        <h1 class="ml-10">달리기 결과</h1>
+                        <h1 class="ml-10" style="color: aliceblue">
+                            <span class="material-symbols-outlined" style="font-size : xx-large">
+                                military_tech
+                            </span>
+                            순위
+                        </h1>
                     </v-col>
                 </v-row>
                 <v-expansion-panels
@@ -69,11 +74,11 @@ onMounted(() => {
                         v-for="(rank, i) in sortedRanks"
                         :key="i"
                         hide-actions
-                        bg-color="#FFD700"
+                        bg-color="#5c822f"
                     >
                         <v-row class="d-flex align-center px-5">
                             <v-col cols="2">
-                                <span>{{ i + 1 }}등 </span>
+                                <span style="font-size : 30px">{{ i + 1 }}등 </span>
                             </v-col>
                             <v-col>
                                 <RankListItem
@@ -88,6 +93,10 @@ onMounted(() => {
             </v-card>
         </div>
     </div>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
 </template>
 
 <style scoped>
@@ -122,12 +131,13 @@ onMounted(() => {
     top: 70px; /* Adjust vertical position */
     left: 70px; /* Adjust horizontal position */
     width: 500px; /* Width of the leaderboard card */
-    background-color: rgba(
+    /* background-color: rgba(
         172,
         204,
         124,
         0.5
-    ); /* Semi-transparent background */
+    ); Semi-transparent background */
+    background-color: rgb(67, 54, 49, 0.8);
     z-index: 10; /* Ensure it's above the canvas */
     padding: 10px; /* Add padding if needed */
     border-radius: 8px; /* Optional: rounded corners */
