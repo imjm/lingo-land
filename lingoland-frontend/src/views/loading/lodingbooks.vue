@@ -31,9 +31,21 @@ const mockTaleData = {
         "선생님께도 물어보며 회의를 하고 두 의견을 가진 사람들은 두 개의 팀으로 나뉘어 싸우게 되었습니다. ",
       illustration: localImage4,
     },
-    { story: "그러던 중 두 팀의 수장들은 서로 다른 팀의 팀원들을 은밀하게 설득했습니다.", illustration: localImage5 },
-    { story: "그러던 끝에 결국 게임 개발을 주장하던 팀이 승리하게 되었고, 이 게임을 개발하게 되었습니다.", illustration: localImage6 },
-    { story: "비록 직전에 한 명이 좋은 곳으로 떠나게 되었지만, 성공적으로 마칠 수 있었답니다~\n잘됐다네~잘됐다네~", illustration: localImage7 },
+    {
+      story:
+        "그러던 중 두 팀의 수장들은 서로 다른 팀의 팀원들을 은밀하게 설득했습니다.",
+      illustration: localImage5,
+    },
+    {
+      story:
+        "그러던 끝에 결국 게임 개발을 주장하던 팀이 승리하게 되었고, 이 게임을 개발하게 되었습니다.",
+      illustration: localImage6,
+    },
+    {
+      story:
+        "비록 직전에 한 명이 좋은 곳으로 떠나게 되었지만, 성공적으로 마칠 수 있었답니다~\n잘됐다네~잘됐다네~",
+      illustration: localImage7,
+    },
   ],
 };
 
@@ -103,11 +115,11 @@ watch(activePage, (newPage) => {
       >
         <div class="front">
           <h1>집에 가고 싶어요</h1>
-          <img class="qr" :src="tale.cover" />
+          <img class="qr-c" :src="tale.cover" />
           <div id="carbon-block"></div>
         </div>
         <div class="back">
-          <img class="qr" :src="tale.content[0].illustration" />
+          <img class="qr ill ma-0" :src="tale.content[0].illustration" />
           <h3>– 1 –</h3>
         </div>
       </div>
@@ -133,7 +145,7 @@ watch(activePage, (newPage) => {
           <!-- {{ content.story }}   -->
 
           <img
-            class="qr"
+            class="qr ma-0 ill"
             v-if="index + 1 < tale.content.length"
             :src="tale.content[index + 1].illustration"
           />
@@ -199,11 +211,18 @@ h3 {
   transform-origin: left center;
 }
 
+.ill {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .front,
 .back {
   position: absolute;
   width: 100%;
   height: 100%;
+  margin: 0 auto;
   padding: 2% 5% 5%;
   box-sizing: border-box;
   backface-visibility: hidden;
@@ -233,6 +252,13 @@ p {
 }
 
 .qr {
+  display: block;
+  margin: 50px auto;
+  max-width: 100%;
+  /* height: 70%; */
+  /* max-height: 70%; */
+}
+.qr-c {
   display: block;
   margin: 50px auto;
   max-width: 100%;
