@@ -1,6 +1,7 @@
 import GroupMemberDetail from "@/components/group/GroupMemberDetail.vue";
 import GroupMemberDetailByAdmin from "@/components/group/GroupMemberDetailByAdmin.vue";
 import MyPage from "@/components/user/MyPage.vue";
+import { useUserStore } from "@/stores/user";
 import GameRoomView from "@/views/GameRoomView.vue";
 import GroupListView from "@/views/group/GroupListView.vue";
 import GroupView from "@/views/group/GroupView.vue";
@@ -8,6 +9,7 @@ import LoginView from "@/views/LoginView.vue";
 import MainPageView from "@/views/MainPageView.vue";
 import MyPageView from "@/views/MyPageView.vue";
 import SignUpView from "@/views/SignUpView.vue";
+import { storeToRefs } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -22,15 +24,24 @@ const router = createRouter({
             path: "/login",
             name: "login",
             component: LoginView,
+            meta: {
+                requiresAuth: false,
+            },
         },
         {
             path: "/signup",
             name: "signUp",
             component: SignUpView,
+            meta: {
+                requiresAuth: false,
+            },
         },
         {
             path: "/game-room",
             component: GameRoomView,
+            meta: {
+                requiresAuth: true,
+            },
             children: [
                 {
                     path: ":roomId",
@@ -69,10 +80,16 @@ const router = createRouter({
             path: "/main-page",
             name: "mainPage",
             component: MainPageView,
+            meta: {
+                requiresAuth: true,
+            },
         },
         {
             path: "/my-page",
             component: MyPageView,
+            meta: {
+                requiresAuth: true,
+            },
             children: [
                 {
                     path: "",
@@ -106,6 +123,9 @@ const router = createRouter({
         {
             path: "/group",
             component: GroupView,
+            meta: {
+                requiresAuth: true,
+            },
             children: [
                 {
                     path: "list",
@@ -144,6 +164,22 @@ const router = createRouter({
             ],
         },
     ],
+});
+
+// 라우팅 시 login 상태 확인
+router.beforeEach(async (to, from) => {
+    const metaByTo = to.meta;
+
+    if (!metaByTo.requiresAuth) {
+        return true;
+    }
+
+    const userStore = useUserStore();
+    const { isAuthenticated } = storeToRefs(userStore);
+
+    if (!isAuthenticated.value && to.name !== "login") {
+        return { name: "login" };
+    }
 });
 
 export default router;
