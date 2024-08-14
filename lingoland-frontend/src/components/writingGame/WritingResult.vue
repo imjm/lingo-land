@@ -67,7 +67,7 @@ watch(activePage, (newPage) => {
             >
                 <div class="front-cover">
                     <h1>{{ tale.title }}</h1>
-                    <img class="qr" :src="tale.cover" />
+                    <img class="cover-qr" :src="tale.cover" />
                     <div id="carbon-block"></div>
                 </div>
                 <div class="back">
@@ -223,11 +223,22 @@ p {
     line-height: 1.7;
 }
 
+
+
+
 .qr {
     display: block;
-    margin: 50px auto;
+    margin: 10px auto;
     max-width: 100%;
-    height: 70%;
-    max-height: 70%;
+    height: 90%;
+    max-height: 95%;
+}
+
+.cover-qr {
+    display: block;
+    margin: 10px auto;
+    max-width: 100%;
+    height: 80%;
+    /* max-height: 95%; */
 }
 </style>

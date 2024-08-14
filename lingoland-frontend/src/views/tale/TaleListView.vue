@@ -6,14 +6,14 @@ import TaleList from "@/components/tale/TaleList.vue";
 </script>
 
 <template>
-    <div class="main">
+    <div class="listmain">
         <BackButton />
         <TaleList class="my-3" />
     </div>
 </template>
 
 <style scoped>
-.main {
+.listmain {
     height: 100vh;
     width: 100vw;
     background-color: white;

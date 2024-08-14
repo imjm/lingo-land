@@ -16,15 +16,15 @@ const tales = ref([
         cover:  sample,
         content: [
             {
-                illustration: freeImage,
+                illustration: sample,
                 story: "안녕하세요 회사에 갑니다.",
             },
             {
-                illustration: freeImage,
+                illustration: sample,
                 story: "저는 학교에 가서 공부합니다.",
             },
             {
-                illustration: freeImage,
+                illustration: sample,
                 story: "회사에 가면 힘들어요",
             },
         ],
@@ -34,15 +34,15 @@ const tales = ref([
         cover:  sample,
         content: [
             {
-                illustration: freeImage,
+                illustration: sample,
                 story: "안녕하세요 회사에 갑니다.",
             },
             {
-                illustration: freeImage,
+                illustration: sample,
                 story: "저는 학교에 가서 공부합니다.",
             },
             {
-                illustration: freeImage,
+                illustration: sample,
                 story: "회사에 가면 힘들어요",
             },
         ],
@@ -52,15 +52,15 @@ const tales = ref([
         cover:  sample,
         content: [
             {
-                illustration: freeImage,
+                illustration: sample,
                 story: "안녕하세요 회사에 갑니다.",
             },
             {
-                illustration: freeImage,
+                illustration: sample,
                 story: "저는 학교에 가서 공부합니다.",
             },
             {
-                illustration: freeImage,
+                illustration: sample,
                 story: "회사에 가면 힘들어요",
             },
         ],
@@ -70,15 +70,15 @@ const tales = ref([
         cover: sample,
         content: [
             {
-                illustration: freeImage,
+                illustration: sample,
                 story: "안녕하세요 회사에 갑니다.",
             },
             {
-                illustration: freeImage,
+                illustration: sample,
                 story: "저는 학교에 가서 공부합니다.",
             },
             {
-                illustration: freeImage,
+                illustration: sample,
                 story: "회사에 가면 힘들어요",
             },
         ],
@@ -88,15 +88,15 @@ const tales = ref([
         cover: sample,
         content: [
             {
-                illustration: freeImage,
+                illustration: sample,
                 story: "안녕하세요 회사에 갑니다.",
             },
             {
-                illustration: freeImage,
+                illustration: sample,
                 story: "저는 학교에 가서 공부합니다.",
             },
             {
-                illustration: freeImage,
+                illustration: sample,
                 story: "회사에 가면 힘들어요",
             },
         ],
