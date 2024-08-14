@@ -17,11 +17,11 @@ const route = useRoute();
 const router = useRouter();
 
 const openviduStore = useOpenviduStore();
-const writingGameStore = useWritingGameStore();
-
 const { participants } = storeToRefs(openviduStore);
-const { pageCount } = storeToRefs(writingGameStore);
 const { session } = openviduStore;
+
+const writingGameStore = useWritingGameStore();
+const { pageCount } = storeToRefs(writingGameStore);
 
 const startRunningGame = () => {
     // 방장인지 아닌지 확인해야함
@@ -210,7 +210,7 @@ function outSession() {
                                 </v-col>
                                 <v-col>
                                     <v-row class="d-flex justify-center">
-                                        <v-col cols="8" class="pl-5"> 
+                                        <v-col cols="8" class="pl-5">
                                             <GenericInput
                                                 v-model="pageCount"
                                                 hint="페이지 수 입력"
@@ -220,8 +220,7 @@ function outSession() {
                                                 max="10"
                                             />
                                         </v-col>
-                                        <v-col cols="4" class="pl-1"
-                                        >
+                                        <v-col cols="4" class="pl-1">
                                             <GenericButton
                                                 width="75%"
                                                 height="70%"
