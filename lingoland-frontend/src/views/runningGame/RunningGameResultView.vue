@@ -28,12 +28,12 @@ onMounted(() => {
     };
 
     gameStore.saveResult(result);
-    // setTimeout(() => {
-    //     router.push({
-    //         name: "gameRoom",
-    //         params: { roomId: route.params.roomId },
-    //     });
-    // }, 10000);
+    setTimeout(() => {
+        router.push({
+            name: "gameRoom",
+            params: { roomId: route.params.roomId },
+        });
+    }, 10000);
 });
 </script>
 <template>
@@ -71,7 +71,7 @@ onMounted(() => {
                     >
                         <v-row class="d-flex align-center px-5">
                             <v-col cols="2">
-                                <span style="font-size : 30px">{{ i + 1 }}등 </span>
+                                <span>{{ i + 1 }}등 </span>
                             </v-col>
                             <v-col>
                                 <RankListItem
@@ -122,8 +122,8 @@ onMounted(() => {
 #leaderboard-container {
     position: absolute;
     top: 70px; /* Adjust vertical position */
-    left: 70px; /* Adjust horizontal position */
-    width: 500px; /* Width of the leaderboard card */
+    left: 120px; /* Adjust horizontal position */
+    width: 450px; /* Width of the leaderboard card */
     /* background-color: rgba(
         172,
         204,

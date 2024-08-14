@@ -1,27 +1,4 @@
 <script setup>
-import { initDraw, startfunc } from "@/stores/runningGame/init";
-// 문제
-import {
-    currentQuestion,
-    isCorrect,
-    loadQuestions,
-    options,
-    questionCountDown,
-    updateQuestion,
-    gameRanks,
-} from "@/stores/runningGame/question";
-
-onMounted(() => {
-    // startCountdown();
-    initDraw();
-    loadQuestions(); // 문제 로드
-
-    setInterval(() => {
-        updateQuestion();
-        console.log("문제 부름");
-        console.log(currentQuestion.value);
-    }, 9000);
-});
 
 import { useGameStore } from "@/stores/runningGame/gameStore";
 import { storeToRefs } from "pinia";
@@ -118,23 +95,22 @@ onMounted(() => {
         </div>
 
         <div id="ranks-container" class="gamja-flower-regular">
-            <h2>게임 순위</h2>
+            <h2 class="pl-2">순위</h2>
             <ul class="no_dot">
                 <li
                     v-for="(rank, index) in sortedRanks"
                     :key="rank.connectionId"
+                    :class="index % 2 === 0 ? 'white-background' : 'gray-background'"
                 >
-                    {{ index + 1 }}등 {{ rank.nickname }} ({{ rank.userId }}):
+                    {{ index + 1 }}등 {{ rank.nickname }} {{ rank.userId }}:
                     {{ Math.floor(rank.score * 100) }} 점
+                    
                 </li>
             </ul>
         </div>
     </div>
 </template>
 
-<style scoped>
-/* 기존 스타일 유지 */
-</style>
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap");
@@ -144,6 +120,25 @@ onMounted(() => {
     font-style: normal;
     font-size: large;
 }
+
+
+.white-background {
+    background-color: white;
+    /* margin: 5px; */
+    padding-left : 10px;
+    margin-bottom : 10px;
+}
+
+.gray-background {
+    background-color: rgb(92, 130,47,0.5);
+    border-radius: 5px;
+    /* margin: 5px; */
+    padding-left:10px;
+    margin-bottom : 10px;
+
+
+}
+
 /* Add any additional styles here */
 #ranks-container {
     position: absolute;
@@ -152,13 +147,13 @@ onMounted(() => {
     right: auto;
     left: 25px;
     width: 200px;
-    background-color: white;
+    background-color: rgb(255,255,255,0.5);
     color: black;
     padding: 10px;
     border-radius: 5px;
 }
 .highlighted button {
-    background-color: yellow;
+    background-color: #FFE280;
     color: black;
 }
 .no_dot {
@@ -200,9 +195,10 @@ onMounted(() => {
     top: 20%;
     left: 50%;
     transform: translate(-50%, -50%); /* 중앙 정렬 */
-    width: 1000px; /* 원하는 너비 */
+    width: 900px; /* 원하는 너비 */
     padding: 20px;
-    background-color: rgba(0, 0, 0, 0.3); /* 배경 색상 */
+    background-color:  rgb(67, 54, 49,0.5);
+
     border-radius: 10px; /* 모서리 둥글게 */
     text-align: center; /*텍스트 중앙 정렬 */
     justify-content: bottom;
@@ -228,7 +224,8 @@ button {
     padding: 10px 20px;
     font-size: 16px;
     color: white;
-    background-color: #007bff;
+    /* background-color: #5c822f; */
+    background-color:  rgb(67, 54, 49);
     border: none;
     border-radius: 5px;
     cursor: pointer;
