@@ -3,7 +3,6 @@ import { onMounted, ref, defineProps, computed } from "vue";
 import TaleListItem from "./Not-use-TaleListItem.vue";
 import { useTaleStore } from "@/stores/tales";
 import { useRoute } from "vue-router";
-import BackButton from "../common/BackButton.vue";
 
 const route = useRoute();
 const taleStore = useTaleStore();
@@ -11,11 +10,16 @@ const items = ref([]);
 
 const search = ref("");
 const currentPage = ref(1);
-const itemsPerPage = 12; // 페이지당 항목 수
+let itemsPerPage = 12; // 페이지당 항목 수
+let cols = ref(2);
+let itemsPerBar = ref(6);
 
 const props = defineProps({
     others: Boolean,
     id: String,
+    itemsPerPage: Number,
+    cols: Number,
+    itemsPerBar: Number,
 });
 
 const clickBook = (item) => {
@@ -24,6 +28,12 @@ const clickBook = (item) => {
 };
 
 onMounted(() => {
+    if (props.itemsPerPage && props.cols && props.itemsPerBar) {
+        itemsPerPage = props.itemsPerPage;
+        cols.value = props.cols;
+        itemsPerBar.value = props.itemsPerBar;
+    }
+
     let talesListPromise;
     if (props.others) {
         console.log("다른 유저 동화");
@@ -57,87 +67,108 @@ const paginatedItems = computed(() => {
 const totalPages = computed(() => {
     return Math.ceil(filteredItems.value.length / itemsPerPage);
 });
+
+const onSearchInput = () => {
+    currentPage.value = 1; // 검색 시 현재 페이지를 1로 초기화
+};
+
 </script>
 
 <template>
-    <v-container class="d-flex flex-column justify-center align-center">
-        <v-row
-            class="d-flex justify-center align-center mt-10"
-            style="position: relative; width:95%"  
+        <v-container
+            class="bg-color d-flex flex-column justify-center align-center"
         >
-            <div v-if="items.length > 6" class="cube-face-bar1"></div>
-            <div v-if="items.length > 6" class="cube-face-bar2"></div>
-            <div v-if="items.length <= 6" class="cube-face-bar3"></div>
-
-            <v-col
-                v-for="item in paginatedItems"
-                :key="item.id"
-                cols="2"
-                @click="clickBook(item)"
-                max-width="100px"
-                style="perspective: 1000px"
-                class="my-3"
+            <v-row
+                class="d-flex justify-center align-center mt-10"
+                style="position: relative; width: 95%"
             >
                 <div
-                    class="book-container"
-                    style="
-                        position: relative;
-                        width: 100px;
-                        /* height: 150px; */
-                        transform-style: preserve-3d;
-                        transform: rotateY(-30deg);
-                        box-sizing: border-box;
-                        perspective: 400px;
-                    "
-                >
-                    <v-img
-                        :src="item.cover"
-                        height="100%"
-                        class="image-shadow"
-                        style="position: relative; top: 10px; right: 10px"
-                    >
-                    </v-img>
-                    <div class="cube-face-right"></div>
-                </div>
-                <div class="gowun-batang-regular mt-4 truncated-text">
-                    {{ item.title }}제목ㅁ제ㅓ메ㅐㄷ걷asdfasf
-                </div>
+                    v-if="paginatedItems.length > itemsPerBar"
+                    class="cube-face-bar1"
+                ></div>
+                <div
+                    v-if="paginatedItems.length > itemsPerBar"
+                    class="cube-face-bar2"
+                ></div>
+                <div
+                    v-if="paginatedItems.length <= itemsPerBar"
+                    class="cube-face-bar3"
+                ></div>
 
-                <!-- </div> -->
-            </v-col>
-        </v-row>
-        <v-divider />
-        <v-row
-            class="d-flex justify-center align-center"
-            style="position: fixed; bottom: 20px"
-        >
-            <v-col>
-                <!-- <div class="d-flex justify-start"> -->
-                <v-text-field
-                    class="search"
-                    v-model="search"
-                    label="제목을 입력해 주세요"
-                    prepend-inner-icon="mdi-magnify"
-                    variant="solo-filled"
-                    flat
-                    hide-details
-                    single-line
-                ></v-text-field>
-                <!-- </div> -->
-            </v-col>
-            <v-col>
-                <v-pagination
-                    class="pagination"
-                    v-model="currentPage"
-                    :length="totalPages"
-                    color="primary"
-                ></v-pagination>
-            </v-col>
-        </v-row>
-    </v-container>
+                <v-col
+                    v-for="item in paginatedItems"
+                    :key="item.id"
+                    :cols="cols"
+                    @click="clickBook(item)"
+                    max-width="100px"
+                    style="perspective: 1000px"
+                    class="my-3"
+                >
+                    <div
+                        class="book-container"
+                        style="
+                            position: relative;
+                            width: 100px;
+                            /* height: 150px; */
+                            transform-style: preserve-3d;
+                            transform: rotateY(-30deg);
+                            box-sizing: border-box;
+                            perspective: 400px;
+                        "
+                    >
+                        <v-img
+                            :src="item.cover"
+                            height="100%"
+                            class="image-shadow"
+                            style="position: relative; top: 10px; right: 10px"
+                        >
+                        </v-img>
+                        <div class="cube-face-right"></div>
+                    </div>
+                    <div class="gowun-batang-regular mt-4 truncated-text">
+                        {{ item.title }}제목ㅁ제ㅓ메ㅐㄷ걷asdfasf
+                    </div>
+
+                    <!-- </div> -->
+                </v-col>
+            </v-row>
+            <v-row
+                class="d-flex align-center"
+                style="position: fixed; bottom: 20px; right: 30px;"
+            >
+                <v-col>
+                    <div class="d-flex justify-start">
+                        <v-text-field
+                            class="search"
+                            v-model="search"
+                            label="제목을 입력해 주세요"
+                            prepend-inner-icon="mdi-magnify"
+                            variant="solo-filled"
+                            flat
+                            hide-details
+                            single-line
+                            @input="onSearchInput"
+                        ></v-text-field>
+                    </div>
+                </v-col>
+                <v-col>
+                    <v-pagination
+                        class="pagination"
+                        v-model="currentPage"
+                        :length="totalPages"
+                        color="primary"
+                    ></v-pagination>
+                </v-col>
+            </v-row>
+        </v-container>
 </template>
 
 <style scoped>
+.bg-color {
+    background-color: white;
+
+}
+
 .truncated-text {
     white-space: nowrap; /* 텍스트를 한 줄로 유지 */
     overflow: hidden; /* 넘치는 텍스트 숨김 */
@@ -153,12 +184,15 @@ const totalPages = computed(() => {
 }
 
 .pagination {
-    padding: 10px;
-    width: 500px;
+    width: 35vw;
+    position: relative;
+    left: 5%;
 }
 
 .search {
-    width: 500px;
+    width: 25vw;
+    position: relative;
+    left: 45%;
 }
 
 .gowun-batang-regular {

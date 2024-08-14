@@ -8,6 +8,7 @@ import org.hibernate.type.SqlTypes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ssafy.a603.lingoland.fairyTale.dto.UpdateFairyTaleRequestDTO;
 import com.ssafy.a603.lingoland.global.entity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -44,9 +45,6 @@ public class FairyTale extends BaseEntity {
 	@Column(columnDefinition = "jsonb")
 	private List<Story> content;
 
-	// @Column(name = "created_at")
-	// private LocalDateTime createdAt = LocalDateTime.now();
-
 	@OneToMany(mappedBy = "fairyTale")
 	@JsonIgnore
 	private List<FairyTaleMember> fairyTaleMembers = new ArrayList<>();
@@ -57,6 +55,13 @@ public class FairyTale extends BaseEntity {
 		this.cover = cover;
 		this.summary = summary;
 		this.content = content;
+	}
+
+	public void update(UpdateFairyTaleRequestDTO request) {
+		if (request.title() != null && !request.title().isBlank())
+			this.title = request.title();
+		if (request.summary() != null && !request.summary().isBlank())
+			this.summary = request.summary();
 	}
 
 	@Getter

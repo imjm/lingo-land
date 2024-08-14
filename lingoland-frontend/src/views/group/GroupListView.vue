@@ -1,5 +1,6 @@
 <script setup>
 import GroupList from "@/components/group/GroupList.vue";
+import squid from "@/assets/animal/SQUID.png";
 </script>
 
 <template>
@@ -29,3 +30,5 @@ import GroupList from "@/components/group/GroupList.vue";
         </div>
     </main>
 </template>
+
+<style scoped></style>
