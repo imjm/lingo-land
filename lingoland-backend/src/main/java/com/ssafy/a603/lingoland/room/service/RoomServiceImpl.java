@@ -32,16 +32,17 @@ public class RoomServiceImpl implements RoomService {
 	private final FairyTaleMemberRepository fairyTaleMemberRepository;
 	private final MemberRepository memberRepository;
 
-	// 절 대 라이팅 룸 서비스 추가하지 마 . 순환 참조 조심해
-
 	@Override
 	@Transactional
 	public void create(String sessionId, CustomUserDetails customUserDetails, String title) {
+		log.info("Creating new room with sessionId: {} and title: {}", sessionId, title);
+
 		FairyTale fairyTale = FairyTale.builder()
 			.title(title)
 			.content(new ArrayList<>())
 			.build();
 		FairyTale saved = fairyTaleRepository.save(fairyTale);
+		log.info("Saved new FairyTale with ID: {}", saved.getId());
 
 		Member member = findMemberByCustomUserDetails(customUserDetails);
 		fairyTaleMemberRepository.save(
@@ -50,61 +51,90 @@ public class RoomServiceImpl implements RoomService {
 				.member(member)
 				.build()
 		);
+		log.info("Saved FairyTaleMember for member ID: {}", member.getId());
 
 		Room room = Room.builder()
 			.sessionId(sessionId)
 			.starter(member)
 			.build();
 		room.setFairyTale(saved);
-		roomRepository.save(room);
+		Room savedRoom = roomRepository.save(room);
+		log.info("Saved new Room with ID: {}", savedRoom.getId());
 	}
 
 	@Override
 	@Transactional
 	public void fairytaleStoryAdd(String sessionId, String starterLoginId, CustomUserDetails contributorDetails,
 		FairyTale.Story story) {
+		log.info("Adding story to FairyTale in room with sessionId: {} and starterLoginId: {}", sessionId,
+			starterLoginId);
+
 		Room room = findRoomByRoomId(sessionId, starterLoginId);
 		Member contributor = findMemberByCustomUserDetails(contributorDetails);
 		room.addContributer(contributor);
+		log.info("Added contributor with ID: {} to Room with ID: {}", contributor.getId(), room.getId());
+
 		room.getFairyTale().addContent(story);
+		log.info("Added story to FairyTale in Room with ID: {}", room.getId());
 	}
 
 	@Override
 	@Transactional
 	public void fairytaleComplete(String sessionId, String starterLoginId, String cover, String summary) {
+		log.info("Completing FairyTale in room with sessionId: {} and starterLoginId: {}", sessionId, starterLoginId);
+
 		Room room = findRoomByRoomId(sessionId, starterLoginId);
 		room.getFairyTale().completeBefore(cover, summary);
 		room.getFairyTale().complete();
+		log.info("Completed FairyTale in Room with ID: {}", room.getId());
 	}
 
 	@Override
 	@Transactional
 	public void fairytaleInComplete(String sessionId, String starterLoginId) {
+		log.info("Marking FairyTale as incomplete in room with sessionId: {} and starterLoginId: {}", sessionId,
+			starterLoginId);
+
 		Room room = findRoomByRoomId(sessionId, starterLoginId);
 		room.getFairyTale().inComplete();
+		log.info("Marked FairyTale as incomplete in Room with ID: {}", room.getId());
 	}
 
 	@Override
 	@Transactional
 	public void endRooms(String sessionId) {
+		log.info("Ending all rooms with sessionId: {}", sessionId);
+
 		List<Room> rooms = roomRepository.findByIdSessionId(sessionId);
-		rooms.forEach(Room::delete);
+		rooms.forEach(room -> {
+			room.delete();
+			roomRepository.save(room);
+			log.info("Ended Room with ID: {}", room.getId());
+		});
 	}
 
 	@Override
 	@Transactional
 	public void endRoom(String sessionId, String starterLoginId) {
+		log.info("Ending room with sessionId: {} and starterLoginId: {}", sessionId, starterLoginId);
+
 		Room room = findRoomByRoomId(sessionId, starterLoginId);
 		room.delete();
+		roomRepository.save(room);
+		log.info("Ended Room with ID: {}", room.getId());
 	}
 
 	@Override
 	public FairyTale findFairyTale(String sessionId, String loginId) {
+		log.info("Finding FairyTale in room with sessionId: {} and loginId: {}", sessionId, loginId);
+
 		return findRoomByRoomId(sessionId, loginId).getFairyTale();
 	}
 
 	@Override
 	public List<FairyTale> findFairyTalesInSession(String sessionId) {
+		log.info("Finding all FairyTales in session with sessionId: {}", sessionId);
+
 		List<Room> rooms = roomRepository.findByIdSessionId(sessionId);
 		return rooms.stream()
 			.map(Room::getFairyTale)
@@ -112,6 +142,8 @@ public class RoomServiceImpl implements RoomService {
 	}
 
 	private Room findRoomByRoomId(String sessionId, String starterLoginId) {
+		log.info("Finding Room with sessionId: {} and starterLoginId: {}", sessionId, starterLoginId);
+
 		Member member = memberRepository.findByLoginId(starterLoginId).orElseThrow(() -> {
 			log.error("No such member id : {}", starterLoginId);
 			return new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
@@ -123,6 +155,8 @@ public class RoomServiceImpl implements RoomService {
 	}
 
 	private Member findMemberByCustomUserDetails(CustomUserDetails customUserDetails) {
+		log.info("Finding Member with customUserDetails: {}", customUserDetails.getMemberId());
+
 		return memberRepository.findById(customUserDetails.getMemberId()).orElseThrow(() -> {
 			log.error("No such member id : {}", customUserDetails.getMemberId());
 			return new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);

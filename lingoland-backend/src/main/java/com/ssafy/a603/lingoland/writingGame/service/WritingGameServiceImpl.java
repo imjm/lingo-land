@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,33 +65,35 @@ public class WritingGameServiceImpl implements WritingGameService {
 		String redisKey = makeRedisRoomKey(sessionId);
 		SessionInfo sessionInfo = new SessionInfo(request.maxTurn());
 		serializeToRedis(redisKey, sessionInfo);
+		log.debug("Session info serialized to Redis with key: {}", redisKey);
 	}
 
 	@Override
 	@Transactional
 	public void setTitle(String sessionId, CustomUserDetails customUserDetails, String title) {
-		// 룸에 누구 있는지 정보 세팅
+		log.info("Setting title for session: {} by user: {}", sessionId, customUserDetails.getUsername());
 		String redisRoomKey = makeRedisRoomKey(sessionId);
 		SessionInfo sessionInfo = deserializeFromRedis(redisRoomKey, new TypeReference<SessionInfo>() {
 		});
 		sessionInfo.addParticipant(customUserDetails.getUsername());
 		serializeToRedis(redisRoomKey, sessionInfo);
 
-		//각 유저에 대한 정보 세팅
+		log.debug("Participant added to session info: {}", sessionInfo.getParticipants());
+
 		String redisAliveKey = makeRedisMemberAliveKey(sessionId, customUserDetails.getUsername());
 		serializeToRedis(redisAliveKey, true);
-
 		String redisSubmitKey = makeRedisMemberSubmitKey(sessionId, customUserDetails.getUsername());
 		serializeToRedis(redisSubmitKey, false);
 
 		roomService.create(sessionId, customUserDetails, title);
+		log.debug("Room created and title set: {}", title);
 	}
 
 	@Override
 	@Transactional
 	public SubmitStoryResponseDTO submitStory(String sessionId, DrawingRequestDTO request,
 		CustomUserDetails customUserDetails) {
-		log.info("Submitting story for session: {}", sessionId);
+		log.info("Submitting story for session: {} by user: {}", sessionId, customUserDetails.getUsername());
 		String redisSubmitKey = makeRedisMemberSubmitKey(sessionId, customUserDetails.getUsername());
 		serializeToRedis(redisSubmitKey, true);
 
@@ -101,15 +104,14 @@ public class WritingGameServiceImpl implements WritingGameService {
 		});
 		List<FairyTale> fairyTales;
 		if (sessionInfo.getMaxTurn() == request.order()) {
-			//마지막 턴의 경우 list 리턴 + true false return
-			//일단 표지 그려라 요청
+			log.info("Last turn for session: {}", sessionId);
 			CompletableFuture.runAsync(() -> endProcess(sessionId, request, customUserDetails), executor)
 				.thenRunAsync(() -> {
 					redisTemplate.delete(makeRedisMemberAliveKey(sessionId, customUserDetails.getUsername()));
 					redisTemplate.delete(makeRedisMemberSubmitKey(sessionId, customUserDetails.getUsername()));
 					roomService.endRoom(sessionId, request.key());
+					log.info("Ended room and cleaned up session data for session: {}", sessionId);
 				}, executor);
-			// end -> list를 가져온다.
 			fairyTales = roomService.findFairyTalesInSession(sessionId);
 		} else {
 			fairyTales = null;
@@ -124,6 +126,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 				deleteKeysByPattern(makeRedisRoomKey(sessionId));
 				roomService.endRooms(sessionId);
 			}
+			log.info("All participants have ended their submissions for session: {}", sessionId);
 			return SubmitStoryResponseDTO.builder()
 				.fairyTales(fairyTales)
 				.goNext(true)
@@ -138,11 +141,13 @@ public class WritingGameServiceImpl implements WritingGameService {
 	@Override
 	@Transactional
 	public Boolean exit(String sessionId, String exitLoginId, Integer order) {
+		log.info("User {} exiting session: {}", exitLoginId, sessionId);
 		String redisAliveKey = makeRedisMemberAliveKey(sessionId, exitLoginId);
 		serializeToRedis(redisAliveKey, false);
 		String redisRoomKey = makeRedisRoomKey(sessionId);
 		SessionInfo sessionInfo = deserializeFromRedis(redisRoomKey, new TypeReference<SessionInfo>() {
 		});
+		log.debug("Session info after user exit: {}", sessionInfo);
 		// if (order != sessionInfo.getMaxTurn()) {
 		// 	String redisSubmitKey = makeRedisMemberSubmitKey(sessionId, exitLoginId);
 		// 	Boolean isSubmit = deserializeFromRedis(redisSubmitKey, new TypeReference<Boolean>() {
@@ -154,7 +159,6 @@ public class WritingGameServiceImpl implements WritingGameService {
 		return isAllEnd(sessionId, sessionInfo);
 	}
 
-	//번역 -> 그림 -> 저장
 	protected void processSingleStory(String sessionId, DrawingRequestDTO request,
 		CustomUserDetails customUserDetails) {
 		log.info("Processing single story: {} for session: {}", request.key(), sessionId);
@@ -169,13 +173,12 @@ public class WritingGameServiceImpl implements WritingGameService {
 		saveStory(sessionId, request, customUserDetails, savedImgUrl);
 	}
 
-	private void endProcess(String sessionId, DrawingRequestDTO request,
-		CustomUserDetails customUserDetails) {
+	private void endProcess(String sessionId, DrawingRequestDTO request, CustomUserDetails customUserDetails) {
+		log.info("Ending process for session: {} with request: {}", sessionId, request.key());
 		FairyTale curFairyTale = roomService.findFairyTale(sessionId, customUserDetails.getUsername());
-		String stories = "";
-		for (FairyTale.Story story : curFairyTale.getContent()) {
-			stories += story.getStory() + "\n";
-		}
+		String stories = curFairyTale.getContent().stream()
+			.map(FairyTale.Story::getStory)
+			.collect(Collectors.joining("\n"));
 
 		String imgUrl;
 		OllamaSummaryResponseDTO imagePrompt = null;
@@ -198,6 +201,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 		else
 			savedImgUrl = imgUtils.saveBase64Image(imgUrl, FAIRY_TALE_IMAGE_PATH);
 		roomService.fairytaleComplete(sessionId, request.key(), savedImgUrl, imagePrompt.summary());
+		log.info("Completed fairy tale for session: {} with cover image: {}", sessionId, savedImgUrl);
 	}
 
 	private String handleStoryTranslation(String story) {
@@ -206,11 +210,11 @@ public class WritingGameServiceImpl implements WritingGameService {
 		try {
 			translated = translateStory2ImagePrompt(story);
 		} catch (Exception e) {
-			log.warn("Skipping image generation due to title creation failure.");
+			log.warn("Skipping image generation due to translation failure.");
 			return imgUtils.getDefaultImage();
 		}
 		if (translated == null || translated.medium().isBlank()) {
-			log.warn("Skipping image generation due to title creation failure.");
+			log.warn("Skipping image generation due to empty translation.");
 			return imgUtils.getDefaultImage();
 		}
 		return generateImageWithFallback(translated.toString());
@@ -228,12 +232,13 @@ public class WritingGameServiceImpl implements WritingGameService {
 
 	private void saveStory(String sessionId, DrawingRequestDTO request, CustomUserDetails customUserDetails,
 		String imgUrl) {
+		log.info("Saving story for session: {} with image URL: {}", sessionId, imgUrl);
 		roomService.fairytaleStoryAdd(sessionId, request.key(), customUserDetails,
 			new FairyTale.Story(imgUrl, request.key()));
 	}
 
 	private OllamaSummaryResponseDTO makeTitleWithSummary(String story) {
-		log.info("Summary story using llama3.1 : {}", story);
+		log.info("Creating summary with llama3.1 for story: {}", story);
 		String json = restClient.post()
 			.uri(ollamaUrl)
 			.body(new OllamaSummaryDTO(story))
@@ -252,7 +257,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 	}
 
 	private OllamaStoryResponseDTO translateStory2ImagePrompt(String story) {
-		log.info("Translating story using llama3.1 : {}", story);
+		log.info("Translating story using llama3.1: {}", story);
 		String json = restClient.post()
 			.uri(ollamaUrl)
 			.body(new OllamaStoryDTO(story))
@@ -271,7 +276,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 	}
 
 	private String generateImage(String translated) {
-		log.info("generate image using text {}", translated);
+		log.info("Generating image using text: {}", translated);
 		KarloReturn karloReturn = restClient.post()
 			.uri("https://api.kakaobrain.com/v2/inference/karlo/t2i")
 			.header("Authorization", "KakaoAK " + imageApiKey)
@@ -281,7 +286,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 			.body(KarloReturn.class);
 
 		if (karloReturn != null && karloReturn.images().length > 0) {
-			log.info("image seed : {}", karloReturn.images()[0].seed());
+			log.info("Image seed: {}", karloReturn.images()[0].seed());
 			return karloReturn.images()[0].image();
 		}
 		log.error("Failed to generate image for translated text: {}", translated);
@@ -291,6 +296,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 	private <T> void serializeToRedis(String key, T value) {
 		try {
 			redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(value));
+			log.debug("Serialized object to Redis with key: {}", key);
 		} catch (JsonProcessingException e) {
 			log.error("Failed to serialize object to Redis", e);
 			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
@@ -300,7 +306,9 @@ public class WritingGameServiceImpl implements WritingGameService {
 	private <T> T deserializeFromRedis(String key, TypeReference<T> valueTypeRef) {
 		String json = (String)redisTemplate.opsForValue().get(key);
 		try {
-			return objectMapper.readValue(json, valueTypeRef);
+			T result = objectMapper.readValue(json, valueTypeRef);
+			log.debug("Deserialized object from Redis with key: {}", key);
+			return result;
 		} catch (JsonProcessingException e) {
 			log.error("Failed to deserialize object from Redis", e);
 			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
@@ -308,6 +316,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 	}
 
 	private boolean isAllEnd(String sessionId, SessionInfo sessionInfo) {
+		log.info("Checking if all participants have ended for session: {}", sessionId);
 		String redisAliveKey;
 		String redisSubmitKey;
 		Boolean isAlive;
@@ -328,7 +337,9 @@ public class WritingGameServiceImpl implements WritingGameService {
 				count++;
 			}
 		}
-		return count == sessionInfo.getParticipants().size();
+		boolean allEnded = count == sessionInfo.getParticipants().size();
+		log.debug("All participants ended: {}", allEnded);
+		return allEnded;
 	}
 
 	private String makeRedisRoomKey(String sessionId) {
@@ -344,8 +355,10 @@ public class WritingGameServiceImpl implements WritingGameService {
 	}
 
 	private void deleteKeysByPattern(String pattern) {
+		log.info("Deleting keys with pattern: {}", pattern);
 		Set<String> keySet = redisTemplate.keys(pattern);
 		redisTemplate.delete(keySet);
+		log.debug("Deleted keys: {}", keySet);
 	}
 
 	// @Async("asyncExecutor")
@@ -422,4 +435,3 @@ public class WritingGameServiceImpl implements WritingGameService {
 	// 	return fairyTales;
 	// }
 }
-

@@ -59,5 +59,6 @@ public class Room extends BaseTimeEntity {
 	public void delete() {
 		this.isDeleted = true;
 		this.deletedAt = LocalDateTime.now();
+		this.contributors.clear();
 	}
 }
