@@ -20,7 +20,7 @@ public class HelloworldTasklet implements Tasklet {
         log.info("tasklet start");
         for(int i = 0; i < 1; i++){
             System.out.println("hello world " + i);
-//            problemService.makeProblem();
+            problemService.makeProblem();
             problemService.test1();
             System.out.println("*****************************");
             problemService.test2();
