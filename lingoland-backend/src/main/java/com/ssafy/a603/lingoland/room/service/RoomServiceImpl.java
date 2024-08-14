@@ -1,5 +1,6 @@
 package com.ssafy.a603.lingoland.room.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,6 +39,7 @@ public class RoomServiceImpl implements RoomService {
 	public void create(String sessionId, CustomUserDetails customUserDetails, String title) {
 		FairyTale fairyTale = FairyTale.builder()
 			.title(title)
+			.content(new ArrayList<>())
 			.build();
 		FairyTale saved = fairyTaleRepository.save(fairyTale);
 
