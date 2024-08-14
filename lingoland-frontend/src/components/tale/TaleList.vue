@@ -3,7 +3,6 @@ import { onMounted, ref, defineProps, computed } from "vue";
 import TaleListItem from "./Not-use-TaleListItem.vue";
 import { useTaleStore } from "@/stores/tales";
 import { useRoute } from "vue-router";
-import BackButton from "../common/BackButton.vue";
 
 const route = useRoute();
 const taleStore = useTaleStore();

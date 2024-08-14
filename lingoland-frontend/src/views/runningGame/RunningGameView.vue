@@ -1,4 +1,28 @@
 <script setup>
+import { initDraw, startfunc } from "@/stores/runningGame/init";
+// 문제
+import {
+    currentQuestion,
+    isCorrect,
+    loadQuestions,
+    options,
+    questionCountDown,
+    updateQuestion,
+    gameRanks,
+} from "@/stores/runningGame/question";
+
+onMounted(() => {
+    // startCountdown();
+    initDraw();
+    loadQuestions(); // 문제 로드
+
+    setInterval(() => {
+        updateQuestion();
+        console.log("문제 부름");
+        console.log(currentQuestion.value);
+    }, 9000);
+});
+
 import { useGameStore } from "@/stores/runningGame/gameStore";
 import { storeToRefs } from "pinia";
 import { onMounted } from "vue";

@@ -12,7 +12,6 @@ import router from "@/router";
         "
     >
         <span class="material-symbols-outlined mt-4 ml-5"> face </span>
-        <span class="mt-2 ml-1">내 정보</span>
     </button>
     <link
         rel="stylesheet"
