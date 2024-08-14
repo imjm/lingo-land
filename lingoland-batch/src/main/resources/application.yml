@@ -3,7 +3,7 @@ spring:
     name: lingoland-batch
 
   datasource:
-    url: jdbc:postgresql://postgres:5432/lingoland
+    url: jdbc:postgresql://i11a603.p.ssafy.io:5432/lingoland
     username: postgres
     password: ssafy
     driver-class-name: org.postgresql.Driver
@@ -15,7 +15,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-
   logging:
     level:
       org:
@@ -40,3 +39,5 @@ spring:
 
   chatGPTKey: ${CHAT_GPT_KEY}
   executionCnt: 1
+server:
+  port: 8081

@@ -30,7 +30,6 @@ public class BatchConfig {
     private final BatchTasklet batchTasklet;
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
-    private final DataSource dataSource;
 
     private static int executionCnt = 0;
 

@@ -17,7 +17,7 @@ public class DataSourceConfig {
     public DataSource dataSource() {
         return DataSourceBuilder.create()
                 .driverClassName("org.postgresql.Driver")
-                .url("jdbc:postgresql://localhost:5432/lingoland")
+                .url("jdbc:postgresql://i11a603.p.ssafy.io:5432/lingoland")
                 .username("postgres")
                 .password("ssafy")
                 .build();
@@ -25,7 +25,7 @@ public class DataSourceConfig {
 
     @Bean
     public ConnectionFactory connectionFactory(){
-        return ConnectionFactoryBuilder.withUrl("r2dbc:postgresql://localhost:5432/lingoland")
+        return ConnectionFactoryBuilder.withUrl("r2dbc:postgresql://i11a603.p.ssafy.io:5432/lingoland")
                 .username("postgres")
                 .password("ssafy")
                 .build();
