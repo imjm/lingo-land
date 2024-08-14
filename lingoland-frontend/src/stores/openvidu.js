@@ -136,6 +136,12 @@ export const useOpenviduStore = defineStore("openvidu", () => {
         console.log("************storyList", storyList.value);
     });
 
+    // 글쓰기 게임 턴 변경 시그널 수신 처리
+    session.on("signal:turnOver", async function (event) {
+        console.log("*****************턴 오버 시그널을 받았다");
+        turn.value++;
+    });
+
     // 방 참가자 리스트 초기화
     function resetParticipants() {
         participants.value = [];

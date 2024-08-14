@@ -1,8 +1,6 @@
 <script setup>
-import { ref, computed, watch, defineProps } from "vue";
-import { useRoute } from "vue-router";
+import { defineProps, ref, watch } from "vue";
 
-const route = useRoute();
 const activePage = ref(1);
 
 const props = defineProps({
@@ -67,7 +65,6 @@ watch(activePage, (newPage) => {
             >
                 <div class="front-cover">
                     <h1>{{ tale.title }}</h1>
-                    <img class="cover-qr" :src="tale.cover" />
                     <div id="carbon-block"></div>
                 </div>
                 <div class="back">
@@ -89,20 +86,7 @@ watch(activePage, (newPage) => {
             >
                 <div class="front d-flex justify-center align-center">
                     <p style="max-height: 500px; overflow-y: auto">
-                        {{ content.story }}Lorem ipsum dolor sit amet,
-                        consectetur adipiscing elit. Ut porta placerat lacus nec
-                        dapibus. In rhoncus dui metus, ut efficitur urna aliquam
-                        ut. In hac habitasse platea dictumst. Cras dictum
-                        commodo pellentesque. Donec placerat massa sit amet
-                        sapien sollicitudin, id molestie est malesuada.
-                        Suspendisse potenti. Proin leo mi, eleifend at nibh id,
-                        dignissim luctus sem. Donec placerat massa sit amet
-                        sapien sollicitudin, id molestie est malesuada.
-                        Suspendisse potenti. Proin leo mi, eleifend at nibh id,
-                        dignissim luctus sem.Donec placerat massa sit amet
-                        sapien sollicitudin, id molestie est malesuada.
-                        Suspendisse potenti. Proin leo mi, eleifend at nibh id,
-                        dignissim luctus sem.
+                        {{ content.story }}
                     </p>
                 </div>
                 <div class="back">
@@ -166,7 +150,7 @@ h3 {
     height: 100%;
     padding: 5% 5% 5%;
     box-sizing: border-box;
-    box-shadow : -5px -5px 15px rgb(0,0,0,0.8);
+    box-shadow: -5px -5px 15px rgb(0, 0, 0, 0.8);
     backface-visibility: hidden;
     background-image: url(/bookCover.jpg);
     background-size: cover;
@@ -222,9 +206,6 @@ p {
     text-indent: 1em;
     line-height: 1.7;
 }
-
-
-
 
 .qr {
     display: block;

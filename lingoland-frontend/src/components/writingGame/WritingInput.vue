@@ -7,11 +7,12 @@ import { useRoute } from "vue-router";
 import GenericInputArea from "../common/GenericInputArea.vue";
 import CountdownTimer from "./CountdownTimer.vue";
 import GenericInput from "../common/GenericInput.vue";
+import SubmitButton from "../common/SubmitButton.vue";
 
 const route = useRoute();
 
 const writingGameStore = useWritingGameStore();
-const { turn, pageCount } = storeToRefs(writingGameStore);
+const { turn, pageCount, isTitle } = storeToRefs(writingGameStore);
 
 const openviduStore = useOpenviduStore();
 const { session, findCurrentStoryId, findMyLoginId } = openviduStore;
@@ -20,15 +21,11 @@ const textareaValue = ref("");
 const title = ref("");
 
 const handleTimesUp = async () => {
-    // 타임아웃이므로 제출
-    await submit();
-
     let currentStoryId = findCurrentStoryId();
-
-    console.log("*************current storyId: ", currentStoryId);
 
     // 시그널 보내기
     if (turn.value + 1 < pageCount.value) {
+        console.log("*******아직 마지막 페이지는 아니다 turn", turn.value);
         await session
             .signal({
                 type: "writingGame",
@@ -39,12 +36,16 @@ const handleTimesUp = async () => {
             })
             .then(() => {
                 console.log("******************writingGame submit");
+                submit();
             })
             .catch((error) => {
                 console.error("***************error sending signal", error);
             });
     } else {
+        console.log("*******마지막 페이지다 turn", turn.value);
         // 마지막 페이지일 때 글쓰기 게임 종료
+        await submit();
+
         await session
             .signal({ type: "gameEnd", data: JSON.stringify({ type: 2 }) })
             .then(() => {
@@ -59,6 +60,14 @@ const handleTimesUp = async () => {
     textareaValue.value = "";
 };
 
+function titleSubmit() {
+    console.log("************제목 제출");
+    writingGameStore.submitTitle(route.params.roomId, {
+        title: title.value,
+    });
+    isTitle.value = false;
+}
+
 function submit() {
     let myLoginId = findMyLoginId();
 
@@ -70,33 +79,17 @@ function submit() {
 
     console.log("*******drawDTO", drawingDTO);
 
-    // 첫번째 턴이면 제목을 제출한다.
-    if (turn.value === 0) {
-        // API 요청 보내기
-        writingGameStore
-            .submitTitle(route.params.roomId, {
-                title: title.value,
-            })
-            .then((response) => {
-                if (response) {
-                    // API 요청 보내기
-                    writingGameStore.submitStory(
-                        route.params.roomId,
-                        drawingDTO
-                    );
-                }
-            });
-    } else {
-        // API 요청 보내기
-        writingGameStore
-            .submitStory(route.params.roomId, drawingDTO)
-            .then((result) => {
-                // 마지막턴에 동화리스트를 받음
-                if (result) {
-                    
-                }
-            });
-    }
+    // API 요청 보내기
+    writingGameStore
+        .submitStory(route.params.roomId, drawingDTO)
+        .then((response) => {
+            if (response) {
+                session.signal({ type: "turnOver" });
+            }
+        })
+        .catch((error) => {
+            console.log("*******************error", error);
+        });
 }
 </script>
 
@@ -114,16 +107,23 @@ function submit() {
             height="500"
             style="background-color: #ffe280"
         >
-            <CountdownTimer @timesUp="handleTimesUp" />
+            <CountdownTimer v-if="!isTitle" @timesUp="handleTimesUp" />
 
             <GenericInput
-                v-if="turn == 0"
+                v-if="isTitle"
                 hint="동화에 제목을 입력하세요"
                 v-model="title"
                 class="textarea"
             />
 
+            <SubmitButton
+                v-if="isTitle"
+                data="제목 제출하기"
+                @click-event="titleSubmit"
+            />
+
             <GenericInputArea
+                v-if="!isTitle"
                 class="textarea"
                 v-model="textareaValue"
                 placeholder="글을 작성해주세요"

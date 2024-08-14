@@ -43,7 +43,6 @@ onBeforeUnmount(() => {
 
 watch(totalTime, (newValue, oldValue) => {
     if (oldValue === 0 && newValue === writingGameConfiguration.gameTime) {
-        console.log("*********reset timer");
         startTimer();
     }
 });
