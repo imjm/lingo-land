@@ -3,6 +3,7 @@ package com.ssafy.a603.lingolandbatch.config;
 
 import com.ssafy.a603.lingolandbatch.tasklet.BatchTasklet;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
@@ -32,7 +33,9 @@ public class BatchConfig {
     private final DataSource dataSource;
 
     private static int executionCnt = 0;
-    private static final int batchExecutionMax = 1;
+
+    @Value("${spring.executionCnt}")
+    private static int batchExecutionMax;
 
     @Bean
     public Job batchJob() {

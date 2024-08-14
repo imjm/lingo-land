@@ -37,3 +37,4 @@
       initialize-schema: never
 
   chatGPTKey: ${CHAT_GPT_KEY}
+  executionCnt: ${EXECUTION_CNT}
