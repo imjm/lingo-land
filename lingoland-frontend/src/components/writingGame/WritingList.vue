@@ -1,4 +1,5 @@
 <script setup>
+import { writingGameConfiguration } from "@/configuration/writingGameConf";
 import { useOpenviduStore } from "@/stores/openvidu";
 import { useWritingGameStore } from "@/stores/writingGame";
 import { storeToRefs } from "pinia";
@@ -41,12 +42,13 @@ watch(turn, (newValue, oldValue) => {
             title: "새로운 이야기가 도착했어요",
             icon: "success",
             confirmButtonText: "완료",
-            timer: 1000,
+            timer: writingGameConfiguration.alertTime,
         }).then(() => {
+            // 턴이 바뀌었을 때 다음 사람이 작성할 이야기 세팅
             setStory();
-
             console.log("****************current story", currentStorys);
-            totalTime.value = 15;
+            // 타이머 초기화
+            totalTime.value = writingGameConfiguration.gameTime;
         });
     }
 });

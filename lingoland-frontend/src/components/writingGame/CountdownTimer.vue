@@ -1,4 +1,5 @@
 <script setup>
+import { writingGameConfiguration } from "@/configuration/writingGameConf";
 import { computed, defineEmits, onBeforeUnmount, onMounted, watch } from "vue";
 import { useWritingGameStore } from "@/stores/writingGame";
 import { storeToRefs } from "pinia";
@@ -41,7 +42,7 @@ onBeforeUnmount(() => {
 });
 
 watch(totalTime, (newValue, oldValue) => {
-    if (oldValue === 0 && newValue === 15) {
+    if (oldValue === 0 && newValue === writingGameConfiguration.gameTime) {
         console.log("*********reset timer");
         startTimer();
     }

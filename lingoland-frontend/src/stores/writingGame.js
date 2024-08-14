@@ -1,4 +1,5 @@
 import { httpStatus } from "@/apis/http-status";
+import { writingGameConfiguration } from "@/configuration/writingGameConf";
 import { defineStore } from "pinia";
 import swal from "sweetalert2";
 import { inject, ref } from "vue";
@@ -12,7 +13,7 @@ export const useWritingGameStore = defineStore("writingGameStore", () => {
     const axios = inject("axios");
     const pageCount = ref(0);
     const turn = ref(0);
-    const totalTime = ref(15);
+    const totalTime = ref(writingGameConfiguration.gameTime);
 
     /**
      * actions
@@ -35,6 +36,7 @@ export const useWritingGameStore = defineStore("writingGameStore", () => {
     };
 
     // 글쓰기 게임 단계별 제출
+    // true를 받으면 다음 턴으로 진행
     const submitStory = async (sessionId, storyDTO) => {
         await axios
             .post(`/writing-game/request/${sessionId}`, storyDTO, {
@@ -43,6 +45,10 @@ export const useWritingGameStore = defineStore("writingGameStore", () => {
             .then((response) => {
                 if (response.status === httpStatus.OK) {
                     console.log("***********글쓰기 게임 제출", response);
+                    if (response.data) {
+                        // 제출 요청에 대해 true가 오면 turn을 바꿈
+                        turn.value++;
+                    }
                 }
             })
             .catch((error) => {
