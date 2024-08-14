@@ -8,6 +8,8 @@ import NameTag from "../common/NameTag.vue";
 
 const userStore = useUserStore();
 
+userStore.$reset(); // 유저 상태 초기화
+
 const warningMessage = ref("");
 
 const loginInfo = ref({

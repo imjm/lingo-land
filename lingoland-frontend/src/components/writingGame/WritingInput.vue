@@ -57,9 +57,6 @@ const handleTimesUp = async () => {
 
     // textarea 초기화하기
     textareaValue.value = "";
-
-    // turn 증가하기
-    turn.value++;
 };
 
 function submit() {

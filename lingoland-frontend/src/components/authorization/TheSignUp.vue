@@ -13,6 +13,8 @@ window.Swal = swal;
 
 const userStore = useUserStore();
 
+userStore.$reset(); // 유저 스토어 초기화
+
 const userInfo = ref({
     loginId: "",
     password: "",
