@@ -73,11 +73,30 @@ function submit() {
     // 첫번째 턴이면 제목을 제출한다.
     if (turn.value === 0) {
         // API 요청 보내기
-        writingGameStore.submitTitle(route.params.roomId, title.value);
+        writingGameStore
+            .submitTitle(route.params.roomId, {
+                title: title.value,
+            })
+            .then((response) => {
+                if (response) {
+                    // API 요청 보내기
+                    writingGameStore.submitStory(
+                        route.params.roomId,
+                        drawingDTO
+                    );
+                }
+            });
+    } else {
+        // API 요청 보내기
+        writingGameStore
+            .submitStory(route.params.roomId, drawingDTO)
+            .then((result) => {
+                // 마지막턴에 동화리스트를 받음
+                if (result) {
+                    
+                }
+            });
     }
-
-    // API 요청 보내기
-    writingGameStore.submitStory(route.params.roomId, drawingDTO);
 }
 </script>
 

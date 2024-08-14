@@ -4,7 +4,7 @@ import WritingResult from "./WritingResult.vue";
 import freeImage from "@/assets/free.png";
 import router from "@/router";
 import { useRoute } from "vue-router";
-import sample from '/sampleBook.jpg'
+import sample from "/sampleBook.jpg";
 const route = useRoute();
 
 const drawer = ref(true);
@@ -13,7 +13,7 @@ const rail = ref(true);
 const tales = ref([
     {
         title: "집에 가고 싶어요",
-        cover:  sample,
+        cover: sample,
         content: [
             {
                 illustration: freeImage,
@@ -31,7 +31,7 @@ const tales = ref([
     },
     {
         title: "집에 가고 싶어요2",
-        cover:  sample,
+        cover: sample,
         content: [
             {
                 illustration: freeImage,
@@ -49,7 +49,7 @@ const tales = ref([
     },
     {
         title: "집에 가고 싶어요3",
-        cover:  sample,
+        cover: sample,
         content: [
             {
                 illustration: freeImage,
@@ -103,7 +103,7 @@ const tales = ref([
     },
     {
         title: "집에 가고 싶어요6",
-        cover:  sample,
+        cover: sample,
         content: [
             {
                 illustration: freeImage,
@@ -126,10 +126,6 @@ const selectedTaleDetail = computed(() => {
     console.log("클릭");
     return tales.value[selectedIndex.value];
 });
-
-
-
-
 </script>
 
 <template>
@@ -137,18 +133,18 @@ const selectedTaleDetail = computed(() => {
         v-model="drawer"
         :rail="rail"
         permanent
-        
         class="drawer gowun-batang-regular"
     >
         <v-list density="compact" @click="rail = !rail" nav>
-
             <v-list-item
                 v-for="(tale, index) in tales"
                 :key="index"
-                
                 class="d-flex justify-center align-center row mt-2"
             >
-                <div class="cover d-flex justify-center align-center" @click="selectedIndex = index">
+                <div
+                    class="cover d-flex justify-center align-center"
+                    @click="selectedIndex = index"
+                >
                     <v-img :src="tale.cover" height="90%"> </v-img>
                 </div>
                 <v-list-item-content>
@@ -215,10 +211,9 @@ const selectedTaleDetail = computed(() => {
     height: 80px;
     margin: 2px;
     box-shadow: 10px 10px 10px rgb(0, 0, 0, 0.5);
-    
 }
 .cover:hover {
-    box-shadow : 5px -5px 5px rgb(255,255,255,0.8)
+    box-shadow: 5px -5px 5px rgb(255, 255, 255, 0.8);
 }
 
 .row {
