@@ -68,7 +68,8 @@ public class WritingGameServiceImpl implements WritingGameService {
 	public void setTitle(String sessionId, CustomUserDetails customUserDetails, String title) {
 		// 룸에 누구 있는지 정보 세팅
 		String redisRoomKey = makeRedisRoomKey(sessionId);
-		SessionInfo sessionInfo = deserializeFromRedis(redisRoomKey, SessionInfo.class);
+		SessionInfo sessionInfo = deserializeFromRedis(redisRoomKey, new TypeReference<SessionInfo>() {
+		});
 		sessionInfo.addParticipant(customUserDetails.getUsername());
 		serializeToRedis(redisRoomKey, sessionInfo);
 
@@ -92,7 +93,8 @@ public class WritingGameServiceImpl implements WritingGameService {
 		processSingleStory(sessionId, request, customUserDetails);
 
 		String redisRoomKey = makeRedisRoomKey(sessionId);
-		SessionInfo sessionInfo = deserializeFromRedis(redisRoomKey, SessionInfo.class);
+		SessionInfo sessionInfo = deserializeFromRedis(redisRoomKey, new TypeReference<SessionInfo>() {
+		});
 		List<FairyTale> fairyTales;
 		if (sessionInfo.getMaxTurn() == request.order()) {
 			//마지막 턴의 경우 list 리턴 + true false return
@@ -128,10 +130,12 @@ public class WritingGameServiceImpl implements WritingGameService {
 		String redisAliveKey = makeRedisMemberAliveKey(sessionId, exitLoginId);
 		serializeToRedis(redisAliveKey, false);
 		String redisRoomKey = makeRedisRoomKey(sessionId);
-		SessionInfo sessionInfo = deserializeFromRedis(redisRoomKey, SessionInfo.class);
+		SessionInfo sessionInfo = deserializeFromRedis(redisRoomKey, new TypeReference<SessionInfo>() {
+		});
 		if (order != sessionInfo.getMaxTurn()) {
 			String redisSubmitKey = makeRedisMemberSubmitKey(sessionId, exitLoginId);
-			Boolean isSubmit = deserializeFromRedis(redisSubmitKey, Boolean.class);
+			Boolean isSubmit = deserializeFromRedis(redisSubmitKey, new TypeReference<Boolean>() {
+			});
 			if (!isSubmit) {
 				roomService.fairytaleInComplete(sessionId, exitLoginId);
 			}
@@ -283,11 +287,9 @@ public class WritingGameServiceImpl implements WritingGameService {
 		}
 	}
 
-	private <T> T deserializeFromRedis(String key, Class<T> valueType) {
+	private <T> T deserializeFromRedis(String key, TypeReference<T> valueTypeRef) {
 		String json = (String)redisTemplate.opsForValue().get(key);
 		try {
-			TypeReference<T> valueTypeRef = new TypeReference<T>() {
-			};
 			return objectMapper.readValue(json, valueTypeRef);
 		} catch (JsonProcessingException e) {
 			log.error("Failed to deserialize object from Redis", e);
@@ -304,12 +306,14 @@ public class WritingGameServiceImpl implements WritingGameService {
 		for (String participant : sessionInfo.getParticipants()) {
 			redisAliveKey = makeRedisMemberAliveKey(sessionId, participant);
 			redisSubmitKey = makeRedisMemberSubmitKey(sessionId, participant);
-			isAlive = deserializeFromRedis(redisAliveKey, Boolean.class);
+			isAlive = deserializeFromRedis(redisAliveKey, new TypeReference<Boolean>() {
+			});
 			if (!isAlive) {
 				count++;
 				continue;
 			}
-			isSubmit = deserializeFromRedis(redisSubmitKey, Boolean.class);
+			isSubmit = deserializeFromRedis(redisSubmitKey, new TypeReference<Boolean>() {
+			});
 			if (isSubmit) {
 				count++;
 			}
