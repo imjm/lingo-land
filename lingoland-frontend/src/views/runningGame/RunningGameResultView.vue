@@ -1,33 +1,26 @@
 <script setup>
-import { ref, onMounted, watch, computed } from "vue";
 import { storeToRefs } from "pinia";
-import { OpenVidu } from "openvidu-browser";
-// 초기 세팅
-import { initDraw } from "@/stores/runningGame/resultinit";
-import { useGroupMemberStore } from "@/stores/groupMember";
-import RankListItem from "./RankListItem.vue";
-// import { sortedRanks } from "./RunningGameView.vue";
-import { useResultStore } from "@/stores/runningGame/resultStore";
-import { wrongProblem, coinTotalScore } from "@/stores/runningGame/question";
-import { useGameStore } from "@/stores/runningGame/gameStore";
-import router from "@/router";
-import { useRoute } from "vue-router";
-const route = useRoute();
-// import {  } from "@/stores/runningGame/init";
+import { onMounted } from "vue";
 
-const groupMemberStore = useGroupMemberStore();
+// 초기 세팅
+import router from "@/router";
+import { useGameStore } from "@/stores/runningGame/gameStore";
+import { coinTotalScore } from "@/stores/runningGame/question";
+import { initDraw } from "@/stores/runningGame/resultinit";
+import { useRoute } from "vue-router";
+import RankListItem from "./RankListItem.vue";
+
+const route = useRoute();
+
 // 카운트다운 & 타이머
 // const result = sortedRanks
 // 문제
-const resultStore = useResultStore();
-const { sortedRanks } = storeToRefs(resultStore);
-const OV = new OpenVidu();
-const session = OV.initSession();
-const gameStore = useGameStore(); // 삭제 예정
+
+const gameStore = useGameStore();
+const { sortedRanks, wrongProblem } = storeToRefs(gameStore);
 
 onMounted(() => {
     initDraw();
-    // 삭제 예정
 
     const result = {
         problemList: wrongProblem.value,
