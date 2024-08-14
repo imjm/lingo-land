@@ -3,12 +3,11 @@ import { storeToRefs } from "pinia";
 import { onMounted } from "vue";
 
 // 초기 세팅
-import router from "@/router";
 import { useGameStore } from "@/stores/runningGame/gameStore";
-import { coinTotalScore } from "@/stores/runningGame/question";
 import { initDraw } from "@/stores/runningGame/resultinit";
 import { useRoute } from "vue-router";
 import RankListItem from "./RankListItem.vue";
+import router from "@/router";
 
 const route = useRoute();
 
@@ -17,7 +16,7 @@ const route = useRoute();
 // 문제
 
 const gameStore = useGameStore();
-const { sortedRanks, wrongProblem } = storeToRefs(gameStore);
+const { sortedRanks, wrongProblem, coinTotalScore } = storeToRefs(gameStore);
 
 onMounted(() => {
     initDraw();
@@ -28,7 +27,9 @@ onMounted(() => {
     };
 
     gameStore.saveResult(result);
+
     setTimeout(() => {
+        console.log('게임룸으로 푸쉬')
         router.push({
             name: "gameRoom",
             params: { roomId: route.params.roomId },

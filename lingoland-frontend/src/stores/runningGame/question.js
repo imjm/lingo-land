@@ -177,4 +177,5 @@ export {
     resetQuestionOnExit,
     updateQuestion,
     wrongProblem,
+    index,
 };

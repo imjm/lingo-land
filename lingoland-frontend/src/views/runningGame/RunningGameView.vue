@@ -1,5 +1,4 @@
 <script setup>
-
 import { useGameStore } from "@/stores/runningGame/gameStore";
 import { storeToRefs } from "pinia";
 import { onMounted } from "vue";
@@ -19,6 +18,8 @@ import {
     options,
     questionCountDown,
     updateQuestion,
+    index,
+    questions,
 } from "@/stores/runningGame/question";
 
 const gameStore = useGameStore();
@@ -28,9 +29,10 @@ onMounted(() => {
     initDraw();
     loadQuestions(); // 문제 로드
     gameStore.setGameRanks(); // 게임 참가로 랭킹 초기화
-
-    // 문제를 9초마다 부름
-    setInterval(() => {
+    const interval = setInterval(() => {
+        if (index === questions.value.length) {
+            clearInterval(interval);
+        }
         updateQuestion();
         console.log("문제 부름");
         console.log(currentQuestion.value);
@@ -53,7 +55,7 @@ onMounted(() => {
                         <v-progress-linear
                             rounded
                             height="25"
-                            color="primary"
+                            color="rgb(92, 130,47)"
                             font-color="white"
                             :model-value="zDivided"
                         >
@@ -95,22 +97,27 @@ onMounted(() => {
         </div>
 
         <div id="ranks-container" class="gamja-flower-regular">
-            <h2 class="pl-2">순위</h2>
+            <h2 class="pl-2" style="color: white">순위</h2>
             <ul class="no_dot">
                 <li
                     v-for="(rank, index) in sortedRanks"
                     :key="rank.connectionId"
-                    :class="index % 2 === 0 ? 'white-background' : 'gray-background'"
+                    :class="
+                        index % 2 === 0 ? 'white-background' : 'gray-background'
+                    "
                 >
-                    {{ index + 1 }}등 {{ rank.nickname }} {{ rank.userId }}:
-                    {{ Math.floor(rank.score * 100) }} 점
-                    
+                    <span style="font-size: 30px"> {{ index + 1 }}등 </span>
+                    <strong>{{ rank.nickname }}</strong>
+
+                    <div style="font-size: 18px">
+                        {{ rank.userId }} :
+                        {{ Math.floor(rank.score * 100) }} 점
+                    </div>
                 </li>
             </ul>
         </div>
     </div>
 </template>
-
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap");
@@ -121,22 +128,21 @@ onMounted(() => {
     font-size: large;
 }
 
-
 .white-background {
     background-color: white;
     /* margin: 5px; */
-    padding-left : 10px;
-    margin-bottom : 10px;
+    padding-left: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
 }
 
 .gray-background {
-    background-color: rgb(92, 130,47,0.5);
+    background-color: rgb(92, 130, 47, 0.5);
     border-radius: 5px;
     /* margin: 5px; */
-    padding-left:10px;
-    margin-bottom : 10px;
-
-
+    padding-left: 10px;
+    margin-bottom: 10px;
+    color: white;
 }
 
 /* Add any additional styles here */
@@ -145,15 +151,17 @@ onMounted(() => {
     top: 15%;
     bottom: auto;
     right: auto;
-    left: 25px;
+    left: 10px;
     width: 200px;
-    background-color: rgb(255,255,255,0.5);
+    /* background-color: rgb(255,255,255,0.5); */
+    background-color: rgb(67, 54, 49, 0.8);
+
     color: black;
     padding: 10px;
     border-radius: 5px;
 }
 .highlighted button {
-    background-color: #FFE280;
+    background-color: #ffe280;
     color: black;
 }
 .no_dot {
@@ -177,7 +185,8 @@ onMounted(() => {
     left: 10px;
     color: white;
     font-size: 20px;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgb(67, 54, 49, 0.8);
+
     padding: 5px;
     border-radius: 5px;
 }
@@ -197,7 +206,7 @@ onMounted(() => {
     transform: translate(-50%, -50%); /* 중앙 정렬 */
     width: 900px; /* 원하는 너비 */
     padding: 20px;
-    background-color:  rgb(67, 54, 49,0.5);
+    background-color: rgb(67, 54, 49, 0.5);
 
     border-radius: 10px; /* 모서리 둥글게 */
     text-align: center; /*텍스트 중앙 정렬 */
@@ -225,7 +234,7 @@ button {
     font-size: 16px;
     color: white;
     /* background-color: #5c822f; */
-    background-color:  rgb(67, 54, 49);
+    background-color: rgb(67, 54, 49);
     border: none;
     border-radius: 5px;
     cursor: pointer;
