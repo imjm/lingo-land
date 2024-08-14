@@ -4,6 +4,7 @@ import WritingResult from "./WritingResult.vue";
 import freeImage from "@/assets/free.png";
 import router from "@/router";
 import { useRoute } from "vue-router";
+import sample from '/sampleBook.jpg'
 const route = useRoute();
 
 const drawer = ref(true);
@@ -12,7 +13,7 @@ const rail = ref(true);
 const tales = ref([
     {
         title: "집에 가고 싶어요",
-        cover: "/balloon.png",
+        cover:  sample,
         content: [
             {
                 illustration: freeImage,
@@ -30,7 +31,7 @@ const tales = ref([
     },
     {
         title: "집에 가고 싶어요2",
-        cover: "/balloon.png",
+        cover:  sample,
         content: [
             {
                 illustration: freeImage,
@@ -48,7 +49,7 @@ const tales = ref([
     },
     {
         title: "집에 가고 싶어요3",
-        cover: "/balloon.png",
+        cover:  sample,
         content: [
             {
                 illustration: freeImage,
@@ -66,7 +67,7 @@ const tales = ref([
     },
     {
         title: "집에 가고 싶어요4",
-        cover: "/balloon.png",
+        cover: sample,
         content: [
             {
                 illustration: freeImage,
@@ -84,7 +85,7 @@ const tales = ref([
     },
     {
         title: "집에 가고 싶어요5",
-        cover: "/balloon.png",
+        cover: sample,
         content: [
             {
                 illustration: freeImage,
@@ -102,7 +103,7 @@ const tales = ref([
     },
     {
         title: "집에 가고 싶어요6",
-        cover: "/balloon.png",
+        cover:  sample,
         content: [
             {
                 illustration: freeImage,
@@ -147,8 +148,8 @@ const selectedTaleDetail = computed(() => {
                 
                 class="d-flex justify-center align-center row mt-2"
             >
-                <div class="cover" @click="selectedIndex = index">
-                    <v-img :src="tale.cover" height="100%"> </v-img>
+                <div class="cover d-flex justify-center align-center" @click="selectedIndex = index">
+                    <v-img :src="tale.cover" height="90%"> </v-img>
                 </div>
                 <v-list-item-content>
                     <v-list-item-title :style="{ color: 'white' }">
