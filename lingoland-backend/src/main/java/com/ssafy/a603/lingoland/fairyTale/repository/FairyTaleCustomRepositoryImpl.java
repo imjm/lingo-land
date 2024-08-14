@@ -27,9 +27,14 @@ public class FairyTaleCustomRepositoryImpl implements FairyTaleCustomRepository 
 			.from(fairyTale)
 			.join(fairyTaleMember).on(fairyTaleMember.fairyTale.id.eq(fairyTale.id))
 			.where(
+				isEnd(),
 				isVisible(),
 				targetGroup(memberId)
 			).fetch();
+	}
+
+	private BooleanExpression isEnd() {
+		return fairyTale.isComplete.ne(0);
 	}
 
 	private BooleanExpression isVisible() {

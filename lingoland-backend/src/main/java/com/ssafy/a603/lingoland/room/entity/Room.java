@@ -1,8 +1,10 @@
 package com.ssafy.a603.lingoland.room.entity;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.hibernate.annotations.SQLRestriction;
 
 import com.ssafy.a603.lingoland.fairyTale.entity.FairyTale;
 import com.ssafy.a603.lingoland.global.entity.BaseTimeEntity;
@@ -20,12 +22,13 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@SQLRestriction("is_deleted is false")
 public class Room extends BaseTimeEntity {
 	@EmbeddedId
 	private RoomId id;
 
 	@OneToMany
-	private List<Member> contributer;
+	private Set<Member> contributors;
 
 	@OneToOne
 	private FairyTale fairyTale;
@@ -37,7 +40,7 @@ public class Room extends BaseTimeEntity {
 	@Builder
 	public Room(String sessionId, Member starter) {
 		this.id = new RoomId(sessionId, starter.getId());
-		this.contributer = new ArrayList<>();
+		this.contributors = new HashSet<>();
 		this.isDeleted = false;
 	}
 
@@ -46,11 +49,11 @@ public class Room extends BaseTimeEntity {
 	}
 
 	public void addContributer(Member member) {
-		contributer.add(member);
+		contributors.add(member);
 	}
 
 	public void removeContributer(Member member) {
-		contributer.remove(member);
+		contributors.remove(member);
 	}
 
 	public void delete() {

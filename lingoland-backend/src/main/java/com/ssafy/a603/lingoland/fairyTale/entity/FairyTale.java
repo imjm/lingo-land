@@ -51,7 +51,7 @@ public class FairyTale extends BaseEntity {
 	@JsonIgnore
 	private List<FairyTaleMember> fairyTaleMembers;
 
-	private Boolean isComplete;
+	private Integer isComplete;
 
 	@Builder
 	protected FairyTale(String title, String cover, String summary, List<Story> content) {
@@ -60,15 +60,15 @@ public class FairyTale extends BaseEntity {
 		this.summary = summary;
 		this.content = content;
 		this.fairyTaleMembers = new ArrayList<>();
-		this.isComplete = false;
+		this.isComplete = 0;
 	}
 
 	public void complete() {
-		this.isComplete = true;
+		this.isComplete = 2;
 	}
 
 	public void inComplete() {
-		this.isComplete = false;
+		this.isComplete = 1;
 	}
 
 	public void addContent(FairyTale.Story story) {
