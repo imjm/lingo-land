@@ -160,83 +160,38 @@ public class ProblemServiceImpl implements ProblemService{
 
                                     System.out.println("********" + "********");
 
-                                    List<ChoiceDTO> choiceDTOs = new ArrayList<>();
-//                                    JsonNode detailNode = problemNode.path("detail");
+                                    List<Problem.Detail.Choice> choices = new ArrayList<>();
                                     for(int j = 0; j < 3; j++) {
-                                        choiceDTOs.add(
-                                                ChoiceDTO.builder()
-                                                .num(j+1)
-                                                .text(problemNode.path(j+1).asText())
-                                                .build());
+                                        choices.add(
+                                                new Problem.Detail.Choice(
+                                                        j + 1,
+                                                        problemNode.path(String.valueOf(j + 1)).asText())
+                                        );
                                     }
-                                    DetailDTO detailDTO = DetailDTO.builder()
-                                            .problem(problemNode.path("problem").asText())
-                                            .answer(problemNode.path("answer").asInt())
-                                            .explanation(problemNode.path("explanation").asText())
-                                            .choiceDTOS(choiceDTOs)
-                                                    .build();
 
-                                    ProblemDTO problemDTO = ProblemDTO.builder()
-                                            .detailDTO(detailDTO)
-                                            .correctAnswerCount(0)
+                                    Problem.Detail detail = new Problem.Detail(
+                                            problemNode.path("problem").asText(),
+                                            choices,
+                                            problemNode.path("answer").asInt(),
+                                            problemNode.path("explanation").asText()
+                                    );
+
+                                    Problem problem = Problem.builder()
+                                            .correctAnswerCount(0L)
+                                            .incorrectAnswerCount(0L)
+                                            .deletedAt(null)
                                             .isDeleted(false)
                                             .inspector(null)
                                             .creator("chatGPT")
-                                            .deletedAt(null)
-                                            .incorrectAnswerCount(0)
+                                            .detail(detail)
                                             .build();
 
-                                    List<Detail.Choice> choices = new ArrayList<>();
-                                    for(int j = 0; j < 3; j++){
-                                        choices.add(Detail.Choice.builder()
-                                                .num(choiceDTOs.get(j).getNum())
-                                                .text(choiceDTOs.get(j).getText())
-                                                .build());
-                                    }
-
-                                    Detail detail = Detail.builder()
-                                            .answer(detailDTO.getAnswer())
-                                            .choices(choices)
-                                            .explanation(detailDTO.getExplanation())
-                                            .problem(detailDTO.getProblem())
-                                            .build();
-
-                                    System.out.println(problemDTO);
-                                    System.out.println(detailDTO);
-                                    for(int j = 0; j < 3; j++){
-                                        System.out.println(choiceDTOs.get(j));
-                                    }
-
-                                    System.out.println("*******cnt********");
-                                    System.out.println(problemRepository.count().subscribe(count -> System.out.println("Total count: " + count),
-                                            error -> System.err.println("Error: " + error),
-                                            () -> System.out.println("Completed")));
-
-                                    String detailString = objectMapper.writeValueAsString(detail);
-                                    System.out.println("problemNode &&&&&&& " + problemNode);
-                                    problemRepository.save(Problem.builder()
-                                            .correctAnswerCount(problemDTO.getCorrectAnswerCount())
-                                            .isDeleted(problemDTO.isDeleted())
-                                            .inspector(problemDTO.getInspector())
-                                            .creator(problemDTO.getCreator())
-                                            .deletedAt(problemDTO.getDeletedAt())
-                                            .incorrectAnswerCount(problemDTO.getIncorrectAnswerCount())
-                                            .detail("{\"json\":\"j\"}::jsonb")
-//                                                    .detail(null)
-                                            .build())
-                                            .subscribe(savedProblem -> {
-                                                System.out.println("Problem saved: " + savedProblem);
-                                                // 저장 완료 후 count 확인
-                                                problemRepository.count().subscribe(count -> System.out.println("Total count: " + count));
-                                            }, error -> {
-                                                System.err.println("Error saving problem: " + error);
-                                            });
+                                    problemRepository.save(problem);
+                                    log.info("문제 저장: {}", problem);
                                 }
                             } catch (JsonProcessingException e) {
                                 throw new RuntimeException(e);
                             }
-
-
 
                             log.info("store success");
                         },

@@ -1,26 +1,36 @@
 package com.ssafy.a603.lingolandbatch.problem;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import com.ssafy.a603.lingolandbatch.problem.BaseTimeEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Table
+@Entity
+@Getter
+@EqualsAndHashCode(of = "id")
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Problem {
+public class Problem extends BaseTimeEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PROBLEM_SEQ_GENERATOR")
+    @SequenceGenerator(name = "PROBLEM_SEQ_GENERATOR", sequenceName = "fairy_tale_id_seq", allocationSize = 1)
     private Integer id;
 
     private long correctAnswerCount;
@@ -35,34 +45,33 @@ public class Problem {
 
     private String creator;
 
-    private String detail;
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private Detail detail;
 
-//    @Builder
-//    public static class Detail {
-//        private String problem;
-//        private List<Choice> choices;
-//        private int answer;
-//        private String explanation;
-//
-//        @Getter
-//        @NoArgsConstructor(access = AccessLevel.PROTECTED)
-//        @AllArgsConstructor
-//        @Builder
-//        public static class Choice {
-//            private int num;
-//            private String text;
-//        }
-//    }
+    public void updateCorrectAnswerCount() {
+        this.correctAnswerCount++;
+    }
 
-//    public Problem fromDTO(ProblemDTO problemDTO){
-//        return Problem.builder()
-//                .correctAnswerCount(0)
-//                .incorrectAnswerCount(0)
-//                .isDeleted(false)
-//                .inspector(null)
-//                .creator("ChatGPT")
-//
-//                .build();
-//    }
+    public void updateInCorrectAnswerCount() {
+        this.incorrectAnswerCount++;
+    }
 
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @AllArgsConstructor
+    public static class Detail {
+        private String problem;
+        private List<Choice> choices;
+        private int answer;
+        private String explanation;
+
+        @Getter
+        @NoArgsConstructor(access = AccessLevel.PROTECTED)
+        @AllArgsConstructor
+        public static class Choice {
+            private int num;
+            private String text;
+        }
+    }
 }
