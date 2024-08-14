@@ -2,6 +2,7 @@ package com.ssafy.a603.lingoland.writingGame.service;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -57,6 +59,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 	private String ollamaUrl;
 
 	@Override
+	@Transactional
 	public void start(String sessionId, WritingGameStartRequestDTO request) {
 		log.info("Starting game for session: {}", sessionId);
 		String redisKey = makeRedisRoomKey(sessionId);
@@ -65,6 +68,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 	}
 
 	@Override
+	@Transactional
 	public void setTitle(String sessionId, CustomUserDetails customUserDetails, String title) {
 		// 룸에 누구 있는지 정보 세팅
 		String redisRoomKey = makeRedisRoomKey(sessionId);
@@ -84,6 +88,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 	}
 
 	@Override
+	@Transactional
 	public SubmitStoryResponseDTO submitStory(String sessionId, DrawingRequestDTO request,
 		CustomUserDetails customUserDetails) {
 		log.info("Submitting story for session: {}", sessionId);
@@ -126,6 +131,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 	}
 
 	@Override
+	@Transactional
 	public Boolean exit(String sessionId, String exitLoginId, Integer order) {
 		String redisAliveKey = makeRedisMemberAliveKey(sessionId, exitLoginId);
 		serializeToRedis(redisAliveKey, false);
@@ -145,7 +151,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 
 	//번역 -> 그림 -> 저장
 	@Async("asyncExecutor")
-	protected void processSingleStory(String sessionId, DrawingRequestDTO request,
+	protected CompletableFuture<Void> processSingleStory(String sessionId, DrawingRequestDTO request,
 		CustomUserDetails customUserDetails) {
 		log.info("Processing single story: {} for session: {}", request.key(), sessionId);
 		String story = request.story();
@@ -156,11 +162,14 @@ public class WritingGameServiceImpl implements WritingGameService {
 		else
 			savedImgUrl = imgUtils.saveBase64Image(imgUrl, FAIRY_TALE_IMAGE_PATH);
 		log.debug("Story image saved at: {}", savedImgUrl);
-		saveStory(request.key(), request, customUserDetails, savedImgUrl);
+		saveStory(sessionId, request, customUserDetails, savedImgUrl);
+
+		return CompletableFuture.completedFuture(null);
 	}
 
 	@Async("asyncExecutor")
-	protected void endProcess(String sessionId, DrawingRequestDTO request, CustomUserDetails customUserDetails) {
+	protected CompletableFuture<Void> endProcess(String sessionId, DrawingRequestDTO request,
+		CustomUserDetails customUserDetails) {
 		FairyTale curFairyTale = roomService.findFairyTale(sessionId, customUserDetails.getUsername());
 		String stories = "";
 		for (FairyTale.Story story : curFairyTale.getContent()) {
@@ -188,6 +197,8 @@ public class WritingGameServiceImpl implements WritingGameService {
 		else
 			savedImgUrl = imgUtils.saveBase64Image(imgUrl, FAIRY_TALE_IMAGE_PATH);
 		roomService.fairytaleComplete(sessionId, request.key(), savedImgUrl, imagePrompt.summary());
+
+		return CompletableFuture.completedFuture(null);
 	}
 
 	private String handleStoryTranslation(String story) {
