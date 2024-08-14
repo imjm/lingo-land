@@ -8,7 +8,6 @@ import java.util.concurrent.ExecutorService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
@@ -95,7 +94,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 		String redisSubmitKey = makeRedisMemberSubmitKey(sessionId, customUserDetails.getUsername());
 		serializeToRedis(redisSubmitKey, true);
 
-		processSingleStory(sessionId, request, customUserDetails);
+		CompletableFuture.runAsync(() -> processSingleStory(sessionId, request, customUserDetails), executor);
 
 		String redisRoomKey = makeRedisRoomKey(sessionId);
 		SessionInfo sessionInfo = deserializeFromRedis(redisRoomKey, new TypeReference<SessionInfo>() {
@@ -104,7 +103,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 		if (sessionInfo.getMaxTurn() == request.order()) {
 			//마지막 턴의 경우 list 리턴 + true false return
 			//일단 표지 그려라 요청
-			endProcess(sessionId, request, customUserDetails);
+			CompletableFuture.runAsync(() -> endProcess(sessionId, request, customUserDetails), executor);
 			// end -> list를 가져온다.
 			fairyTales = roomService.findFairyTalesInSession(sessionId);
 			// 기존의 게임 룸에 대한 redis, room entity 제거
@@ -150,8 +149,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 	}
 
 	//번역 -> 그림 -> 저장
-	@Async("asyncExecutor")
-	protected CompletableFuture<Void> processSingleStory(String sessionId, DrawingRequestDTO request,
+	protected void processSingleStory(String sessionId, DrawingRequestDTO request,
 		CustomUserDetails customUserDetails) {
 		log.info("Processing single story: {} for session: {}", request.key(), sessionId);
 		String story = request.story();
@@ -163,12 +161,9 @@ public class WritingGameServiceImpl implements WritingGameService {
 			savedImgUrl = imgUtils.saveBase64Image(imgUrl, FAIRY_TALE_IMAGE_PATH);
 		log.debug("Story image saved at: {}", savedImgUrl);
 		saveStory(sessionId, request, customUserDetails, savedImgUrl);
-
-		return CompletableFuture.completedFuture(null);
 	}
 
-	@Async("asyncExecutor")
-	protected CompletableFuture<Void> endProcess(String sessionId, DrawingRequestDTO request,
+	private void endProcess(String sessionId, DrawingRequestDTO request,
 		CustomUserDetails customUserDetails) {
 		FairyTale curFairyTale = roomService.findFairyTale(sessionId, customUserDetails.getUsername());
 		String stories = "";
@@ -197,8 +192,6 @@ public class WritingGameServiceImpl implements WritingGameService {
 		else
 			savedImgUrl = imgUtils.saveBase64Image(imgUrl, FAIRY_TALE_IMAGE_PATH);
 		roomService.fairytaleComplete(sessionId, request.key(), savedImgUrl, imagePrompt.summary());
-
-		return CompletableFuture.completedFuture(null);
 	}
 
 	private String handleStoryTranslation(String story) {
