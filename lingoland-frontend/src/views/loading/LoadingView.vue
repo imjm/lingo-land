@@ -5,7 +5,7 @@
 
     <TaleDetail class="gowun-batang-regular" />
   </div>
-  <v-carousel :show-arrows="false">
+  <!-- <v-carousel :show-arrows="false">
     <v-carousel-item
       id="full"
       v-for="(item, i) in items"
@@ -13,7 +13,7 @@
       :src="item.src"
       cover
     ></v-carousel-item>
-  </v-carousel>
+  </v-carousel> -->
 </template>
 
 <script setup>
