@@ -4,6 +4,7 @@ import MyPage from "@/components/user/MyPage.vue";
 import GameRoomView from "@/views/GameRoomView.vue";
 import GroupListView from "@/views/group/GroupListView.vue";
 import GroupView from "@/views/group/GroupView.vue";
+import LoadingView from "@/views/loading/LoadingView.vue";
 import LoginView from "@/views/LoginView.vue";
 import MainPageView from "@/views/MainPageView.vue";
 import MyPageView from "@/views/MyPageView.vue";
@@ -143,6 +144,11 @@ const router = createRouter({
                 },
             ],
         },
+        {
+            path:"/loading",
+            name:"loading",
+            component : LoadingView,
+        }
     ],
 });
 
