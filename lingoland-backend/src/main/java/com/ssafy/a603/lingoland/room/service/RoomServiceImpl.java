@@ -57,8 +57,6 @@ public class RoomServiceImpl implements RoomService {
 		roomRepository.save(room);
 	}
 
-	//session id, 키값, 현재 작성 멤버, 만들어진
-	// 동화 한 페이지
 	@Override
 	@Transactional
 	public void fairytaleStoryAdd(String sessionId, String starterLoginId, CustomUserDetails contributorDetails,
