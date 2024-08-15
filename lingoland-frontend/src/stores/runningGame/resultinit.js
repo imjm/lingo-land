@@ -21,31 +21,10 @@ const { reparticipants } = storeToRefs(openviduStore);
 const gameStore = useGameStore();
 const { sortedRanks } = storeToRefs(gameStore);
 
-let resultlen;
-const resultlst = ref([]);
-
-if (sortedRanks.value.length < 3) {
-    resultlen = sortedRanks.value.length;
-} else {
-    resultlen = 3;
-}
-
-for (let i = 0; i < resultlen; i++) {
-    for (let j = 0; j < reparticipants.value.length; j++) {
-        if (
-            sortedRanks.value[i].connectionId ==
-            reparticipants.value[j].connectionId
-        ) {
-            resultlst.value.push({
-                winnerInfo: modelConfiguration.models[j],
-            });
-            break;
-        }
-    }
-}
-
 let renderer, scene, mixer, camera, controls, podiumModel;
 let moveSide = ref(0);
+const resultlst = ref([]);
+let resultlen;
 
 // 카메라 설정
 const cameraSettings = {
@@ -54,7 +33,33 @@ const cameraSettings = {
     angle: Math.PI / 6 + Math.PI / 6 + Math.PI / 6 + Math.PI / 6, // 카메라의 각도 (라디안) // 초기 각도
 };
 
+function setWinner() {
+    resultlst.value = [];
+
+    if (sortedRanks.value.length < 3) {
+        resultlen = sortedRanks.value.length;
+    } else {
+        resultlen = 3;
+    }
+
+    for (let i = 0; i < resultlen; i++) {
+        for (let j = 0; j < reparticipants.value.length; j++) {
+            if (
+                sortedRanks.value[i].connectionId ==
+                reparticipants.value[j].connectionId
+            ) {
+                resultlst.value.push({
+                    winnerInfo: modelConfiguration.models[j],
+                });
+                break;
+            }
+        }
+    }
+}
+
 function initDraw() {
+    setWinner();
+
     const canvas = document.querySelector("#c");
 
     scene = initScene();
@@ -279,5 +284,6 @@ export {
     renderer,
     scene,
     startCameraRotationAnimation,
-    updateCameraPosition,
+    updateCameraPosition
 };
+

@@ -4,7 +4,7 @@ import { storeToRefs } from "pinia";
 import { onMounted } from "vue";
 
 // 초기 세팅
-import { initDraw, startfunc } from "@/stores/runningGame/init";
+import { initDraw } from "@/stores/runningGame/init";
 import { selectedAnswerIndex } from "@/stores/runningGame/model";
 
 // 카운트다운 & 타이머
@@ -13,22 +13,25 @@ import { countdown } from "@/stores/runningGame/time";
 // 문제
 import {
     currentQuestion,
+    index,
     isCorrect,
     loadQuestions,
     options,
     questionCountDown,
-    updateQuestion,
-    index,
     questions,
+    updateQuestion,
 } from "@/stores/runningGame/question";
 
 const gameStore = useGameStore();
-const { sortedRanks, zDivided } = storeToRefs(gameStore);
+const { sortedRanks, zDivided, startfunc } = storeToRefs(gameStore);
 
 onMounted(() => {
+    console.log("***********************달리기 게임이 계속 불리나?");
+
+    gameStore.resetRunningGame();
+
     initDraw();
     loadQuestions(); // 문제 로드
-    gameStore.setGameRanks(); // 게임 참가로 랭킹 초기화
     const interval = setInterval(() => {
         if (index === questions.value.length) {
             clearInterval(interval);
@@ -69,7 +72,6 @@ onMounted(() => {
                 </v-col>
             </v-row>
         </div>
-        <div id="coordinates" class="coordinates"></div>
 
         <div v-if="currentQuestion" id="quiz-container">
             <h2>{{ currentQuestion.problem }}</h2>
@@ -170,7 +172,7 @@ onMounted(() => {
 #game-container {
     position: relative;
     width: 100%;
-    height: 100vh;
+    height: 100%;
 }
 
 #c {

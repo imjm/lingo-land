@@ -1,7 +1,6 @@
 import { storeToRefs } from "pinia";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { ref } from "vue";
 import { useGameStore } from "./gameStore";
 import { addLights } from "./light";
 import { loadMapSection } from "./map";
@@ -18,10 +17,19 @@ import { countdown, startCountdown, updateTimer } from "./time";
 
 import { useThreeJsStore } from "./threeStore";
 
-let renderer, scene, mixer, camera, controls, chickModel, coinSound, shoeSound, soundbg;
+let renderer,
+    scene,
+    mixer,
+    camera,
+    controls,
+    chickModel,
+    coinSound,
+    shoeSound,
+    soundbg;
 
 const gameStore = useGameStore();
-const { isGameEnded, coinScore, coinTotalScore } = storeToRefs(gameStore);
+const { isGameEnded, coinScore, coinTotalScore, startfunc } =
+    storeToRefs(gameStore);
 
 const threeJsStore = useThreeJsStore();
 const { loader, audioLoader, listener } = threeJsStore;
@@ -35,10 +43,8 @@ const cameraSettings = {
 
 let keysPressed = setupKeyListeners();
 
-const startfunc = ref(false);
 function initDraw() {
     const canvas = document.querySelector("#c");
-    const coordinatesElement = document.querySelector("#coordinates");
 
     scene = initScene();
     renderer = initRenderer(canvas);
@@ -82,7 +88,7 @@ function initDraw() {
 
         if (!isGameEnded.value) {
             if (isCameraAnimationDone) {
-                if (startfunc.value == false) {
+                if (!startfunc.value) {
                     startCountdown();
                     startfunc.value = true;
                 }
@@ -96,10 +102,10 @@ function initDraw() {
                     }
                 }
 
-                handleChickMovement(keysPressed, coordinatesElement); // 모델 움직임
+                handleChickMovement(); // 모델 움직임
                 checkForCoinCollisions(); // 코인 충돌 감지 및 처리
                 checkForShoeCollisions(); // 신발 충돌 감지 및 처리
-                handleShoeMovement(keysPressed, coordinatesElement); // 신발 먹으면 빨라지기
+                handleShoeMovement(); // 신발 먹으면 빨라지기
                 updateCameraPosition(); // 카메라가 모델을 쫒아오도록 처리
             } else {
                 updateCameraDuringAnimation(); // 시작할 때 모델 회전 카메라 무빙
@@ -446,8 +452,7 @@ export {
     renderer,
     scene,
     setupKeyListeners,
-    startfunc,
-    updateCameraPosition,
-    soundbg
+    soundbg,
+    updateCameraPosition
 };
 
