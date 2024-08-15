@@ -1,4 +1,4 @@
 export const writingGameConfiguration = {
-    gameTime: 60, // 15초
-    alertTime: 1000, // 1초
+    gameTime: 120, // 1 = 1초
+    alertTime: 1000, // 1000 = 1초
 };
