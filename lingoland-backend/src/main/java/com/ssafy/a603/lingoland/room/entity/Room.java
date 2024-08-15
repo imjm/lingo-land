@@ -10,6 +10,7 @@ import com.ssafy.a603.lingoland.fairyTale.entity.FairyTale;
 import com.ssafy.a603.lingoland.global.entity.BaseTimeEntity;
 import com.ssafy.a603.lingoland.member.entity.Member;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -30,7 +31,7 @@ public class Room extends BaseTimeEntity {
 	@OneToMany
 	private Set<Member> contributors;
 
-	@OneToOne
+	@OneToOne(cascade = CascadeType.MERGE)
 	private FairyTale fairyTale;
 
 	private Boolean isDeleted;
@@ -59,5 +60,6 @@ public class Room extends BaseTimeEntity {
 	public void delete() {
 		this.isDeleted = true;
 		this.deletedAt = LocalDateTime.now();
+		this.contributors.clear();
 	}
 }
