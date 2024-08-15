@@ -46,7 +46,6 @@ watch(turn, (newValue, oldValue) => {
         }).then(() => {
             // 턴이 바뀌었을 때 다음 사람이 작성할 이야기 세팅
             setStory();
-            console.log("****************current story", currentStorys);
             // 타이머 초기화
             totalTime.value = writingGameConfiguration.gameTime;
         });
@@ -59,7 +58,6 @@ const computedStorys = computed(() => {
             ? ["나만의 이야기를 시작하세요"]
             : currentStorys.value;
 
-    console.log("************storys: ", storys);
     return storys;
 });
 </script>

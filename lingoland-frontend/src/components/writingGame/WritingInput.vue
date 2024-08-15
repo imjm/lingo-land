@@ -4,15 +4,15 @@ import { useWritingGameStore } from "@/stores/writingGame";
 import { storeToRefs } from "pinia";
 import { ref } from "vue";
 import { useRoute } from "vue-router";
-import GenericInputArea from "../common/GenericInputArea.vue";
-import CountdownTimer from "./CountdownTimer.vue";
 import GenericInput from "../common/GenericInput.vue";
+import GenericInputArea from "../common/GenericInputArea.vue";
 import SubmitButton from "../common/SubmitButton.vue";
+import CountdownTimer from "./CountdownTimer.vue";
 
 const route = useRoute();
 
 const writingGameStore = useWritingGameStore();
-const { turn, pageCount, isTitle } = storeToRefs(writingGameStore);
+const { turn, pageCount, isTitle, tales } = storeToRefs(writingGameStore);
 
 const openviduStore = useOpenviduStore();
 const { session, findCurrentStoryId, findMyLoginId } = openviduStore;
@@ -20,48 +20,30 @@ const { session, findCurrentStoryId, findMyLoginId } = openviduStore;
 const textareaValue = ref("");
 const title = ref("");
 
-const handleTimesUp = async () => {
+const handleTimesUp = () => {
     let currentStoryId = findCurrentStoryId();
 
     // 시그널 보내기
-    if (turn.value + 1 < pageCount.value) {
-        console.log("*******아직 마지막 페이지는 아니다 turn", turn.value);
-        await session
-            .signal({
-                type: "writingGame",
-                data: JSON.stringify({
-                    storyId: currentStoryId,
-                    story: textareaValue.value,
-                }),
-            })
-            .then(() => {
-                console.log("******************writingGame submit");
-                submit();
-            })
-            .catch((error) => {
-                console.error("***************error sending signal", error);
-            });
-    } else {
-        console.log("*******마지막 페이지다 turn", turn.value);
-        // 마지막 페이지일 때 글쓰기 게임 종료
-        await submit();
-
-        await session
-            .signal({ type: "gameEnd", data: JSON.stringify({ type: 2 }) })
-            .then(() => {
-                console.log("***********************writingGame end");
-            })
-            .catch((error) => {
-                console.error("******************error sending signal", error);
-            });
-    }
-
-    // textarea 초기화하기
-    textareaValue.value = "";
+    session
+        .signal({
+            type: "writingGame",
+            data: JSON.stringify({
+                storyId: currentStoryId,
+                story: textareaValue.value,
+            }),
+        })
+        .then(() => {
+            console.log("******************writingGame submit");
+            submit();
+            // textarea 초기화하기
+            textareaValue.value = "";
+        })
+        .catch((error) => {
+            console.error("***************error sending signal", error);
+        });
 };
 
 function titleSubmit() {
-    console.log("************제목 제출");
     writingGameStore.submitTitle(route.params.roomId, {
         title: title.value,
     });
@@ -77,12 +59,12 @@ function submit() {
         order: Number(turn.value) + Number(1),
     };
 
-    console.log("*******drawDTO", drawingDTO);
-
     // API 요청 보내기
     writingGameStore
         .submitStory(route.params.roomId, drawingDTO)
         .then((response) => {
+            console.log("*******현재 턴", turn.value);
+            console.log("********스토리 제출 API 요청 응답", response);
             if (response) {
                 session.signal({ type: "turnOver" });
             }
@@ -90,6 +72,8 @@ function submit() {
         .catch((error) => {
             console.log("*******************error", error);
         });
+
+    return;
 }
 </script>
 

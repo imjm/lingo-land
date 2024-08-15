@@ -3,7 +3,6 @@ import { writingGameConfiguration } from "@/configuration/writingGameConf";
 import { defineStore } from "pinia";
 import swal from "sweetalert2";
 import { inject, ref } from "vue";
-import { useOpenviduStore } from "./openvidu";
 
 export const useWritingGameStore = defineStore("writingGameStore", () => {
     /**
@@ -17,9 +16,6 @@ export const useWritingGameStore = defineStore("writingGameStore", () => {
     const isTitle = ref(true);
     const totalTime = ref(writingGameConfiguration.gameTime);
     const tales = ref([]);
-
-    const openviduStore = useOpenviduStore();
-    const { session } = openviduStore;
 
     /**
      * actions
@@ -51,20 +47,12 @@ export const useWritingGameStore = defineStore("writingGameStore", () => {
             .then((response) => {
                 if (response.status === httpStatus.OK) {
                     console.log("***********글쓰기 게임 제출", response);
-
                     // 제출 요청에 대해 true가 오면 turn을 바꿈
                     // 턴 바꾸라는 시그널 요청 보내야함
                     if (response.data.goNext) {
-                        return true;
-                    }
-                    // 마지막 턴이면 fairyTales 에 데이터가 있다. , 아니면 빈 배열
-                    // 모든 사람들의 동화인데 마지막 턴 글은 없다.
-                    if (response.data.fairyTales) {
-                        console.log(
-                            "*************마지막 동화목록입니다.",
-                            response.data
-                        );
-                        tales.value = response.data.fairyTales;
+                        if (response.data.fairyTales) {
+                            tales.value = response.data.fairyTales;
+                        }
                         return true;
                     }
                 }
