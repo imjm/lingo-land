@@ -128,6 +128,10 @@ const rail = ref(true);
 //     },
 // ]);
 
+onMounted(() => {
+    console.log(tales.value);
+});
+
 const selectedIndex = ref(0);
 const selectedTaleDetail = computed(() => {
     console.log("클릭");
@@ -151,9 +155,7 @@ const selectedTaleDetail = computed(() => {
                 <div
                     class="cover d-flex justify-center align-center"
                     @click="selectedIndex = index"
-                >
-                    <v-img :src="tale.cover" height="90%"> </v-img>
-                </div>
+                ></div>
                 <v-list-item-content>
                     <v-list-item-title :style="{ color: 'white' }">
                         {{ tale.title }}
