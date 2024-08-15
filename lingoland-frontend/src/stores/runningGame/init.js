@@ -18,7 +18,7 @@ import { countdown, startCountdown, updateTimer } from "./time";
 
 import { useThreeJsStore } from "./threeStore";
 
-let renderer, scene, mixer, camera, controls, chickModel, coinSound, shoeSound;
+let renderer, scene, mixer, camera, controls, chickModel, coinSound, shoeSound, soundbg;
 
 const gameStore = useGameStore();
 const { isGameEnded, coinScore, coinTotalScore } = storeToRefs(gameStore);
@@ -338,13 +338,13 @@ function updateCameraPosition() {
 }
 
 function loadAndPlayBackgroundMusic() {
-    const sound = new THREE.Audio(listener);
+    soundbg = new THREE.Audio(listener);
 
     audioLoader.load("/children-running.mp3", function (buffer) {
-        sound.setBuffer(buffer);
-        sound.setLoop(true);
-        sound.setVolume(0.5);
-        sound.play();
+        soundbg.setBuffer(buffer);
+        soundbg.setLoop(true);
+        soundbg.setVolume(0.5);
+        soundbg.play();
     });
 }
 
@@ -378,7 +378,7 @@ function checkForCoinCollisions() {
             if (chickBB.intersectsBox(coinBB)) {
                 coinScore.value += 0.01;
                 coinTotalScore.value += 0.01;
-                scene.remove(child);
+                child.visible = false;
                 if (coinSound.isPlaying) {
                     coinSound.stop();
                 }
@@ -400,8 +400,8 @@ function checkForShoeCollisions() {
             const shoeBB = new THREE.Box3().setFromObject(child);
 
             if (chickBB.intersectsBox(shoeBB)) {
-                scene.remove(child);
-
+                // scene.remove(child);
+                child.visible = false;
                 if (speedTimeout) {
                     clearTimeout(speedTimeout);
                 }
@@ -447,6 +447,7 @@ export {
     scene,
     setupKeyListeners,
     startfunc,
-    updateCameraPosition
+    updateCameraPosition,
+    soundbg
 };
 

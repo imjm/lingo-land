@@ -73,10 +73,10 @@ session.on("signal:checkProblem", (event) => {
     console.log("점수점수 refcoinScore", coinScore.value);
 });
 
-const questionCountDown = ref(5);
+const questionCountDown = ref(8);
 
 function qcountdown() {
-    questionCountDown.value = 5;
+    questionCountDown.value = 8;
 
     const interval = setInterval(() => {
         if (questionCountDown.value > 0) {
@@ -134,7 +134,7 @@ function loadQuestion() {
 
     answerTimeout = setTimeout(() => {
         checkAnswerAndTime();
-    }, 5000);
+    }, 8000);
 }
 
 function checkAnswer(selected) {
@@ -177,5 +177,7 @@ export {
     resetQuestionOnExit,
     updateQuestion,
     wrongProblem,
+    coinScore,
     index,
+    reparticipants
 };

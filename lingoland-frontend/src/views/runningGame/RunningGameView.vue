@@ -36,7 +36,7 @@ onMounted(() => {
         updateQuestion();
         console.log("문제 부름");
         console.log(currentQuestion.value);
-    }, 9000);
+    }, 15000);
 });
 </script>
 
@@ -248,7 +248,7 @@ p {
     font-size: 18px;
     margin-top: 10px;
 }
-.coordinates {
+/* .coordinates {
     position: absolute;
     top: 10px;
     right: 10px;
@@ -257,7 +257,7 @@ p {
     background-color: rgba(0, 0, 0, 0.5);
     padding: 5px;
     border-radius: 5px;
-}
+} */
 #countdown {
     position: absolute;
     top: 50%;

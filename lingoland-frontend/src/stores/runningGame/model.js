@@ -4,30 +4,42 @@ import Swal from "sweetalert2";
 import * as THREE from "three";
 import { ref } from "vue";
 import { useGameStore } from "./gameStore";
-import { checkAnswer } from "./question";
+import { checkAnswer,reparticipants, coinScore, coinTotalScore } from "./question";
 import { countdown } from "./time";
 import { useThreeJsStore } from "./threeStore";
 import { modelConfiguration } from "@/configuration/modelConfiguration";
-
 const openviduStore = useOpenviduStore();
 const { session } = openviduStore;
 const { myCharacterIndex } = storeToRefs(openviduStore);
 
 const gameStore = useGameStore();
-const { isGameEnded } = storeToRefs(gameStore);
+const { isGameEnded, gameRanks } = storeToRefs(gameStore);
 
 const threeJsStore = useThreeJsStore();
 const { loader } = threeJsStore;
 
 const autoForwardSpeed = ref(0);
 const selectedAnswerIndex = ref(null);
-
+// const gamebutton = ref(false)
 let moveSide = ref(0);
 let chickModel;
 let mixer;
 
 const showRunningGameResult = () => {
     // 시그널 송신
+    console.log(session.connection.connectionId)
+    console.log("윤희의1시간",gameRanks)
+    let lenPar = reparticipants.value.length;
+    for (let i = 0; i < lenPar; i++) {
+        if (gameRanks.value[i].connectionId === session.connection.connectionId) {
+            // console.log("지금의 기록", problemResult);
+            // gameRanks.value[i].score += problemResult.score;
+            gameRanks.value[i].score += coinScore.value;
+            gameRanks.value[i].coin = coinTotalScore.value;
+            coinScore.value = 0;
+            break;
+        }
+    }
     session
         .signal({
             type: "gameEnd",
@@ -123,7 +135,7 @@ function handleChickMovement(keysPressed, coordinatesElement) {
 
         // z 좌표가 9000이 되면 경기 종료
         // z 좌표가 9000이 되면 경기 종료
-        if (z >= 7500) {
+        if (z >= 1500) {
             gameStore.endGame(); // 경기 종료 함수 호출
 
             Swal.fire({
