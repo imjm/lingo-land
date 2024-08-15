@@ -73,14 +73,19 @@ public class RoomServiceImpl implements RoomService {
 
 		Room room = findRoomByRoomId(sessionId, starterLoginId);
 		Member contributor = findMemberByCustomUserDetails(contributorDetails);
-		room.addContributer(contributor);
-		log.info("Added contributor with ID: {} to Room with ID: {}", contributor.getId(), room.getId());
 
 		FairyTale fairyTale = fairyTaleRepository.findById(room.getFairyTale().getId()).orElseThrow(() -> {
 			log.error("No such FairyTale : {}", room.getFairyTale().getId());
 			return new NotFoundException(ErrorCode.FAIRY_TALE_NOT_FOUND);
 		});
 		fairyTale.addContent(story);
+		fairyTaleMemberRepository.save(
+			FairyTaleMember.builder()
+				.fairyTale(fairyTale)
+				.member(contributor)
+				.build()
+		);
+		fairyTaleRepository.save(fairyTale);
 		log.info("Added story to FairyTale in Room with ID: {}", room.getId());
 	}
 
