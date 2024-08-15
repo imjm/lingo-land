@@ -8,6 +8,7 @@ import { initDraw } from "@/stores/runningGame/resultinit";
 import { useRoute } from "vue-router";
 import RankListItem from "./RankListItem.vue";
 import router from "@/router";
+import { soundbg } from "@/stores/runningGame/init";
 
 const route = useRoute();
 
@@ -30,6 +31,7 @@ onMounted(() => {
 
     setTimeout(() => {
         console.log('게임룸으로 푸쉬')
+        soundbg.stop()
         router.push({
             name: "gameRoom",
             params: { roomId: route.params.roomId },

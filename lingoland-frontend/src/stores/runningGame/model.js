@@ -123,7 +123,7 @@ function handleChickMovement(keysPressed, coordinatesElement) {
 
         // z 좌표가 9000이 되면 경기 종료
         // z 좌표가 9000이 되면 경기 종료
-        if (z >= 7500) {
+        if (z >= 500) {
             gameStore.endGame(); // 경기 종료 함수 호출
 
             Swal.fire({

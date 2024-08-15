@@ -89,7 +89,8 @@ function joinRoom() {
                 </v-col>
 
                 <v-col cols="7">
-                    <v-row>
+                    <v-row
+                    >
                         <v-col
                             cols="6"
                             class="d-flex flex-column justify-space-between"
@@ -104,6 +105,10 @@ function joinRoom() {
                                 />
                             </div>
 
+                            
+                        </v-col>
+
+                        <v-col cols="6">
                             <div
                                 class="room-code d-flex flex-column justify-center align-center"
                             >
@@ -125,10 +130,7 @@ function joinRoom() {
                                     data="입력"
                                 />
                             </div>
-                        </v-col>
-
-                        <v-col cols="6">
-                            <RankList />
+                        
                         </v-col>
                     </v-row>
                 </v-col>
