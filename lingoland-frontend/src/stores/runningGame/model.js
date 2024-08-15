@@ -1,13 +1,19 @@
+import { modelConfiguration } from "@/configuration/modelConfiguration";
 import { useOpenviduStore } from "@/stores/openvidu";
 import { storeToRefs } from "pinia";
 import Swal from "sweetalert2";
 import * as THREE from "three";
 import { ref } from "vue";
 import { useGameStore } from "./gameStore";
-import { checkAnswer,reparticipants, coinScore, coinTotalScore } from "./question";
-import { countdown } from "./time";
+import {
+    checkAnswer,
+    coinScore,
+    coinTotalScore,
+    reparticipants,
+} from "./question";
 import { useThreeJsStore } from "./threeStore";
-import { modelConfiguration } from "@/configuration/modelConfiguration";
+import { countdown } from "./time";
+
 const openviduStore = useOpenviduStore();
 const { session } = openviduStore;
 const { myCharacterIndex } = storeToRefs(openviduStore);
@@ -20,18 +26,19 @@ const { loader } = threeJsStore;
 
 const autoForwardSpeed = ref(0);
 const selectedAnswerIndex = ref(null);
-// const gamebutton = ref(false)
 let moveSide = ref(0);
 let chickModel;
 let mixer;
 
 const showRunningGameResult = () => {
     // 시그널 송신
-    console.log(session.connection.connectionId)
-    console.log("윤희의1시간",gameRanks)
+    console.log(session.connection.connectionId);
+    console.log("윤희의1시간", gameRanks);
     let lenPar = reparticipants.value.length;
     for (let i = 0; i < lenPar; i++) {
-        if (gameRanks.value[i].connectionId === session.connection.connectionId) {
+        if (
+            gameRanks.value[i].connectionId === session.connection.connectionId
+        ) {
             // console.log("지금의 기록", problemResult);
             // gameRanks.value[i].score += problemResult.score;
             gameRanks.value[i].score += coinScore.value;
@@ -81,7 +88,7 @@ function loadMyModel(scene, renderer, callback) {
             ); // 크기 1배
             scene.add(chickModel);
             mixer = new THREE.AnimationMixer(chickModel);
-            
+
             const action = mixer.clipAction(gltf.animations[0]);
             action.setLoop(THREE.LoopRepeat);
             action.play();
@@ -98,7 +105,7 @@ function loadMyModel(scene, renderer, callback) {
     );
 }
 
-function handleChickMovement(keysPressed, coordinatesElement) {
+function handleChickMovement() {
     if (chickModel && countdown.value === 0 && !isGameEnded.value) {
         // 자동으로 z축을 따라 앞으로 이동
         chickModel.position.z += autoForwardSpeed.value; // 현재 속도 값에 따른 이동
@@ -117,9 +124,6 @@ function handleChickMovement(keysPressed, coordinatesElement) {
         );
 
         const { x, y, z } = chickModel.position;
-        coordinatesElement.textContent = `X: ${x.toFixed(2)}, Y: ${y.toFixed(
-            2
-        )}, Z: ${z.toFixed(2)}`;
 
         // x축 위치에 따른 정답 체크 및 하이라이트 처리
         if (x.toFixed(2) == -4.0) {
@@ -143,13 +147,14 @@ function handleChickMovement(keysPressed, coordinatesElement) {
                 icon: "success",
                 timer: 5000,
             }).then(() => {
+                chickModel.position.z = 0; // 모델의 위치 초기화
                 showRunningGameResult();
             });
         }
     }
 }
 
-function handleShoeMovement(keysPressed, coordinatesElement) {
+function handleShoeMovement() {
     if (chickModel && countdown.value === 0 && !isGameEnded.value) {
         // 자동으로 z축을 따라 앞으로 이동
         chickModel.position.z += autoForwardSpeed.value;
@@ -168,9 +173,6 @@ function handleShoeMovement(keysPressed, coordinatesElement) {
         );
 
         const { x, y, z } = chickModel.position;
-        coordinatesElement.textContent = `X: ${x.toFixed(2)}, Y: ${y.toFixed(
-            2
-        )}, Z: ${z.toFixed(2)}`;
 
         // x축 위치에 따른 정답 체크
         if (x.toFixed(2) == -4.0) {

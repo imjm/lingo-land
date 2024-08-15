@@ -7,7 +7,7 @@ import { storeToRefs } from "pinia";
 const emit = defineEmits(["timesUp"]);
 
 const writingGameStore = useWritingGameStore();
-const { totalTime } = storeToRefs(writingGameStore);
+const { totalTime, turn } = storeToRefs(writingGameStore);
 
 let timer = null;
 
@@ -42,7 +42,10 @@ onBeforeUnmount(() => {
 });
 
 watch(totalTime, (newValue, oldValue) => {
-    if (oldValue === 0 && newValue === writingGameConfiguration.gameTime) {
+    if (
+        oldValue === 0 &&
+        newValue === writingGameConfiguration.gameTime + turn.value * 30 // 턴이 진행됨에 따라 시간 가중치 부여
+    ) {
         startTimer();
     }
 });

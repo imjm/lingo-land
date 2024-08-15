@@ -3,12 +3,12 @@ import { storeToRefs } from "pinia";
 import { onMounted } from "vue";
 
 // 초기 세팅
+import router from "@/router";
 import { useGameStore } from "@/stores/runningGame/gameStore";
+import { soundbg } from "@/stores/runningGame/init";
 import { initDraw } from "@/stores/runningGame/resultinit";
 import { useRoute } from "vue-router";
 import RankListItem from "./RankListItem.vue";
-import router from "@/router";
-import { soundbg } from "@/stores/runningGame/init";
 
 const route = useRoute();
 
@@ -30,8 +30,8 @@ onMounted(() => {
     gameStore.saveResult(result);
 
     setTimeout(() => {
-        console.log('게임룸으로 푸쉬')
-        soundbg.stop()
+        console.log("게임룸으로 푸쉬");
+        soundbg.stop();
         router.push({
             name: "gameRoom",
             params: { roomId: route.params.roomId },
@@ -40,11 +40,9 @@ onMounted(() => {
 });
 </script>
 <template>
-    <!-- Canvas와 타이머를 포함하는 상위 div -->
     <div id="game-container">
         <canvas id="c"></canvas>
 
-        <!-- Leaderboard card -->
         <div id="leaderboard-container">
             <v-card
                 class="pt-3 ma-30"
@@ -54,7 +52,10 @@ onMounted(() => {
                 <v-row>
                     <v-col>
                         <h1 class="ml-10" style="color: aliceblue">
-                            <span class="material-symbols-outlined" style="font-size : xx-large">
+                            <span
+                                class="material-symbols-outlined"
+                                style="font-size: xx-large"
+                            >
                                 military_tech
                             </span>
                             순위
@@ -83,7 +84,6 @@ onMounted(() => {
                                 />
                             </v-col>
                         </v-row>
-                        <!-- 아직 변수 값을 몰라 임의로 작성하였습니다. 데이터는 store에 임의로 작성하여 구성했습니다. -->
                     </v-expansion-panel>
                 </v-expansion-panels>
             </v-card>

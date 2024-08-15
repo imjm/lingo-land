@@ -1,4 +1,3 @@
-// src/stores/gameStore.js
 import { defineStore, storeToRefs } from "pinia";
 import { computed, inject, ref } from "vue";
 import { useOpenviduStore } from "../openvidu";
@@ -23,6 +22,8 @@ export const useGameStore = defineStore("gameStore", () => {
     const coinTotalScore = ref(0);
 
     const wrongProblem = ref([]);
+
+    const startfunc = ref(false);
 
     function updateZCoordinate(z) {
         zCoordinate.value = z;
@@ -58,12 +59,15 @@ export const useGameStore = defineStore("gameStore", () => {
     }
 
     function resetRunningGame() {
+        console.log("**************달리기 게임 재설정");
+
         zCoordinate.value = 0;
         isGameEnded.value = false;
         gameRanks.value = [];
         wrongProblem.value = [];
         coinScore.value = 0;
         coinTotalScore.value = 0;
+        startfunc.value = false;
 
         setGameRanks();
     }
@@ -77,6 +81,7 @@ export const useGameStore = defineStore("gameStore", () => {
         wrongProblem,
         coinScore,
         coinTotalScore,
+        startfunc,
         updateZCoordinate,
         endGame,
         saveResult,

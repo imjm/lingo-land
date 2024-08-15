@@ -12,18 +12,15 @@ import CountdownTimer from "./CountdownTimer.vue";
 const route = useRoute();
 
 const writingGameStore = useWritingGameStore();
-const { turn, pageCount, isTitle, tales } = storeToRefs(writingGameStore);
+const { turn, isTitle, textareaValue, title } = storeToRefs(writingGameStore);
 
 const openviduStore = useOpenviduStore();
 const { session, findCurrentStoryId, findMyLoginId } = openviduStore;
 
-const textareaValue = ref("");
-const title = ref("");
-
 const handleTimesUp = () => {
     let currentStoryId = findCurrentStoryId();
 
-    // 시그널 보내기
+    // 글 제출 시그널 보내기
     session
         .signal({
             type: "writingGame",
