@@ -44,7 +44,10 @@ frontend-url: ${FRONTEND_URL}
 
 image:
   store-url: ${STORE_PATH}
-  find-url: ${IMAGE_PATH}
 
 ollama:
   api-url: ${OLLAMA_URL}
+
+openai:
+  api:
+    key: ${CHAT_GPT_KEY}

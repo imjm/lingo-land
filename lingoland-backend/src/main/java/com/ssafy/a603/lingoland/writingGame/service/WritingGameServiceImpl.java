@@ -33,6 +33,10 @@ import com.ssafy.a603.lingoland.writingGame.dto.OllamaStoryDTO;
 import com.ssafy.a603.lingoland.writingGame.dto.OllamaStoryResponseDTO;
 import com.ssafy.a603.lingoland.writingGame.dto.OllamaSummaryDTO;
 import com.ssafy.a603.lingoland.writingGame.dto.OllamaSummaryResponseDTO;
+import com.ssafy.a603.lingoland.writingGame.dto.OpenAiStoryDTO;
+import com.ssafy.a603.lingoland.writingGame.dto.OpenAiStoryResponseDTO;
+import com.ssafy.a603.lingoland.writingGame.dto.OpenAiSummaryDTO;
+import com.ssafy.a603.lingoland.writingGame.dto.OpenAiSummaryResponseDTO;
 import com.ssafy.a603.lingoland.writingGame.dto.SessionInfo;
 import com.ssafy.a603.lingoland.writingGame.dto.SubmitStoryResponseDTO;
 import com.ssafy.a603.lingoland.writingGame.dto.WritingGameStartRequestDTO;
@@ -59,6 +63,9 @@ public class WritingGameServiceImpl implements WritingGameService {
 
 	@Value("${ollama.api-url}")
 	private String ollamaUrl;
+
+	@Value("${openai.api.key}")
+	private String chatpgtKey;
 
 	@Override
 	@Transactional
@@ -179,18 +186,18 @@ public class WritingGameServiceImpl implements WritingGameService {
 			.collect(Collectors.joining("\n"));
 
 		String imgUrl;
-		OllamaSummaryResponseDTO imagePrompt = null;
+		OpenAiSummaryResponseDTO imagePrompt = null;
 		try {
-			imagePrompt = makeTitleWithSummary(stories);
+			imagePrompt = makeTitleWithSummary2(stories);
 		} catch (Exception e) {
 			log.warn("Skipping image generation due to title creation failure.");
 			imgUrl = imgUtils.getDefaultImage();
 		}
 
-		if (imagePrompt == null || imagePrompt.content() == null) {
+		if (imagePrompt == null || imagePrompt.summary() == null) {
 			imgUrl = imgUtils.getDefaultImage();
 		} else {
-			imgUrl = generateImageWithFallback(imagePrompt.content().toString());
+			imgUrl = generateImageWithFallback(imagePrompt.toPrompt().toString());
 		}
 
 		String savedImgUrl;
@@ -204,9 +211,9 @@ public class WritingGameServiceImpl implements WritingGameService {
 
 	private String handleStoryTranslation(String story) {
 		log.info("Translating story to image prompt");
-		OllamaStoryResponseDTO translated = null;
+		OpenAiStoryResponseDTO translated = null;
 		try {
-			translated = translateStory2ImagePrompt(story);
+			translated = translateStory2ImagePrompt2(story);
 		} catch (Exception e) {
 			log.warn("Skipping image generation due to translation failure.");
 			return imgUtils.getDefaultImage();
@@ -232,7 +239,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 		String imgUrl) {
 		log.info("Saving story for session: {} with image URL: {}", sessionId, imgUrl);
 		roomService.fairytaleStoryAdd(sessionId, request.key(), customUserDetails,
-			new FairyTale.Story(imgUrl, request.key()));
+			new FairyTale.Story(imgUrl, request.story()));
 	}
 
 	private OllamaSummaryResponseDTO makeTitleWithSummary(String story) {
@@ -271,6 +278,54 @@ public class WritingGameServiceImpl implements WritingGameService {
 			log.error("Failed to process JSON response from translation API", e);
 			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
 		}
+	}
+
+	private OpenAiSummaryResponseDTO makeTitleWithSummary2(String story) {
+		log.info("Creating summary with OpenAi for story: {}", story);
+		String json = restClient.post()
+			.uri("https://api.openai.com/v1/chat/completions")
+			.header("Authorization", "Bearer " + chatpgtKey)
+			.body(new OpenAiSummaryDTO(story))
+			.retrieve()
+			.body(String.class);
+		log.info("response make title with summary : {}", json);
+		try {
+			JsonNode jsonNode = objectMapper.readTree(json);
+			JsonNode choiceNode = jsonNode.path("choices");
+			JsonNode messageNode = choiceNode.get(0).path("message");
+			String content = messageNode.path("content").asText().trim();
+			log.info("Summary result: {}", content);
+			return objectMapper.readValue(content, new TypeReference<OpenAiSummaryResponseDTO>() {
+			});
+		} catch (JsonProcessingException e) {
+			log.error("Failed to process JSON response from translation API", e);
+			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
+		}
+		// return json;
+	}
+
+	private OpenAiStoryResponseDTO translateStory2ImagePrompt2(String story) {
+		log.info("Translating story using OpenAI: {}", story);
+		String json = restClient.post()
+			.uri("https://api.openai.com/v1/chat/completions")
+			.header("Authorization", "Bearer " + chatpgtKey)
+			.body(new OpenAiStoryDTO(story))
+			.retrieve()
+			.body(String.class);
+		log.info("response story : {}", json);
+		try {
+			JsonNode jsonNode = objectMapper.readTree(json);
+			JsonNode choiceNode = jsonNode.path("choices");
+			JsonNode messageNode = choiceNode.get(0).path("message");
+			String content = messageNode.path("content").asText().trim();
+			log.info("Translation result: {}", content);
+			return objectMapper.readValue(content, new TypeReference<OpenAiStoryResponseDTO>() {
+			});
+		} catch (JsonProcessingException e) {
+			log.error("Failed to process JSON response from translation API", e);
+			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
+		}
+		// return json;
 	}
 
 	private String generateImage(String translated) {
