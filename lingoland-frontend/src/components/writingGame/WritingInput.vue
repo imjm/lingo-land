@@ -4,6 +4,7 @@ import { useWritingGameStore } from "@/stores/writingGame";
 import { storeToRefs } from "pinia";
 import { ref } from "vue";
 import { useRoute } from "vue-router";
+import GenericInput from "../common/GenericInput.vue";
 import GenericInputArea from "../common/GenericInputArea.vue";
 import SubmitButton from "../common/SubmitButton.vue";
 import CountdownTimer from "./CountdownTimer.vue";
@@ -11,63 +12,45 @@ import CountdownTimer from "./CountdownTimer.vue";
 const route = useRoute();
 
 const writingGameStore = useWritingGameStore();
-const { turn, pageCount } = storeToRefs(writingGameStore);
+const { turn, pageCount, isTitle, tales } = storeToRefs(writingGameStore);
 
 const openviduStore = useOpenviduStore();
 const { session, findCurrentStoryId, findMyLoginId } = openviduStore;
 
 const textareaValue = ref("");
-const isSubmit = ref(false);
+const title = ref("");
 
 const handleTimesUp = () => {
-    // 타임아웃이므로 강제로 제출
-    // 아직 제출하지 않았으면 제출시킨다.
-    if (!isSubmit.value) {
-        sumbit();
-    }
-
-    isSubmit.value = false;
-
     let currentStoryId = findCurrentStoryId();
 
-    console.log("*************current storyId: ", currentStoryId);
-
     // 시그널 보내기
-    if (turn.value + 1 < pageCount.value) {
-        session
-            .signal({
-                type: "writingGame",
-                data: JSON.stringify({
-                    storyId: currentStoryId,
-                    story: textareaValue.value,
-                }),
-            })
-            .then(() => {
-                console.log("******************writingGame submit");
-            })
-            .catch((error) => {
-                console.error("***************error sending signal", error);
-            });
-    } else {
-        // 마지막 페이지일 때 글쓰기 게임 종료
-        session
-            .signal({ type: "gameEnd", data: JSON.stringify({ type: 2 }) })
-            .then(() => {
-                console.log("***********************writingGame end");
-            })
-            .catch((error) => {
-                console.error("******************error sending signal", error);
-            });
-    }
-
-    // textarea 초기화하기
-    textareaValue.value = "";
-
-    // turn 증가하기
-    turn.value++;
+    session
+        .signal({
+            type: "writingGame",
+            data: JSON.stringify({
+                storyId: currentStoryId,
+                story: textareaValue.value,
+            }),
+        })
+        .then(() => {
+            console.log("******************writingGame submit");
+            submit();
+            // textarea 초기화하기
+            textareaValue.value = "";
+        })
+        .catch((error) => {
+            console.error("***************error sending signal", error);
+        });
 };
 
-function sumbit() {
+function titleSubmit() {
+    writingGameStore.submitTitle(route.params.roomId, {
+        title: title.value,
+    });
+    isTitle.value = false;
+}
+
+function submit() {
     let myLoginId = findMyLoginId();
 
     const drawingDTO = {
@@ -76,33 +59,59 @@ function sumbit() {
         order: Number(turn.value) + Number(1),
     };
 
-    console.log("*******drawDTO", drawingDTO);
     // API 요청 보내기
-    writingGameStore.submitStory(route.params.roomId, drawingDTO);
+    writingGameStore
+        .submitStory(route.params.roomId, drawingDTO)
+        .then((response) => {
+            console.log("*******현재 턴", turn.value);
+            console.log("********스토리 제출 API 요청 응답", response);
+            if (response) {
+                session.signal({ type: "turnOver" });
+            }
+        })
+        .catch((error) => {
+            console.log("*******************error", error);
+        });
 
-    isSubmit.value = true;
+    return;
 }
 </script>
 
 <template>
     <div class="d-flex flex-column justify-center align-center">
-        <div class="d-flex justify-end mb-10" style="font-size: 30px; color: white">
+        <div
+            class="d-flex justify-end mb-10"
+            style="font-size: 30px; color: white"
+        >
             다음 글을 읽고 이어질 이야기를 작성하세요
         </div>
-        <v-card class="d-flex flex-column justify-center align-center" width="500" height="500"
-            style="background-color: #ffe280">
-            <CountdownTimer @timesUp="handleTimesUp" />
+        <v-card
+            class="d-flex flex-column justify-center align-center"
+            width="500"
+            height="500"
+            style="background-color: #ffe280"
+        >
+            <CountdownTimer v-if="!isTitle" @timesUp="handleTimesUp" />
 
-            <v-textarea
-                class="textarea custom-textarea"
+            <GenericInput
+                v-if="isTitle"
+                hint="동화에 제목을 입력하세요"
+                v-model="title"
+                class="textarea"
+            />
+
+            <SubmitButton
+                v-if="isTitle"
+                data="제목 제출하기"
+                @click-event="titleSubmit"
+            />
+
+            <GenericInputArea
+                v-if="!isTitle"
+                class="textarea"
                 v-model="textareaValue"
                 placeholder="글을 작성해주세요"
-                hide-details
-            ></v-textarea>
-
-            <div class="d-flex justify-end">
-                <SubmitButton width="100" data="제출" class="mx-5 mb-5" />
-            </div>
+            />
         </v-card>
     </div>
 </template>

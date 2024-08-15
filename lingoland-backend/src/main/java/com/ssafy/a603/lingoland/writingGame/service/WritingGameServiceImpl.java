@@ -1,20 +1,18 @@
 package com.ssafy.a603.lingoland.writingGame.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.time.Duration;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -22,11 +20,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.a603.lingoland.fairyTale.entity.FairyTale;
-import com.ssafy.a603.lingoland.fairyTale.service.FairyTaleService;
 import com.ssafy.a603.lingoland.global.error.entity.ErrorCode;
 import com.ssafy.a603.lingoland.global.error.exception.BaseException;
 import com.ssafy.a603.lingoland.global.error.exception.InvalidInputException;
 import com.ssafy.a603.lingoland.member.security.CustomUserDetails;
+import com.ssafy.a603.lingoland.room.service.RoomService;
 import com.ssafy.a603.lingoland.util.ImgUtils;
 import com.ssafy.a603.lingoland.writingGame.dto.DrawingRequestDTO;
 import com.ssafy.a603.lingoland.writingGame.dto.KarloDTO;
@@ -35,6 +33,8 @@ import com.ssafy.a603.lingoland.writingGame.dto.OllamaStoryDTO;
 import com.ssafy.a603.lingoland.writingGame.dto.OllamaStoryResponseDTO;
 import com.ssafy.a603.lingoland.writingGame.dto.OllamaSummaryDTO;
 import com.ssafy.a603.lingoland.writingGame.dto.OllamaSummaryResponseDTO;
+import com.ssafy.a603.lingoland.writingGame.dto.SessionInfo;
+import com.ssafy.a603.lingoland.writingGame.dto.SubmitStoryResponseDTO;
 import com.ssafy.a603.lingoland.writingGame.dto.WritingGameStartRequestDTO;
 
 import lombok.RequiredArgsConstructor;
@@ -47,10 +47,9 @@ public class WritingGameServiceImpl implements WritingGameService {
 	private static final String FAIRY_TALE_IMAGE_PATH = "fairyTale";
 	private final ObjectMapper objectMapper;
 	private final RedisTemplate<String, Object> redisTemplate;
-	private final ConcurrentHashMap<String, List<DrawingRequestDTO>> requestMap = new ConcurrentHashMap<>();
 	private final RestClient restClient;
-	private final FairyTaleService fairyTaleService;
 	private final ImgUtils imgUtils;
+	private final RoomService roomService;
 
 	@Qualifier("myExecutor")
 	private final ExecutorService executor;
@@ -62,69 +61,104 @@ public class WritingGameServiceImpl implements WritingGameService {
 	private String ollamaUrl;
 
 	@Override
-	public int[] start(String sessionId, WritingGameStartRequestDTO request) {
+	@Transactional
+	public void start(String sessionId, WritingGameStartRequestDTO request) {
 		log.info("Starting game for session: {}", sessionId);
-		String redisKey = "lingoland:fairyTale:session:" + sessionId;
-		serializeToRedis(redisKey, request);
-		int[] randomList = randomNumList(request.numPart());
-		log.debug("Generated random list: {} for session: {}", Arrays.toString(randomList), sessionId);
-		return randomList;
+		String redisKey = makeRedisRoomKey(sessionId);
+		SessionInfo sessionInfo = new SessionInfo(request.maxTurn());
+		serializeToRedis(redisKey, sessionInfo);
+		log.debug("Session info serialized to Redis with key: {}", redisKey);
 	}
 
 	@Override
-	public void setTitle(String title, CustomUserDetails customUserDetails) {
-		String redisKey = "lingoland:fairyTale:" + customUserDetails.getUsername() + ":title";
-		serializeToRedis(redisKey, title);
-	}
-
-	@Override
-	public List<FairyTale> submitStory(String sessionId, DrawingRequestDTO dto) {
-		log.info("Submitting story for session: {}", sessionId);
-		List<DrawingRequestDTO> requests = requestMap.compute(sessionId, (key, existingList) -> {
-			if (existingList == null) {
-				existingList = new ArrayList<>();
-			}
-			existingList.add(dto);
-			log.debug("Added DrawingRequestDTO to session: {}, current size: {}", sessionId, existingList.size());
-			return existingList;
+	@Transactional
+	public void setTitle(String sessionId, CustomUserDetails customUserDetails, String title) {
+		log.info("Setting title for session: {} by user: {}", sessionId, customUserDetails.getUsername());
+		String redisRoomKey = makeRedisRoomKey(sessionId);
+		SessionInfo sessionInfo = deserializeFromRedis(redisRoomKey, new TypeReference<SessionInfo>() {
 		});
+		sessionInfo.addParticipant(customUserDetails.getUsername());
+		serializeToRedis(redisRoomKey, sessionInfo);
 
-		WritingGameStartRequestDTO sessionInfo = deserializeFromRedis("lingoland:fairyTale:session:" + sessionId,
-			WritingGameStartRequestDTO.class);
-		if (requests.size() == sessionInfo.numPart()) {
-			log.info("All members have submitted stories for session: {}", sessionId);
-			List<DrawingRequestDTO> collected = new ArrayList<>(requests);
-			requestMap.remove(sessionId);
+		log.debug("Participant added to session info: {}", sessionInfo.getParticipants());
 
-			CompletableFuture<List<FairyTale>> future = processStoriesAsync(sessionId, collected, sessionInfo)
-				.thenCompose(voidResult -> {
-					if (requests.get(0).order() == sessionInfo.maxTurn()) {
-						log.info("Final tasks after all stories are processed for session: {}", sessionId);
-						return CompletableFuture.supplyAsync(() -> end(collected), executor);
-					} else {
-						return CompletableFuture.completedFuture(Collections.emptyList());
-					}
-				});
-			log.debug("Returning processed stories for session: {}", sessionId);
-			return requests.get(0).order() == sessionInfo.maxTurn() ? future.join() : Collections.emptyList();
-		}
-		return Collections.emptyList();
+		String redisAliveKey = makeRedisMemberAliveKey(sessionId, customUserDetails.getUsername());
+		serializeToRedis(redisAliveKey, true);
+		String redisSubmitKey = makeRedisMemberSubmitKey(sessionId, customUserDetails.getUsername());
+		serializeToRedis(redisSubmitKey, false);
+
+		roomService.create(sessionId, customUserDetails, title);
+		log.debug("Room created and title set: {}", title);
 	}
 
-	@Async("asyncExecutor")
-	private CompletableFuture<Void> processStoriesAsync(String sessionId, List<DrawingRequestDTO> requests,
-		WritingGameStartRequestDTO sessionInfo) {
-		log.info("Processing stories asynchronously for session: {}", sessionId);
-		List<CompletableFuture<Void>> futures = new ArrayList<>();
-		for (DrawingRequestDTO request : requests) {
-			log.debug("Processing single story for session: {}, order: {}", sessionId, request.order());
-			futures.add(CompletableFuture.runAsync(() -> processSingleStory(sessionId, request), executor));
+	@Override
+	@Transactional
+	public SubmitStoryResponseDTO submitStory(String sessionId, DrawingRequestDTO request,
+		CustomUserDetails customUserDetails) {
+		log.info("Submitting story for session: {} by user: {}", sessionId, customUserDetails.getUsername());
+		String redisSubmitKey = makeRedisMemberSubmitKey(sessionId, customUserDetails.getUsername());
+		serializeToRedis(redisSubmitKey, true);
+
+		CompletableFuture.runAsync(() -> processSingleStory(sessionId, request, customUserDetails), executor);
+
+		String redisRoomKey = makeRedisRoomKey(sessionId);
+		SessionInfo sessionInfo = deserializeFromRedis(redisRoomKey, new TypeReference<SessionInfo>() {
+		});
+		List<FairyTale> fairyTales;
+		if (sessionInfo.getMaxTurn() == request.order()) {
+			log.info("Last turn for session: {}", sessionId);
+			CompletableFuture.runAsync(() -> endProcess(sessionId, request, customUserDetails), executor)
+				.thenRunAsync(() -> {
+					redisTemplate.delete(makeRedisMemberAliveKey(sessionId, customUserDetails.getUsername()));
+					redisTemplate.delete(makeRedisMemberSubmitKey(sessionId, customUserDetails.getUsername()));
+					roomService.endRoom(sessionId, request.key());
+					log.info("Ended room and cleaned up session data for session: {}", sessionId);
+				}, executor);
+			fairyTales = roomService.findFairyTalesInSession(sessionId);
+		} else {
+			fairyTales = null;
 		}
-		return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
-			.thenRun(() -> log.info("All story processing tasks completed for session: {}", sessionId));
+
+		if (isAllEnd(sessionId, sessionInfo)) {
+			for (String participant : sessionInfo.getParticipants()) {
+				redisSubmitKey = makeRedisMemberSubmitKey(sessionId, participant);
+				serializeToRedis(redisSubmitKey, false);
+			}
+			log.info("All participants have ended their submissions for session: {}", sessionId);
+			return SubmitStoryResponseDTO.builder()
+				.fairyTales(fairyTales)
+				.goNext(true)
+				.build();
+		}
+		return SubmitStoryResponseDTO.builder()
+			.fairyTales(fairyTales)
+			.goNext(false)
+			.build();
 	}
 
-	private void processSingleStory(String sessionId, DrawingRequestDTO request) {
+	@Override
+	@Transactional
+	public Boolean exit(String sessionId, String exitLoginId, Integer order) {
+		log.info("User {} exiting session: {}", exitLoginId, sessionId);
+		String redisAliveKey = makeRedisMemberAliveKey(sessionId, exitLoginId);
+		serializeToRedis(redisAliveKey, false);
+		String redisRoomKey = makeRedisRoomKey(sessionId);
+		SessionInfo sessionInfo = deserializeFromRedis(redisRoomKey, new TypeReference<SessionInfo>() {
+		});
+		log.debug("Session info after user exit: {}", sessionInfo);
+		// if (order != sessionInfo.getMaxTurn()) {
+		// 	String redisSubmitKey = makeRedisMemberSubmitKey(sessionId, exitLoginId);
+		// 	Boolean isSubmit = deserializeFromRedis(redisSubmitKey, new TypeReference<Boolean>() {
+		// 	});
+		// 	if (!isSubmit) {
+		// 		roomService.fairytaleInComplete(sessionId, exitLoginId);
+		// 	}
+		// }
+		return isAllEnd(sessionId, sessionInfo);
+	}
+
+	protected void processSingleStory(String sessionId, DrawingRequestDTO request,
+		CustomUserDetails customUserDetails) {
 		log.info("Processing single story: {} for session: {}", request.key(), sessionId);
 		String story = request.story();
 		String imgUrl = handleStoryTranslation(story);
@@ -134,7 +168,38 @@ public class WritingGameServiceImpl implements WritingGameService {
 		else
 			savedImgUrl = imgUtils.saveBase64Image(imgUrl, FAIRY_TALE_IMAGE_PATH);
 		log.debug("Story image saved at: {}", savedImgUrl);
-		saveStoryToRedis(request.key(), request, savedImgUrl);
+		saveStory(sessionId, request, customUserDetails, savedImgUrl);
+	}
+
+	private void endProcess(String sessionId, DrawingRequestDTO request, CustomUserDetails customUserDetails) {
+		log.info("Ending process for session: {} with request: {}", sessionId, request.key());
+		FairyTale curFairyTale = roomService.findFairyTale(sessionId, customUserDetails.getUsername());
+		String stories = curFairyTale.getContent().stream()
+			.map(FairyTale.Story::getStory)
+			.collect(Collectors.joining("\n"));
+
+		String imgUrl;
+		OllamaSummaryResponseDTO imagePrompt = null;
+		try {
+			imagePrompt = makeTitleWithSummary(stories);
+		} catch (Exception e) {
+			log.warn("Skipping image generation due to title creation failure.");
+			imgUrl = imgUtils.getDefaultImage();
+		}
+
+		if (imagePrompt == null || imagePrompt.content() == null) {
+			imgUrl = imgUtils.getDefaultImage();
+		} else {
+			imgUrl = generateImageWithFallback(imagePrompt.content().toString());
+		}
+
+		String savedImgUrl;
+		if (imgUrl.equals(imgUtils.getDefaultImage()))
+			savedImgUrl = imgUtils.getImagePathWithDefaultImage(FAIRY_TALE_IMAGE_PATH);
+		else
+			savedImgUrl = imgUtils.saveBase64Image(imgUrl, FAIRY_TALE_IMAGE_PATH);
+		roomService.fairytaleComplete(sessionId, request.key(), savedImgUrl, imagePrompt.summary());
+		log.info("Completed fairy tale for session: {} with cover image: {}", sessionId, savedImgUrl);
 	}
 
 	private String handleStoryTranslation(String story) {
@@ -143,11 +208,11 @@ public class WritingGameServiceImpl implements WritingGameService {
 		try {
 			translated = translateStory2ImagePrompt(story);
 		} catch (Exception e) {
-			log.warn("Skipping image generation due to title creation failure.");
+			log.warn("Skipping image generation due to translation failure.");
 			return imgUtils.getDefaultImage();
 		}
 		if (translated == null || translated.medium().isBlank()) {
-			log.warn("Skipping image generation due to title creation failure.");
+			log.warn("Skipping image generation due to empty translation.");
 			return imgUtils.getDefaultImage();
 		}
 		return generateImageWithFallback(translated.toString());
@@ -163,128 +228,15 @@ public class WritingGameServiceImpl implements WritingGameService {
 		}
 	}
 
-	private void saveStoryToRedis(String key, DrawingRequestDTO request, String savedImgUrl) {
-		log.info("Saving story to Redis with key: {}", key);
-		String redisStoryKey = "lingoland:fairyTale:" + key;
-		FairyTale.Story node = FairyTale.Story.builder()
-			.illustration(savedImgUrl)
-			.story(request.story())
-			.build();
-
-		try {
-			if (request.order() == 1) {
-				List<FairyTale.Story> stories = new ArrayList<>();
-				stories.add(node);
-				serializeToRedis(redisStoryKey, stories);
-				log.debug("Serialized new story to Redis for key: {}", redisStoryKey);
-				return;
-			}
-			List<FairyTale.Story> existingStories = getExistingStories(redisStoryKey);
-			existingStories.add(node);
-			serializeToRedis(redisStoryKey, existingStories);
-			log.debug("Serialized updated story to Redis for key: {}", redisStoryKey);
-		} catch (JsonProcessingException e) {
-			log.error("Error processing JSON for Redis serialization", e);
-			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
-		}
-	}
-
-	private List<FairyTale.Story> getExistingStories(String redisStoryKey) throws JsonProcessingException {
-		String existingJson = (String)redisTemplate.opsForValue().get(redisStoryKey);
-		return existingJson != null ? objectMapper.readValue(existingJson, new TypeReference<List<FairyTale.Story>>() {
-		}) : new ArrayList<>();
-	}
-
-	@Async("asyncExecutor")
-	private List<FairyTale> end(List<DrawingRequestDTO> requests) {
-		log.info("Ending game session with {} requests", requests.size());
-
-		List<String> writers = requests.stream()
-			.map(DrawingRequestDTO::key)
-			.collect(Collectors.toList());
-		log.debug("Writers involved in this session: {}", writers);
-
-		List<CompletableFuture<FairyTale>> futures = requests.stream()
-			.map(request -> CompletableFuture.supplyAsync(() -> {
-					log.info("Processing end of session for request: {}", request.key());
-					return endProcess(request, writers);
-				}, executor)
-				.exceptionally(ex -> {
-					log.error("Error processing request: {}", request.key(), ex);
-					throw new InvalidInputException(ErrorCode.INTERNAL_SERVER_ERROR);
-				}))
-			.collect(Collectors.toList());
-
-		log.info("Waiting for all end-process tasks to complete");
-		CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-
-		List<FairyTale> fairyTales = futures.stream()
-			.map(CompletableFuture::join)
-			.collect(Collectors.toList());
-		log.info("Completed end-process tasks for all requests");
-
-		return fairyTales;
-	}
-
-	private FairyTale endProcess(DrawingRequestDTO request, List<String> writers) {
-		String redisStoryKey = "lingoland:fairyTale:" + request.key();
-		log.info("Retrieving and processing stories from Redis with key: {}", redisStoryKey);
-
-		List<FairyTale.Story> stories;
-		try {
-			String existingJson = (String)redisTemplate.opsForValue().get(redisStoryKey);
-			stories = objectMapper.readValue(existingJson, new TypeReference<List<FairyTale.Story>>() {
-			});
-			log.debug("Retrieved {} stories from Redis for key: {}", stories.size(), redisStoryKey);
-		} catch (JsonProcessingException e) {
-			log.error("Error processing JSON from Redis for key: {}", redisStoryKey, e);
-			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
-		}
-
-		StringBuilder allStories = new StringBuilder();
-		for (FairyTale.Story story : stories) {
-			allStories.append(story.getStory()).append("\n");
-		}
-		log.debug("Combined all stories for processing: {}", allStories.toString());
-
-		OllamaSummaryResponseDTO titleWithSummary;
-		String imgUrl;
-		String savedImgUrl;
-
-		try {
-			titleWithSummary = makeTitleWithSummary(allStories.toString());
-			log.info("Generated title and summary: {}", titleWithSummary);
-		} catch (Exception e) {
-			log.error("Failed to create title and summary, using default values", e);
-			titleWithSummary = new OllamaSummaryResponseDTO("No title", "No summary",
-				OllamaStoryResponseDTO.builder().build());
-		}
-
-		boolean isValidTitle = titleWithSummary != null && titleWithSummary.title() != null && !titleWithSummary.title()
-			.equals("No title");
-		boolean isValidSummary = titleWithSummary.summary() != null && !titleWithSummary.summary().equals("No summary");
-		boolean isValidContent = titleWithSummary.content() != null;
-
-		if (!isValidTitle || !isValidSummary || !isValidContent) {
-			log.warn("Skipping image generation due to invalid title or summary.");
-			savedImgUrl = imgUtils.getImagePathWithDefaultImage(FAIRY_TALE_IMAGE_PATH);
-		} else {
-			imgUrl = generateImageWithFallback(titleWithSummary.content().toString());
-			savedImgUrl = imgUtils.saveBase64Image(imgUrl, FAIRY_TALE_IMAGE_PATH);
-			log.debug("Saved generated image at: {}", savedImgUrl);
-		}
-
-		String title = deserializeFromRedis("lingoland:fairyTale:" + request.key() + ":title", String.class);
-
-		FairyTale fairyTale = fairyTaleService.createFairyTale(title, savedImgUrl,
-			titleWithSummary.summary(), stories, writers);
-		log.info("Fairy tale created with title: {}", titleWithSummary.title());
-
-		return fairyTale;
+	private void saveStory(String sessionId, DrawingRequestDTO request, CustomUserDetails customUserDetails,
+		String imgUrl) {
+		log.info("Saving story for session: {} with image URL: {}", sessionId, imgUrl);
+		roomService.fairytaleStoryAdd(sessionId, request.key(), customUserDetails,
+			new FairyTale.Story(imgUrl, request.key()));
 	}
 
 	private OllamaSummaryResponseDTO makeTitleWithSummary(String story) {
-		log.info("Summary story using llama3.1 : {}", story);
+		log.info("Creating summary with llama3.1 for story: {}", story);
 		String json = restClient.post()
 			.uri(ollamaUrl)
 			.body(new OllamaSummaryDTO(story))
@@ -303,7 +255,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 	}
 
 	private OllamaStoryResponseDTO translateStory2ImagePrompt(String story) {
-		log.info("Translating story using llama3.1 : {}", story);
+		log.info("Translating story using llama3.1: {}", story);
 		String json = restClient.post()
 			.uri(ollamaUrl)
 			.body(new OllamaStoryDTO(story))
@@ -322,7 +274,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 	}
 
 	private String generateImage(String translated) {
-		log.info("generate image using text {}", translated);
+		log.info("Generating image using text: {}", translated);
 		KarloReturn karloReturn = restClient.post()
 			.uri("https://api.kakaobrain.com/v2/inference/karlo/t2i")
 			.header("Authorization", "KakaoAK " + imageApiKey)
@@ -332,7 +284,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 			.body(KarloReturn.class);
 
 		if (karloReturn != null && karloReturn.images().length > 0) {
-			log.info("image seed : {}", karloReturn.images()[0].seed());
+			log.info("Image seed: {}", karloReturn.images()[0].seed());
 			return karloReturn.images()[0].image();
 		}
 		log.error("Failed to generate image for translated text: {}", translated);
@@ -341,36 +293,155 @@ public class WritingGameServiceImpl implements WritingGameService {
 
 	private <T> void serializeToRedis(String key, T value) {
 		try {
-			redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(value));
+			redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(value), 60, TimeUnit.MINUTES);
+			log.debug("Serialized object to Redis with key: {}", key);
 		} catch (JsonProcessingException e) {
 			log.error("Failed to serialize object to Redis", e);
 			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
 		}
 	}
 
-	private <T> T deserializeFromRedis(String key, Class<T> valueType) {
+	private <T> T deserializeFromRedis(String key, TypeReference<T> valueTypeRef) {
 		String json = (String)redisTemplate.opsForValue().get(key);
 		try {
-			return objectMapper.readValue(json, valueType);
+			T result = objectMapper.readValue(json, valueTypeRef);
+			log.debug("Deserialized object from Redis with key: {}", key);
+			return result;
 		} catch (JsonProcessingException e) {
 			log.error("Failed to deserialize object from Redis", e);
 			throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
 		}
 	}
 
-	private int[] randomNumList(int n) {
-		int[] array = new int[n];
-		for (int i = 0; i < n; i++) {
-			array[i] = i + 1;
-		}
-		ThreadLocalRandom rand = ThreadLocalRandom.current();
-		for (int i = array.length - 1; i > 0; i--) {
-			int j = rand.nextInt(i + 1);
-			int temp = array[i];
-			array[i] = array[j];
-			array[j] = temp;
-		}
-		return array;
-	}
-}
+	private boolean isAllEnd(String sessionId, SessionInfo sessionInfo) {
+		log.info("Checking if all participants have ended for session: {}", sessionId);
+		String lockKey = "lock:" + sessionId + ":isAllEnd";
+		String redisAliveKey;
+		String redisSubmitKey;
+		int count = 0;
 
+		// Acquire a distributed lock
+		Boolean acquired = redisTemplate.opsForValue().setIfAbsent(lockKey, "locked", Duration.ofSeconds(5));
+		if (Boolean.TRUE.equals(acquired)) {
+			try {
+				for (String participant : sessionInfo.getParticipants()) {
+					redisAliveKey = makeRedisMemberAliveKey(sessionId, participant);
+					redisSubmitKey = makeRedisMemberSubmitKey(sessionId, participant);
+
+					Boolean isAlive = deserializeFromRedis(redisAliveKey, new TypeReference<Boolean>() {
+					});
+					Boolean isSubmit = deserializeFromRedis(redisSubmitKey, new TypeReference<Boolean>() {
+					});
+
+					if (Boolean.FALSE.equals(isAlive) || Boolean.TRUE.equals(isSubmit)) {
+						count++;
+					}
+				}
+			} finally {
+				// Release the lock
+				redisTemplate.delete(lockKey);
+			}
+		} else {
+			// Could not acquire lock, return false or retry after some time
+			log.warn("Could not acquire lock for session: {}", sessionId);
+			return false;
+		}
+
+		boolean allEnded = count == sessionInfo.getParticipants().size();
+		log.debug("All participants ended: {}", allEnded);
+		return allEnded;
+	}
+
+	private String makeRedisRoomKey(String sessionId) {
+		return "lingoland:fairyTale:session:" + sessionId;
+	}
+
+	private String makeRedisMemberAliveKey(String sessionId, String loginId) {
+		return "lingoland:fairyTale:session:" + sessionId + ":member:" + loginId + ":alive";
+	}
+
+	private String makeRedisMemberSubmitKey(String sessionId, String loginId) {
+		return "lingoland:fairyTale:session:" + sessionId + ":member:" + loginId + ":submit";
+	}
+
+	private void deleteKeysByPattern(String pattern) {
+		log.info("Deleting keys with pattern: {}", pattern);
+		Set<String> keySet = redisTemplate.keys(pattern);
+		redisTemplate.delete(keySet);
+		log.debug("Deleted keys: {}", keySet);
+	}
+
+	// @Async("asyncExecutor")
+	// protected CompletableFuture<Void> processStoriesAsync(String sessionId, List<DrawingRequestDTO> requests,
+	// 	WritingGameStartRequestDTO sessionInfo) {
+	// 	log.info("Processing stories asynchronously for session: {}", sessionId);
+	// 	List<CompletableFuture<Void>> futures = new ArrayList<>();
+	// 	for (DrawingRequestDTO request : requests) {
+	// 		log.debug("Processing single story for session: {}, order: {}", sessionId, request.order());
+	// 		futures.add(CompletableFuture.runAsync(() -> processSingleStory(sessionId, request), executor));
+	// 	}
+	// 	return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+	// 		.thenRun(() -> log.info("All story processing tasks completed for session: {}", sessionId));
+	// }
+	// private void saveStoryToRedis(String key, DrawingRequestDTO request, String savedImgUrl) {
+	// 	log.info("Saving story to Redis with key: {}", key);
+	// 	String redisStoryKey = "lingoland:fairyTale:" + key;
+	// 	FairyTale.Story node = FairyTale.Story.builder()
+	// 		.illustration(savedImgUrl)
+	// 		.story(request.story())
+	// 		.build();
+	//
+	// 	try {
+	// 		if (request.order() == 1) {
+	// 			List<FairyTale.Story> stories = new ArrayList<>();
+	// 			stories.add(node);
+	// 			serializeToRedis(redisStoryKey, stories);
+	// 			log.debug("Serialized new story to Redis for key: {}", redisStoryKey);
+	// 			return;
+	// 		}
+	// 		List<FairyTale.Story> existingStories = getExistingStories(redisStoryKey);
+	// 		existingStories.add(node);
+	// 		serializeToRedis(redisStoryKey, existingStories);
+	// 		log.debug("Serialized updated story to Redis for key: {}", redisStoryKey);
+	// 	} catch (JsonProcessingException e) {
+	// 		log.error("Error processing JSON for Redis serialization", e);
+	// 		throw new BaseException(ErrorCode.JSON_PROCESSING_FAILED);
+	// 	}
+	// }
+	//
+	// private List<FairyTale.Story> getExistingStories(String redisStoryKey) throws JsonProcessingException {
+	// 	String existingJson = (String)redisTemplate.opsForValue().get(redisStoryKey);
+	// 	return existingJson != null ? objectMapper.readValue(existingJson, new TypeReference<List<FairyTale.Story>>() {
+	// 	}) : new ArrayList<>();
+	// }
+	// @Async("asyncExecutor")
+	// protected List<FairyTale> end(List<DrawingRequestDTO> requests) {
+	// 	log.info("Ending game session with {} requests", requests.size());
+	//
+	// 	List<String> writers = requests.stream()
+	// 		.map(DrawingRequestDTO::key)
+	// 		.collect(Collectors.toList());
+	// 	log.debug("Writers involved in this session: {}", writers);
+	//
+	// 	List<CompletableFuture<FairyTale>> futures = requests.stream()
+	// 		.map(request -> CompletableFuture.supplyAsync(() -> {
+	// 				log.info("Processing end of session for request: {}", request.key());
+	// 				return endProcess(request, writers);
+	// 			}, executor)
+	// 			.exceptionally(ex -> {
+	// 				log.error("Error processing request: {}", request.key(), ex);
+	// 				throw new InvalidInputException(ErrorCode.INTERNAL_SERVER_ERROR);
+	// 			}))
+	// 		.collect(Collectors.toList());
+	//
+	// 	log.info("Waiting for all end-process tasks to complete");
+	// 	CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+	//
+	// 	List<FairyTale> fairyTales = futures.stream()
+	// 		.map(CompletableFuture::join)
+	// 		.collect(Collectors.toList());
+	// 	log.info("Completed end-process tasks for all requests");
+	//
+	// 	return fairyTales;
+	// }
+}

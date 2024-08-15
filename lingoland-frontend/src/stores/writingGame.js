@@ -1,4 +1,5 @@
-import { httpStatus } from "@/apis/http-status";
+import { httpStatus } from "@/configuration/http-status";
+import { writingGameConfiguration } from "@/configuration/writingGameConf";
 import { defineStore } from "pinia";
 import swal from "sweetalert2";
 import { inject, ref } from "vue";
@@ -12,7 +13,9 @@ export const useWritingGameStore = defineStore("writingGameStore", () => {
     const axios = inject("axios");
     const pageCount = ref(0);
     const turn = ref(0);
-    const totalTime = ref(15);
+    const isTitle = ref(true);
+    const totalTime = ref(writingGameConfiguration.gameTime);
+    const tales = ref([]);
 
     /**
      * actions
@@ -35,14 +38,41 @@ export const useWritingGameStore = defineStore("writingGameStore", () => {
     };
 
     // 글쓰기 게임 단계별 제출
+    // true를 받으면 다음 턴으로 진행
     const submitStory = async (sessionId, storyDTO) => {
-        await axios
+        const goNext = await axios
             .post(`/writing-game/request/${sessionId}`, storyDTO, {
                 withCredentials: true,
             })
             .then((response) => {
                 if (response.status === httpStatus.OK) {
-                    console.log(response);
+                    console.log("***********글쓰기 게임 제출", response);
+                    // 제출 요청에 대해 true가 오면 turn을 바꿈
+                    // 턴 바꾸라는 시그널 요청 보내야함
+                    if (response.data.goNext) {
+                        if (response.data.fairyTales) {
+                            tales.value = response.data.fairyTales;
+                        }
+                        return true;
+                    }
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+        return goNext;
+    };
+
+    // 글쓰기 게임 첫 턴일 때 제목 제출
+    const submitTitle = async (sessionId, title) => {
+        await axios
+            .post(`/writing-game/title/${sessionId}`, title, {
+                withCredentials: true,
+            })
+            .then((response) => {
+                if (response.status === httpStatus.NOCONTENT) {
+                    console.log("***********글쓰기 게임 제목 제출", response);
                 }
             })
             .catch((error) => {
@@ -54,7 +84,10 @@ export const useWritingGameStore = defineStore("writingGameStore", () => {
         pageCount,
         turn,
         totalTime,
+        tales,
+        isTitle,
         setWritingGame,
         submitStory,
+        submitTitle,
     };
 });

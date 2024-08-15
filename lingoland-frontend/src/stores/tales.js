@@ -2,7 +2,7 @@ import { ref, computed, inject } from "vue";
 import { defineStore } from "pinia";
 import swal from "sweetalert2";
 import { useRouter } from "vue-router";
-import { httpStatus } from "@/apis/http-status";
+import { httpStatus } from "@/configuration/http-status";
 
 export const useTaleStore = defineStore("tale", () => {
     const selectedtale = ref(null);

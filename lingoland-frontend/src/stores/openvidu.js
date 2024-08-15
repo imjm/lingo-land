@@ -1,12 +1,14 @@
 import sampleImg from "@/assets/sampleImg.jpg";
 import { OpenVidu } from "openvidu-browser";
 import { defineStore, storeToRefs } from "pinia";
-import { ref } from "vue";
+import { inject, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "./user";
 import { useWritingGameStore } from "./writingGame";
 
 export const useOpenviduStore = defineStore("openvidu", () => {
+    const axios = inject("axios");
+
     const OV = new OpenVidu();
     const session = OV.initSession();
 
@@ -60,9 +62,20 @@ export const useOpenviduStore = defineStore("openvidu", () => {
     session.on("connectionDestroyed", (event) => {
         const connectionId = event.connection.connectionId;
 
+        console.log(event);
+
+        // 로그인 아이디 exitLoginId , 현재 몇 턴인지(order)
+        // const exitUserDTO = ref({
+        //     exitLoginId: "",
+        //     order: turn.value,
+        // });
+
         participants.value = participants.value.filter(
             (participant) => participant.connectionId !== connectionId
         );
+
+        // 세션에 유저가 나가면 서버에게 API 요청을 보냄
+        // removeConnection(event.sessionId, exitUserDTO);
     });
 
     // 게임 시작 Signal 수신 처리
@@ -121,6 +134,29 @@ export const useOpenviduStore = defineStore("openvidu", () => {
         await setStory(writingGameSignal);
 
         console.log("************storyList", storyList.value);
+    });
+
+    // 글쓰기 게임 턴 변경 시그널 수신 처리
+    session.on("signal:turnOver", async function (event) {
+        console.log("*****************턴 오버 시그널을 받았다", event);
+        turn.value++;
+
+        if (turn.value == pageCount.value) {
+            session
+                .signal({
+                    type: "gameEnd",
+                    data: JSON.stringify({ type: 2 }),
+                })
+                .then(() => {
+                    console.log("***********************writingGame end");
+                })
+                .catch((error) => {
+                    console.error(
+                        "******************error sending signal",
+                        error
+                    );
+                });
+        }
     });
 
     // 방 참가자 리스트 초기화
@@ -219,6 +255,21 @@ export const useOpenviduStore = defineStore("openvidu", () => {
             }
         }
     }
+
+    // 세션에서 나간 사람이 있을 시 API요청
+    // TODO: 백엔드 스펙나오면 개발진행
+    const removeConnection = async (sessionId, exitUser) => {
+        await axios
+            .post(`/writing-game/exit/${sessionId}`, exitUser, {
+                withCredentials: true,
+            })
+            .then((response) => {
+                console.log(response);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
 
     return {
         OV,

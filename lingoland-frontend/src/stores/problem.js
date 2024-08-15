@@ -1,4 +1,4 @@
-import { httpStatus } from "@/apis/http-status";
+import { httpStatus } from "@/configuration/http-status";
 import { defineStore } from "pinia";
 import { inject } from "vue";
 

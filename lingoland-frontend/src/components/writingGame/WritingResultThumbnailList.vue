@@ -4,132 +4,139 @@ import WritingResult from "./WritingResult.vue";
 import freeImage from "@/assets/free.png";
 import router from "@/router";
 import { useRoute } from "vue-router";
-import sample from '/sampleBook.jpg'
+import sample from "/sampleBook.jpg";
+import { useWritingGameStore } from "@/stores/writingGame";
+import { storeToRefs } from "pinia";
+
+const writingGameStore = useWritingGameStore();
+
+const { tales } = storeToRefs(writingGameStore);
+
 const route = useRoute();
 
 const drawer = ref(true);
 const rail = ref(true);
 
-const tales = ref([
-    {
-        title: "집에 가고 싶어요",
-        cover:  sample,
-        content: [
-            {
-                illustration: sample,
-                story: "안녕하세요 회사에 갑니다.",
-            },
-            {
-                illustration: sample,
-                story: "저는 학교에 가서 공부합니다.",
-            },
-            {
-                illustration: sample,
-                story: "회사에 가면 힘들어요",
-            },
-        ],
-    },
-    {
-        title: "집에 가고 싶어요2",
-        cover:  sample,
-        content: [
-            {
-                illustration: sample,
-                story: "안녕하세요 회사에 갑니다.",
-            },
-            {
-                illustration: sample,
-                story: "저는 학교에 가서 공부합니다.",
-            },
-            {
-                illustration: sample,
-                story: "회사에 가면 힘들어요",
-            },
-        ],
-    },
-    {
-        title: "집에 가고 싶어요3",
-        cover:  sample,
-        content: [
-            {
-                illustration: sample,
-                story: "안녕하세요 회사에 갑니다.",
-            },
-            {
-                illustration: sample,
-                story: "저는 학교에 가서 공부합니다.",
-            },
-            {
-                illustration: sample,
-                story: "회사에 가면 힘들어요",
-            },
-        ],
-    },
-    {
-        title: "집에 가고 싶어요4",
-        cover: sample,
-        content: [
-            {
-                illustration: sample,
-                story: "안녕하세요 회사에 갑니다.",
-            },
-            {
-                illustration: sample,
-                story: "저는 학교에 가서 공부합니다.",
-            },
-            {
-                illustration: sample,
-                story: "회사에 가면 힘들어요",
-            },
-        ],
-    },
-    {
-        title: "집에 가고 싶어요5",
-        cover: sample,
-        content: [
-            {
-                illustration: sample,
-                story: "안녕하세요 회사에 갑니다.",
-            },
-            {
-                illustration: sample,
-                story: "저는 학교에 가서 공부합니다.",
-            },
-            {
-                illustration: sample,
-                story: "회사에 가면 힘들어요",
-            },
-        ],
-    },
-    {
-        title: "집에 가고 싶어요6",
-        cover:  sample,
-        content: [
-            {
-                illustration: freeImage,
-                story: "안녕하세요 회사에 갑니다.",
-            },
-            {
-                illustration: freeImage,
-                story: "저는 학교에 가서 공부합니다.",
-            },
-            {
-                illustration: freeImage,
-                story: "회사에 가면 힘들어요",
-            },
-        ],
-    },
-]);
+// const tales = ref([
+//     {
+//         title: "집에 가고 싶어요",
+//         cover: sample,
+//         content: [
+//             {
+//                 illustration: sample,
+//                 story: "안녕하세요 회사에 갑니다.",
+//             },
+//             {
+//                 illustration: sample,
+//                 story: "저는 학교에 가서 공부합니다.",
+//             },
+//             {
+//                 illustration: sample,
+//                 story: "회사에 가면 힘들어요",
+//             },
+//         ],
+//     },
+//     {
+//         title: "집에 가고 싶어요2",
+//         cover: sample,
+//         content: [
+//             {
+//                 illustration: sample,
+//                 story: "안녕하세요 회사에 갑니다.",
+//             },
+//             {
+//                 illustration: sample,
+//                 story: "저는 학교에 가서 공부합니다.",
+//             },
+//             {
+//                 illustration: sample,
+//                 story: "회사에 가면 힘들어요",
+//             },
+//         ],
+//     },
+//     {
+//         title: "집에 가고 싶어요3",
+//         cover: sample,
+//         content: [
+//             {
+//                 illustration: sample,
+//                 story: "안녕하세요 회사에 갑니다.",
+//             },
+//             {
+//                 illustration: sample,
+//                 story: "저는 학교에 가서 공부합니다.",
+//             },
+//             {
+//                 illustration: sample,
+//                 story: "회사에 가면 힘들어요",
+//             },
+//         ],
+//     },
+//     {
+//         title: "집에 가고 싶어요4",
+//         cover: sample,
+//         content: [
+//             {
+//                 illustration: sample,
+//                 story: "안녕하세요 회사에 갑니다.",
+//             },
+//             {
+//                 illustration: sample,
+//                 story: "저는 학교에 가서 공부합니다.",
+//             },
+//             {
+//                 illustration: sample,
+//                 story: "회사에 가면 힘들어요",
+//             },
+//         ],
+//     },
+//     {
+//         title: "집에 가고 싶어요5",
+//         cover: sample,
+//         content: [
+//             {
+//                 illustration: sample,
+//                 story: "안녕하세요 회사에 갑니다.",
+//             },
+//             {
+//                 illustration: sample,
+//                 story: "저는 학교에 가서 공부합니다.",
+//             },
+//             {
+//                 illustration: sample,
+//                 story: "회사에 가면 힘들어요",
+//             },
+//         ],
+//     },
+//     {
+//         title: "집에 가고 싶어요6",
+//         cover: sample,
+//         content: [
+//             {
+//                 illustration: freeImage,
+//                 story: "안녕하세요 회사에 갑니다.",
+//             },
+//             {
+//                 illustration: freeImage,
+//                 story: "저는 학교에 가서 공부합니다.",
+//             },
+//             {
+//                 illustration: freeImage,
+//                 story: "회사에 가면 힘들어요",
+//             },
+//         ],
+//     },
+// ]);
+
+onMounted(() => {
+    console.log(tales.value);
+});
 
 const selectedIndex = ref(0);
 const selectedTaleDetail = computed(() => {
     console.log("클릭");
     return tales.value[selectedIndex.value];
 });
-
-
-
-
 </script>
 
 <template>
@@ -137,20 +144,18 @@ const selectedTaleDetail = computed(() => {
         v-model="drawer"
         :rail="rail"
         permanent
-        
         class="drawer gowun-batang-regular"
     >
         <v-list density="compact" @click="rail = !rail" nav>
-
             <v-list-item
                 v-for="(tale, index) in tales"
                 :key="index"
-                
                 class="d-flex justify-center align-center row mt-2"
             >
-                <div class="cover d-flex justify-center align-center" @click="selectedIndex = index">
-                    <v-img :src="tale.cover" height="90%"> </v-img>
-                </div>
+                <div
+                    class="cover d-flex justify-center align-center"
+                    @click="selectedIndex = index"
+                ></div>
                 <v-list-item-content>
                     <v-list-item-title :style="{ color: 'white' }">
                         {{ tale.title }}
@@ -175,17 +180,12 @@ const selectedTaleDetail = computed(() => {
             >
                 door_open
             </span>
-            <!-- <span>방으로</span> -->
         </button>
     </v-navigation-drawer>
     <v-main class="main d-flex align-center justify-center">
         <WritingResult :tale="selectedTaleDetail" />
     </v-main>
 
-    <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
-    />
     <link
         rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
@@ -215,10 +215,9 @@ const selectedTaleDetail = computed(() => {
     height: 80px;
     margin: 2px;
     box-shadow: 10px 10px 10px rgb(0, 0, 0, 0.5);
-    
 }
 .cover:hover {
-    box-shadow : 5px -5px 5px rgb(255,255,255,0.8)
+    box-shadow: 5px -5px 5px rgb(255, 255, 255, 0.8);
 }
 
 .row {

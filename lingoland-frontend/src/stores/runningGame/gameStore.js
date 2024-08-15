@@ -57,7 +57,7 @@ export const useGameStore = defineStore("gameStore", () => {
         }
     }
 
-    function resetRunningGmae() {
+    function resetRunningGame() {
         zCoordinate.value = 0;
         isGameEnded.value = false;
         gameRanks.value = [];
@@ -81,6 +81,6 @@ export const useGameStore = defineStore("gameStore", () => {
         endGame,
         saveResult,
         setGameRanks,
-        resetRunningGmae,
+        resetRunningGame,
     };
 });

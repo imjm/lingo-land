@@ -17,6 +17,8 @@ import "vuetify/styles";
 
 import { instance } from "@/apis/axios";
 
+import { cloneDeep } from "lodash";
+
 const vuetify = createVuetify({
     icons: {
         defaultSet: "mdi",
@@ -28,14 +30,24 @@ const vuetify = createVuetify({
     },
     components,
     directives,
-
 });
 
+// 피니아 상태 초기화
+function resetStore({ store }) {
+    // store의 기본값을 deepClone
+    const initalState = cloneDeep(store.$state);
+
+    // deepClone한 상태로 재 설정
+    store.$reset = () => store.$patch(cloneDeep(initalState));
+}
+
 const app = createApp(App);
+const pinia = createPinia();
+pinia.use(resetStore);
 
 app.provide("axios", instance);
 app.use(vuetify);
-app.use(createPinia());
+app.use(pinia);
 app.use(router);
 
 app.mount("#app");
