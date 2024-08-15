@@ -1,9 +1,11 @@
 package com.ssafy.a603.lingoland.room.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,7 +76,11 @@ public class RoomServiceImpl implements RoomService {
 		room.addContributer(contributor);
 		log.info("Added contributor with ID: {} to Room with ID: {}", contributor.getId(), room.getId());
 
-		room.getFairyTale().addContent(story);
+		FairyTale fairyTale = fairyTaleRepository.findById(room.getFairyTale().getId()).orElseThrow(() -> {
+			log.error("No such FairyTale : {}", room.getFairyTale().getId());
+			return new NotFoundException(ErrorCode.FAIRY_TALE_NOT_FOUND);
+		});
+		fairyTale.addContent(story);
 		log.info("Added story to FairyTale in Room with ID: {}", room.getId());
 	}
 
@@ -161,5 +167,16 @@ public class RoomServiceImpl implements RoomService {
 			log.error("No such member id : {}", customUserDetails.getMemberId());
 			return new NotFoundException(ErrorCode.MEMBER_NOT_FOUND);
 		});
+	}
+
+	@Scheduled(cron = "0 0 * * * ?")
+	public void roomDelteSchedule() {
+		LocalDateTime oneHourAgo = LocalDateTime.now().minusHours(1);
+
+		List<Room> roomsToDelete = roomRepository.findByCreatedAtBeforeAndIsDeletedFalse(oneHourAgo);
+		for (Room room : roomsToDelete) {
+			room.delete();
+			roomRepository.save(room);
+		}
 	}
 }

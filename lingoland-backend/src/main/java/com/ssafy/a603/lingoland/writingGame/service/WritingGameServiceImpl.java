@@ -1,9 +1,11 @@
 package com.ssafy.a603.lingoland.writingGame.service;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -121,10 +123,6 @@ public class WritingGameServiceImpl implements WritingGameService {
 			for (String participant : sessionInfo.getParticipants()) {
 				redisSubmitKey = makeRedisMemberSubmitKey(sessionId, participant);
 				serializeToRedis(redisSubmitKey, false);
-			}
-			if (fairyTales != null) {
-				deleteKeysByPattern(makeRedisRoomKey(sessionId));
-				roomService.endRooms(sessionId);
 			}
 			log.info("All participants have ended their submissions for session: {}", sessionId);
 			return SubmitStoryResponseDTO.builder()
@@ -295,7 +293,7 @@ public class WritingGameServiceImpl implements WritingGameService {
 
 	private <T> void serializeToRedis(String key, T value) {
 		try {
-			redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(value));
+			redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(value), 60, TimeUnit.MINUTES);
 			log.debug("Serialized object to Redis with key: {}", key);
 		} catch (JsonProcessingException e) {
 			log.error("Failed to serialize object to Redis", e);
@@ -317,26 +315,38 @@ public class WritingGameServiceImpl implements WritingGameService {
 
 	private boolean isAllEnd(String sessionId, SessionInfo sessionInfo) {
 		log.info("Checking if all participants have ended for session: {}", sessionId);
+		String lockKey = "lock:" + sessionId + ":isAllEnd";
 		String redisAliveKey;
 		String redisSubmitKey;
-		Boolean isAlive;
-		Boolean isSubmit;
 		int count = 0;
-		for (String participant : sessionInfo.getParticipants()) {
-			redisAliveKey = makeRedisMemberAliveKey(sessionId, participant);
-			redisSubmitKey = makeRedisMemberSubmitKey(sessionId, participant);
-			isAlive = deserializeFromRedis(redisAliveKey, new TypeReference<Boolean>() {
-			});
-			if (!isAlive) {
-				count++;
-				continue;
+
+		// Acquire a distributed lock
+		Boolean acquired = redisTemplate.opsForValue().setIfAbsent(lockKey, "locked", Duration.ofSeconds(5));
+		if (Boolean.TRUE.equals(acquired)) {
+			try {
+				for (String participant : sessionInfo.getParticipants()) {
+					redisAliveKey = makeRedisMemberAliveKey(sessionId, participant);
+					redisSubmitKey = makeRedisMemberSubmitKey(sessionId, participant);
+
+					Boolean isAlive = deserializeFromRedis(redisAliveKey, new TypeReference<Boolean>() {
+					});
+					Boolean isSubmit = deserializeFromRedis(redisSubmitKey, new TypeReference<Boolean>() {
+					});
+
+					if (Boolean.FALSE.equals(isAlive) || Boolean.TRUE.equals(isSubmit)) {
+						count++;
+					}
+				}
+			} finally {
+				// Release the lock
+				redisTemplate.delete(lockKey);
 			}
-			isSubmit = deserializeFromRedis(redisSubmitKey, new TypeReference<Boolean>() {
-			});
-			if (isSubmit) {
-				count++;
-			}
+		} else {
+			// Could not acquire lock, return false or retry after some time
+			log.warn("Could not acquire lock for session: {}", sessionId);
+			return false;
 		}
+
 		boolean allEnded = count == sessionInfo.getParticipants().size();
 		log.debug("All participants ended: {}", allEnded);
 		return allEnded;
