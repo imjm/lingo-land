@@ -106,7 +106,7 @@ export const useOpenviduStore = defineStore("openvidu", () => {
     // 게임 종료 signal 수신 처리
     session.on("signal:gameEnd", function (event) {
         const resultType = JSON.parse(event.data);
-
+        console.log("나의1시간 받아라",event)
         if (resultType.type === 1) {
             router.push({ name: "runningGameResult" });
         } else if (resultType.type === 2) {

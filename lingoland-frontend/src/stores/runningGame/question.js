@@ -179,4 +179,5 @@ export {
     wrongProblem,
     coinScore,
     index,
+    reparticipants
 };
