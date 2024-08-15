@@ -17,6 +17,9 @@ export const useWritingGameStore = defineStore("writingGameStore", () => {
     const totalTime = ref(writingGameConfiguration.gameTime);
     const tales = ref([]);
 
+    const textareaValue = ref("");
+    const title = ref("");
+
     /**
      * actions
      */
@@ -80,14 +83,24 @@ export const useWritingGameStore = defineStore("writingGameStore", () => {
             });
     };
 
+    function setWritingGameState() {
+        turn.value = 0;
+        isTitle.value = true;
+        tales.value = [];
+        (textareaValue.value = ""), (title.value = "");
+    }
+
     return {
         pageCount,
         turn,
         totalTime,
         tales,
         isTitle,
+        textareaValue,
+        title,
         setWritingGame,
         submitStory,
         submitTitle,
+        setWritingGameState,
     };
 });

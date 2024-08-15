@@ -105,6 +105,10 @@ export const useOpenviduStore = defineStore("openvidu", () => {
             // 방장이 보내준 글쓰기 페이지로 초기화
             pageCount.value = gameType.data;
 
+            storyList.value = [];
+
+            writingGameStore.setWritingGameState();
+
             // 이야기 배열 초기화
             initalizeStoryList();
 
@@ -117,12 +121,13 @@ export const useOpenviduStore = defineStore("openvidu", () => {
     });
 
     // 게임 종료 signal 수신 처리
-    session.on("signal:gameEnd", function (event) {
+    session.on("signal:gameEnd", async function (event) {
         const resultType = JSON.parse(event.data);
         if (resultType.type === 1) {
             router.push({ name: "runningGameResult" });
         } else if (resultType.type === 2) {
-            router.push({ name: "writingGameResult" });
+            // router.push({ name: "writingGameResult" });
+            router.push({ name: "loading" });
         }
     });
 
@@ -140,6 +145,7 @@ export const useOpenviduStore = defineStore("openvidu", () => {
         console.log("*****************턴 오버 시그널을 받았다", event);
         turn.value++;
 
+        // 글쓰기 턴과 설정 페이지가 같으면 글쓰기 게임 종료
         if (turn.value == pageCount.value) {
             session
                 .signal({
