@@ -47,7 +47,7 @@ watch(turn, (newValue, oldValue) => {
             // 턴이 바뀌었을 때 다음 사람이 작성할 이야기 세팅
             setStory();
             // 타이머 초기화
-            totalTime.value = writingGameConfiguration.gameTime;
+            totalTime.value = writingGameConfiguration.gameTime + (turn.value * 30); // 턴이 진행됨에 따라서 시간 가중치
         });
     }
 });
