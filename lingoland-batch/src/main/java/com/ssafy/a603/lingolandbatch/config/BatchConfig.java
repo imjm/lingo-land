@@ -2,6 +2,7 @@ package com.ssafy.a603.lingolandbatch.config;
 
 
 import com.ssafy.a603.lingolandbatch.tasklet.BatchTasklet;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.slf4j.Logger;
@@ -34,8 +35,14 @@ public class BatchConfig {
     private static int executionCnt = 0;
 
     @Value("${spring.executionCnt}")
+    private int cnt;
+
     private static int batchExecutionMax;
 
+    @PostConstruct
+    public void setEnvironmentVariable(){
+        batchExecutionMax = cnt;
+    }
     @Bean
     public Job batchJob() {
         return new JobBuilder("batchJob", jobRepository)
@@ -74,6 +81,8 @@ public class BatchConfig {
     @Bean
     public JobExecutionDecider jobExecutionDecider(){
         return ((jobExecution, stepExecution) -> {
+            System.out.println("*****************");
+            log.info("executionCnt : {}, batchExecutionMax : {}", executionCnt, batchExecutionMax);
             executionCnt++;
             if (executionCnt < batchExecutionMax) {
                 return new FlowExecutionStatus("CONTINUE");

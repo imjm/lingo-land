@@ -38,6 +38,6 @@ spring:
       initialize-schema: always
 
   chatGPTKey: ${CHAT_GPT_KEY}
-  executionCnt: 1
+  executionCnt: 3
 server:
   port: 8081
