@@ -7,13 +7,11 @@ import PageNavigationButton from "@/components/common/PageNavigationButton.vue";
 import Profile from "@/components/common/Profile.vue";
 import { useGameRoomStore } from "@/stores/gameRoom";
 import { useOpenviduStore } from "@/stores/openvidu";
-import { useGameStore } from "@/stores/runningGame/gameStore";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
 
-const gameStore = useGameStore(); // 삭제 예정
 const gameRoomStore = useGameRoomStore();
 const openviduStore = useOpenviduStore();
 
@@ -106,13 +104,14 @@ function joinRoom() {
                             </div>
                             <GenericInput
                                 v-model="roomCode"
-                                :style="{ width: '90%' }"
+                                :style="{ width: '70%' }"
                                 @keyUp-event="joinRoom"
                             />
                             <GenericButton
                                 data="입력"
-                                :style="{ width: '90%' }"
+                                :style="{ width: '70%' }"
                                 @click-event="joinRoom"
+                                class="mb-5"
                             />
                         </v-col>
                     </v-row>
