@@ -1,13 +1,11 @@
 <script setup>
-import GenericButton from "@/components/common/GenericButton.vue";
-import router from "@/router";
+import { onMounted } from "vue";
 import GroupMemberListItem from "./GroupMemberListItem.vue";
 
 const props = defineProps({
     groupMemberList: Object,
+    group: Object,
 });
-
-
 </script>
 
 <template>
@@ -17,11 +15,9 @@ const props = defineProps({
             :key="i"
             hide-actions
         >
-            <GroupMemberListItem :groupMember="groupMember" />
+            <GroupMemberListItem :groupMember="groupMember" :group="group" />
         </v-expansion-panel>
     </v-expansion-panels>
-
-
 </template>
 
 <style scoped></style>

@@ -1,14 +1,9 @@
 package com.ssafy.a603.lingoland.member.entity;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ssafy.a603.lingoland.fairyTale.entity.FairyTaleMember;
 import com.ssafy.a603.lingoland.global.entity.BaseEntity;
 import com.ssafy.a603.lingoland.group.entity.GroupMember;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -24,6 +19,10 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -51,17 +50,14 @@ public class Member extends BaseEntity {
 	@Column(nullable = false)
 	private String password;
 
-	@Column(columnDefinition = "TEXT")
+	@Column(length = 512)
 	private String profileImage;
 
 	@Column(nullable = false)
 	private long experiencePoint;
 
-	@Column(nullable = false)
-	private String rank;
-
-	// @Column(nullable = false)
-	// private LocalDateTime createdAt;
+	@Enumerated(EnumType.STRING)
+	private Rank rank;
 
 	private LocalDateTime deletedAt;
 
@@ -74,7 +70,7 @@ public class Member extends BaseEntity {
 	@Column(nullable = false)
 	private long writingPlayedCount;
 
-	@Column(columnDefinition = "TEXT")
+	@Column(length = 512)
 	private String refreshToken;
 
 	@Enumerated(EnumType.STRING)
@@ -102,5 +98,17 @@ public class Member extends BaseEntity {
 
 	public void updateProfileImage(String profileImage) {
 		this.profileImage = profileImage;
+	}
+
+	public void updateExperiencePoint(long points) {
+		this.experiencePoint += points;
+		checkRankUp();
+	}
+
+	private void checkRankUp() {
+		if(this.experiencePoint >= this.rank.getMaxExperience()) {
+			this.experiencePoint -= this.rank.getMaxExperience();
+			this.rank = this.rank.nextRank();
+		}
 	}
 }

@@ -8,6 +8,8 @@ import NameTag from "../common/NameTag.vue";
 
 const userStore = useUserStore();
 
+userStore.$reset(); // 유저 상태 초기화
+
 const warningMessage = ref("");
 
 const loginInfo = ref({
@@ -46,7 +48,7 @@ function login() {
         <v-row>
             <v-col cols="6" class="px-5">
                 <NameTag data="로그인" />
-                <v-card  height="500">
+                <v-card height="500">
                     <v-row>
                         <v-col>
                             <div class="ma-10">
@@ -55,6 +57,7 @@ function login() {
                                     type="text"
                                     data="아이디"
                                     id="loginId"
+                                    @keyUp-event="login"
                                 />
 
                                 <GenericInput
@@ -62,6 +65,7 @@ function login() {
                                     type="password"
                                     data="비밀번호"
                                     id="password"
+                                    @keyUp-event="login"
                                 />
 
                                 <v-switch

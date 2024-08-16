@@ -1,9 +1,12 @@
 <script setup>
+import defaultImage from "@/assets/sampleImg.jpg";
 import { useGroupStore } from "@/stores/groups";
 import { onMounted, ref, defineProps } from "vue";
 import GroupListItem from "./GroupListItem.vue";
 import { useRouter } from "vue-router";
 import GroupJoinDialog from "./GroupJoinDialog.vue";
+
+const { VITE_SERVER_IMAGE_URL } = import.meta.env;
 
 const props = defineProps({
     checkMyGroup: Boolean,
@@ -15,7 +18,7 @@ const router = useRouter();
 const groupList = ref();
 const dialog = ref({
     groupInfo: Object,
-    isOpen: false,  
+    isOpen: false,
 });
 
 function clickFunction(groupInfo, groupId) {
@@ -27,6 +30,12 @@ function clickFunction(groupInfo, groupId) {
         });
     } else {
         // 내가 속한 그룹이 아닌 경우 가입 dialog 출력
+        if (groupInfo.groupImage === "group/default.jpg") {
+            groupInfo.groupImage = defaultImage;
+        } else {
+            groupInfo.groupImage = VITE_SERVER_IMAGE_URL + groupInfo.groupImage;
+        }
+
         dialog.value.groupInfo = groupInfo;
         dialog.value.isOpen = true;
     }
@@ -56,6 +65,7 @@ onMounted(() => {
         >
             <GroupListItem
                 :group="group"
+                :check-my-group="props.checkMyGroup"
                 @click-event="clickFunction(group, group.id)"
             />
         </v-expansion-panel>

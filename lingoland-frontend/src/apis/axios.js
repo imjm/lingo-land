@@ -1,7 +1,7 @@
 import router from "@/router";
 import { Mutex } from "async-mutex";
 import axios from "axios";
-import { httpStatus } from "./http-status.js";
+import { httpStatus } from "@/configuration/http-status";
 
 const { VITE_SERVER_URL } = import.meta.env;
 

@@ -8,6 +8,7 @@ import org.hibernate.type.SqlTypes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ssafy.a603.lingoland.fairyTale.dto.UpdateFairyTaleRequestDTO;
 import com.ssafy.a603.lingoland.global.entity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -19,11 +20,13 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@EqualsAndHashCode(of = "id", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FairyTale extends BaseEntity {
 	@Id
@@ -44,19 +47,44 @@ public class FairyTale extends BaseEntity {
 	@Column(columnDefinition = "jsonb")
 	private List<Story> content;
 
-	// @Column(name = "created_at")
-	// private LocalDateTime createdAt = LocalDateTime.now();
-
 	@OneToMany(mappedBy = "fairyTale")
 	@JsonIgnore
-	private List<FairyTaleMember> fairyTaleMembers = new ArrayList<>();
+	private List<FairyTaleMember> fairyTaleMembers;
+
+	private Integer isComplete;
 
 	@Builder
-	protected FairyTale(String title, String cover, String summary, List<Story> content) {
+	public FairyTale(String title, String cover, String summary, List<Story> content) {
 		this.title = title;
 		this.cover = cover;
 		this.summary = summary;
 		this.content = content;
+		this.fairyTaleMembers = new ArrayList<>();
+		this.isComplete = 0;
+	}
+
+	public void complete() {
+		this.isComplete = 2;
+	}
+
+	public void inComplete() {
+		this.isComplete = 1;
+	}
+
+	public void addContent(FairyTale.Story story) {
+		this.content.add(story);
+	}
+
+	public void update(UpdateFairyTaleRequestDTO request) {
+		if (request.title() != null && !request.title().isBlank())
+			this.title = request.title();
+		if (request.summary() != null && !request.summary().isBlank())
+			this.summary = request.summary();
+	}
+
+	public void completeBefore(String cover, String summary) {
+		this.cover = cover;
+		this.summary = summary;
 	}
 
 	@Getter
@@ -66,7 +94,7 @@ public class FairyTale extends BaseEntity {
 		private String story;
 
 		@Builder
-		protected Story(@JsonProperty("illustration") String illustration,
+		public Story(@JsonProperty("illustration") String illustration,
 			@JsonProperty("story") String story) {
 			this.illustration = illustration;
 			this.story = story;

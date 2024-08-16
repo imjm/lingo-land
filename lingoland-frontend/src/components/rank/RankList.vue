@@ -8,7 +8,7 @@ const groupMemberStore = useGroupMemberStore();
 
 <template>
     <div>
-        <v-card color="rgba(172, 204, 124, 1)" class="pt-3 " height="75vh">
+        <v-card color="rgba(172, 204, 124, 1)" class="pt-3 " height="90vh">
             <v-row>
                 <v-col>
                     <h1 class="ml-10">순위</h1>

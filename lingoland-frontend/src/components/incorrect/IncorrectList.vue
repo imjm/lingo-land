@@ -1,16 +1,58 @@
 <script setup>
-import { defineProps } from "vue";
+import { useProblemStore } from "@/stores/problem";
+import { defineProps, onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
 import IncorrectListItem from "./IncorrectListItem.vue";
 
+const emit = defineEmits(["clickEvent"]);
+
+const problemStore = useProblemStore();
+const route = useRoute();
+const incorrectList = ref();
+
 const props = defineProps({
-    incorrects: Array,
+    groupId: String,
+    memberId: String,
+});
+
+function getWrongProblems() {
+    let problemList;
+    if (route.params.memberId) {
+        problemList = problemStore.getWrongProblemsByadmin(
+            props.groupId,
+            props.memberId
+        );
+    } else {
+        problemList = problemStore.getMyWrongProblems();
+    }
+
+    if (problemList) {
+        problemList.then((getvalue) => {
+            incorrectList.value = getvalue;
+        });
+    }
+}
+
+function completeWrongProblem() {
+    emit("clickEvent");
+    // 갱신된 오답노트 재요청
+    getWrongProblems();
+}
+
+onMounted(() => {
+    // 오답노트 가져오기
+    getWrongProblems();
 });
 </script>
 
 <template>
     <v-list class="incorrect-list">
-        <v-list-item v-for="(incorrect, index) in incorrects" :key="index">
-            <IncorrectListItem :incorrect="incorrect"></IncorrectListItem>
+        <v-list-item v-for="(incorrect, index) in incorrectList" :key="index">
+            <IncorrectListItem
+                :incorrect="incorrect"
+                @click-event="completeWrongProblem"
+                :member-id="memberId"
+            ></IncorrectListItem>
         </v-list-item>
     </v-list>
 </template>
@@ -35,5 +77,9 @@ const props = defineProps({
 ::-webkit-scrollbar-thumb {
     background: rgb(252, 194, 85);
     border-radius: 10px;
+}
+
+.custom-swal-popup {
+    z-index: 99999 !important; /* Vue 다이얼로그보다 높은 z-index 설정 */
 }
 </style>

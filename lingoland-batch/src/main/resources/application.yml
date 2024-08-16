@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: lingoland-batch
+
+  datasource:
+    url: jdbc:postgresql://i11a603.p.ssafy.io:5432/lingoland
+    username: postgres
+    password: ssafy
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  logging:
+    level:
+      org:
+        hibernate:
+          type:
+            descriptor:
+              sql: trace
+
+      reactor.core.publisher: DEBUG
+      io.r2dbc.postgresql: DEBUG
+      org.springframework.data.r2dbc: DEBUG
+
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+  batch:
+    jdbc:
+      initialize-schema: always
+
+  chatGPTKey: ${CHAT_GPT_KEY}
+  executionCnt: 3
+server:
+  port: 8081

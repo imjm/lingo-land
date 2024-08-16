@@ -1,13 +1,14 @@
 <script setup>
+import sampleImage from "@/assets/sampleImg.jpg";
 import { useUserStore } from "@/stores/user";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import BackButton from "../common/BackButton.vue";
 import GenericButton from "../common/GenericButton.vue";
 import GenericInput from "../common/GenericInput.vue";
 import ImageBox from "../common/ImageBox.vue";
 import NameTag from "../common/NameTag.vue";
 import SubmitButton from "../common/SubmitButton.vue";
-import sampleImage from "@/assets/sampleImg.jpg";
 
 const router = useRouter();
 
@@ -20,9 +21,23 @@ const userProfile = ref({
     experiencePoint: 0,
 });
 
+const updateProfileImage = ref();
+
 function modifyNickName() {
     // 닉네임 수정 API 요청
     userStore.modifyNickname(changeNickName.value);
+}
+
+function modifyProfileImage(event) {
+    const file = event.target.files[0];
+
+    if (file) {
+        updateProfileImage.value = file;
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        userStore.modifyProfileImage(updateProfileImage.value);
+    }
 }
 
 function modifyPassword() {
@@ -48,6 +63,7 @@ onMounted(() => {
 </script>
 
 <template>
+    <BackButton />
     <v-main class="d-flex align-center justify-center">
         <div>
             <NameTag data="프로필 수정" :style="{ width: '250px' }" />
@@ -57,8 +73,16 @@ onMounted(() => {
                 class="d-flex align-center justify-center"
             >
                 <v-row>
-                    <v-col cols="6" class="d-flex align-center justify-center">
+                    <v-col
+                        cols="6"
+                        class="d-flex flex-column align-center justify-center"
+                    >
                         <ImageBox :source="userProfile.profileImage" />
+                        <v-file-input
+                            prepend-icon="mdi-camera"
+                            hide-input
+                            @change="modifyProfileImage"
+                        ></v-file-input>
                     </v-col>
 
                     <v-col cols="6">

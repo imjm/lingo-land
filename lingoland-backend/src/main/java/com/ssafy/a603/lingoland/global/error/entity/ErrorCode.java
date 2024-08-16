@@ -15,6 +15,7 @@ public enum ErrorCode {
 	GROUP_DUPLICATED_VALUE(HttpStatus.BAD_REQUEST, "G2", "이미 존재하는 그룹입니다."),
 	GROUP_INVALID_INPUT(HttpStatus.BAD_REQUEST, "G3", "올바르지 않은 입력값입니다."),
 	GROUP_PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST, "G4", "비밀번호가 일치하지 않습니다."),
+	GROUP_NOT_LEADER(HttpStatus.FORBIDDEN, "G5", "리더가 아닙니다."),
 
 	FAIRY_TALE_NOT_FOUND(HttpStatus.NOT_FOUND, "F1", "존재하지 않는 동화입니다."),
 	FAIRY_TALE_DUPLICATED_VALUE(HttpStatus.BAD_REQUEST, "F2", "이미 존재하는 동화입니다."),
@@ -25,7 +26,8 @@ public enum ErrorCode {
 	NOT_FOUND(HttpStatus.NOT_FOUND, "E4", "존재하지 않는 엔티티입니다."),
 	UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "E5", "인증되지 않은 사용자입니다."),
 	DUPLICATED_VALUE(HttpStatus.BAD_REQUEST, "E6", "이미 존재하는 엔티티입니다."),
-	FORBIDDEN(HttpStatus.FORBIDDEN, "E7", "권한이 없는 사용자입니다.");
+	FORBIDDEN(HttpStatus.FORBIDDEN, "E7", "권한이 없는 사용자입니다."),
+	JSON_PROCESSING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "E8", "JSON 변환에 실패했습니다.");
 
 	private final HttpStatus status;
 	private final String code;

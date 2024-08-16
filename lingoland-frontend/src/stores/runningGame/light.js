@@ -1,7 +1,6 @@
 import * as THREE from "three";
 
-
-//병앓쓰
+// 병아리
 function addLights(scene) {
     const light = new THREE.DirectionalLight(0xffffff, 1);
     light.position.set(3, 10, 10);

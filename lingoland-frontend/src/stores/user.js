@@ -1,8 +1,11 @@
-import { httpStatus } from "@/apis/http-status";
+import { httpStatus } from "@/configuration/http-status";
+import defaultGroupImage from "@/assets/sampleImg.jpg";
 import { defineStore } from "pinia";
 import swal from "sweetalert2";
 import { inject, ref } from "vue";
 import { useRouter } from "vue-router";
+
+const { VITE_SERVER_IMAGE_URL } = import.meta.env;
 
 export const useUserStore = defineStore("userStore", () => {
     /**
@@ -12,32 +15,18 @@ export const useUserStore = defineStore("userStore", () => {
 
     const router = useRouter();
     const axios = inject("axios");
-
-    // 신분명이 결정되면 수정 예정
-    const statue = ref([
-        "신분1",
-        "신분2",
-        "신분3",
-        "신분4",
-        "신분5",
-        "신분6",
-        "신분7",
-        "신분9",
-        "신분10",
-    ]);
+    const isAuthenticated = ref(false);
 
     /**
      * actions
      */
-    // 경험치를 어떤 기준으로 신분을 나눌 것인지 결정되면 수정 예정
-    function getstatue(experiencePoint) {
-        console.log("*****************경험치", experiencePoint);
-        console.log(
-            "*****************신분",
-            statue.value[experiencePoint / 100]
-        );
-
-        return statue.value[experiencePoint / 100];
+    // 이미지 얻어왔을 때 기본 이미지 넣어주는 함수 & 이미지 경로 넣어주는 함수 구현
+    function checkImagePath(profileImage) {
+        if (profileImage === "member/default.jpg") {
+            return defaultGroupImage;
+        } else {
+            return VITE_SERVER_IMAGE_URL + profileImage;
+        }
     }
 
     function checkPassword(originPassword, checkPassword) {
@@ -60,7 +49,8 @@ export const useUserStore = defineStore("userStore", () => {
                 }
             })
             .catch((error) => {
-                if (error.status === httpStatus.CONFLICT) {
+                console.log(error);
+                if (error.response.status === httpStatus.CONFLICT) {
                     return_value = false;
                 }
             });
@@ -99,6 +89,8 @@ export const useUserStore = defineStore("userStore", () => {
             .post("/login", userInfo, { withCredentials: true })
             .then((response) => {
                 if (response.status === httpStatus.OK) {
+                    isAuthenticated.value = true;
+
                     // axios 요청 header에 access token 추가
                     axios.defaults.headers.common["Authorization"] =
                         response.headers.authorization;
@@ -122,7 +114,7 @@ export const useUserStore = defineStore("userStore", () => {
         await axios
             .put("/logout", {}, { withCredentials: true })
             .then((response) => {
-                console.log(response);
+                isAuthenticated.value = false;
                 sessionStorage.removeItem("accessToken");
                 delete axios.defaults.headers.common["Authorization"];
                 router.replace({ name: "login" });
@@ -138,6 +130,9 @@ export const useUserStore = defineStore("userStore", () => {
             .get("/users", { withCredentials: true })
             .then((response) => {
                 if (response.status === httpStatus.OK) {
+                    response.data.profileImage = checkImagePath(
+                        response.data.profileImage
+                    );
                     return Promise.resolve(response.data);
                 }
             })
@@ -154,6 +149,9 @@ export const useUserStore = defineStore("userStore", () => {
             .get(`/users/${loginId}`, { withCredentials: true })
             .then((response) => {
                 if (response.status === httpStatus.OK) {
+                    response.data.profileImage = checkImagePath(
+                        response.data.profileImage
+                    );
                     return Promise.resolve(response.data);
                 }
             })
@@ -216,8 +214,42 @@ export const useUserStore = defineStore("userStore", () => {
             });
     };
 
+    // 유저 이미지 수정
+    const modifyProfileImage = async (profileImage) => {
+        const formData = new FormData();
+
+        formData.append("profileImage", profileImage);
+
+        await axios
+            .put("/users/profile-image", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+                withCredentials: true,
+            })
+            .then((response) => {
+                if (response.status === httpStatus.OK) {
+                    Swal.fire({
+                        title: "이미지 수정이 완료되었어요",
+                        icon: "success",
+                    }).then(() => {
+                        router.go(0);
+                    });
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                if (error.response.status === httpStatus.BADREQUEST) {
+                    Swal.fire({
+                        title: error.response.data,
+                        icon: "error",
+                    });
+                }
+            });
+    };
+
     return {
-        getstatue,
+        isAuthenticated,
         checkPassword,
         checkDuplicate,
         signUp,
@@ -227,5 +259,6 @@ export const useUserStore = defineStore("userStore", () => {
         getProfileById,
         modifyNickname,
         modifyPassword,
+        modifyProfileImage,
     };
 });

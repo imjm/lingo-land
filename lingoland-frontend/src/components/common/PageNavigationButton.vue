@@ -10,40 +10,38 @@ const props = defineProps({
     data: String,
     backgroundColor: String,
     source: String,
+    height: String,
 });
 </script>
 
 <template>
-    <div>
-        <v-btn
-            class="mb-5"
-            :style="{
-                width: '90vw',
-                height: '300px',
-                backgroundColor: backgroundColor,
-                // fontSize: 'x-large',
-            }"
-            @click="$emit('clickEvent')"
-        >
-            <div class="d-flex flex-column">
-                <div class="text-h4 font-weight-black">
-                    {{ data }}
-                </div>
-                <div class="d-flex justify-center align-center" style="flex: 1">
-                    <img
-                        v-if="source"
-                        :src="source"
-                        style="
-                            max-width: 100%;
-                            max-height: 100%;
-                            object-fit: contain;
-                        "
-                        alt="Icon"
-                    />
-                </div>
+    <v-btn
+        :style="{
+            width: '40vw',
+            backgroundColor: backgroundColor,
+        }"
+        :height="height"
+        @click="$emit('clickEvent')"
+    >
+        <div class="d-flex flex-column mt-5">
+            <div style="font-size: xx-large; font-weight: 700">
+                {{ data }}
             </div>
-        </v-btn>
-    </div>
+            <div class="d-flex justify-center align-center pa-1">
+                <img
+                    v-if="source"
+                    :src="source"
+                    style="
+                        max-width: 80%;
+                        max-height: 90%;
+                        object-fit: contain;
+                        padding-bottom: 10px;
+                    "
+                    alt="Icon"
+                />
+            </div>
+        </div>
+    </v-btn>
 </template>
 
 <style scoped></style>

@@ -1,10 +1,12 @@
 import { ref } from "vue";
 
-const countdown = ref(3);
+const countdown = ref();
 let timerInterval = null;
 let startTime = null;
 
 function startCountdown() {
+    countdown.value = 3;
+
     const interval = setInterval(() => {
         if (countdown.value > 0) {
             countdown.value--;
@@ -19,6 +21,7 @@ function startCountdown() {
 function startTimer() {
     startTime = Date.now();
     timerInterval = setInterval(updateTimer(startTime), 1000);
+    console.log("시간 시작!!!!!!!!!1");
 }
 
 function updateTimer(startTime) {
@@ -35,10 +38,10 @@ function updateTimer(startTime) {
 }
 
 export {
-    startCountdown,
-    startTimer,
-    updateTimer,
     countdown,
-    timerInterval,
+    startCountdown,
     startTime,
+    startTimer,
+    timerInterval,
+    updateTimer,
 };

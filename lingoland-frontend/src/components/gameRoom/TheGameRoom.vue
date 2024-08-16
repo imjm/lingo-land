@@ -1,81 +1,40 @@
 <script setup>
 import sampleImg from "@/assets/sampleImg.jpg";
-import img1 from "@/assets/달리기.jpg";
-import GameButton from "@/components/gameRoom/GameButton.vue";
+import runningImg from "@/assets/달리기.jpg";
 import GameMemberList from "@/components/gameRoom/GameMemberList.vue";
-import { useGameRoomStore } from "@/stores/gameRoom";
-import { useUserStore } from "@/stores/user";
-import { OpenVidu } from "openvidu-browser";
-import swal from "sweetalert2";
-import { onMounted, ref } from "vue";
+import { useOpenviduStore } from "@/stores/openvidu";
+import { useWritingGameStore } from "@/stores/writingGame";
+import { storeToRefs } from "pinia";
+import Swal from "sweetalert2";
 import { useRoute, useRouter } from "vue-router";
+import GenericButton from "../common/GenericButton.vue";
+import GenericInput from "../common/GenericInput.vue";
+import NameTag from "../common/NameTag.vue";
 
-window.Swal = swal;
+window.Swal = Swal;
 
 const route = useRoute();
 const router = useRouter();
-const userStore = useUserStore();
 
-const gameRoomStore = useGameRoomStore();
+const openviduStore = useOpenviduStore();
+const { participants } = storeToRefs(openviduStore);
+const { session } = openviduStore;
 
-const OV = new OpenVidu();
-const session = OV.initSession();
-
-const participants = ref([]);
-
-// 세션에 스트림이 생성될 때 호출되는 콜백 함수
-session.on("streamCreated", function (event) {
-    session.subscribe(event.stream, "subscriber");
-});
-
-// 세션에 새로운 유저가 참가하면 호출되는 콜백함수
-session.on("connectionCreated", (event) => {
-    userStore.getProfileById(event.connection.data).then((info) => {
-        // 참가자 배열에 이미 있는 사람인지 확인 필요
-        // 배열에서 userId 중복되는지 확인
-        const exists = participants.value.some(
-            (participant) => participant.userId === event.connection.data
-        );
-
-        // 중복되지 않으면 배열에 추가
-        if (!exists) {
-            // 프로필 이미지가 없으면 기본 이미지를 넣어준다.
-            if (!info.profileImage) {
-                info.profileImage = sampleImg;
-            }
-
-            participants.value.push({
-                connectionId: event.connection.connectionId,
-                userId: event.connection.data,
-                userProfile: info,
-            });
-        }
-    });
-});
-
-session.on("connectionDestroyed", (event) => {
-    const connectionId = event.connection.connectionId;
-
-    participants.value = participants.value.filter(
-        (participant) => participant.connectionId !== connectionId
-    );
-});
-
-// Signal 수신 처리
-session.on("signal:gameStart", function (event) {
-    const gameType = JSON.parse(event.data);
-
-    if (gameType.type === 1) {
-        // 달리기 게임으로
-        router.replace({ name: "runningGame" });
-    } else if (gameType.type === 2) {
-        // 글쓰기 게임으로
-        router.replace({ name: "writingGame" });
-    }
-});
+const writingGameStore = useWritingGameStore();
+const { pageCount } = storeToRefs(writingGameStore);
 
 const startRunningGame = () => {
-    // 시그널 송신
+    // 방장인지 아닌지 확인해야함
+    if (!openviduStore.isLeader()) {
+        Swal.fire({
+            title: "방장이 아닙니다.",
+            icon: "error",
+        });
+
+        return;
+    }
+
+    // 달리기 게임 시작 시그널 송신
     session
         .signal({
             type: "gameStart",
@@ -90,11 +49,45 @@ const startRunningGame = () => {
 };
 
 const startWritingGame = () => {
-    // 시그널 수신
+    // 방장인지 아닌지 확인해야함
+    if (!openviduStore.isLeader()) {
+        Swal.fire({
+            title: "방장이 아닙니다.",
+            icon: "error",
+        });
+
+        return;
+    }
+
+    if (!pageCount.value || pageCount.value <= 0) {
+        Swal.fire({
+            title: "한 페이지 이상으로 입력하세요",
+            icon: "error",
+        });
+
+        return;
+    }
+    if (pageCount.value > 10) {
+        Swal.fire({
+            title: "10 페이지 이하로 입력하세요",
+            icon: "error",
+        });
+        pageCount.value = 10;
+
+        return;
+    }
+
+    // 글쓰기 게임 시작 서버로 API 호출
+    writingGameStore.setWritingGame(route.params.roomId, {
+        numPart: participants.value.length,
+        maxTurn: pageCount.value,
+    });
+
+    // 글쓰기 게임 시작 시그널 송신
     session
         .signal({
             type: "gameStart",
-            data: JSON.stringify({ type: 2, data: "writing game" }),
+            data: JSON.stringify({ type: 2, data: pageCount.value }),
         })
         .then(() => {
             console.log("******************Game start writing signal sent");
@@ -103,24 +96,6 @@ const startWritingGame = () => {
             console.error("****************Error sending signal:", error);
         });
 };
-
-function joinRoom(sessionId) {
-    gameRoomStore.getToken(sessionId).then((customToken) => {
-        // 토큰을 얻어왔어
-        session
-            .connect(customToken)
-            .then(() => {
-                const publisher = OV.initPublisher("publisher");
-                session.publish(publisher);
-            })
-            .catch((error) => {
-                console.error(
-                    "There was an error connecting to the session:",
-                    error
-                );
-            });
-    });
-}
 
 // 방코드 복사하기
 async function writeClipboardText(text) {
@@ -136,40 +111,127 @@ async function writeClipboardText(text) {
     }
 }
 
-onMounted(() => {
-    joinRoom(route.params.roomId);
-});
+// 방에서 나가기
+function outSession() {
+    // 세션과의 연결 종료
+    session.disconnect();
+    // 메인페이지로 리다리엑트
+    router.replace({ name: "mainPage" }).then(() => {
+        openviduStore.resetParticipants();
+    });
+}
 </script>
 
 <template>
-    <v-main class="d-flex justify-center mt-10">
+    <button @click="outSession" class="d-flex justify-start mx-5 mt-5">
+        <span class="material-symbols-outlined"> logout </span>
+    </button>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
+
+    <v-main class="d-flex justify-center">
         <v-container>
             <v-row>
                 <v-col cols="5">
+                    <NameTag data="플레이어"></NameTag>
                     <GameMemberList
-                        :members="participants"
+                        class="gameMember"
+                        :members="openviduStore.participants"
                         :style="{ height: '90vh' }"
                     />
                 </v-col>
 
-                <v-col cols="7">
+                <v-col cols="7" class="mt-15">
                     <div
                         class="d-flex justify-space-evenly"
-                        style="height: 65vh"
+                        style="height: 65vh; border-radius: 10%"
                     >
-                        <GameButton
-                            @click-event="startRunningGame"
-                            :img="img1"
-                            name="달리기"
-                            desc="문해력 문제를 맞추며 달려라!"
-                        ></GameButton>
+                        <v-card
+                            class="d-flex justify-center align-start"
+                            width="40%"
+                            height="90%"
+                            border-radius="1%"
+                            box-shadow="7px 7px 5px rgba(0, 0, 0, 0.25)"
+                            @click="startRunningGame"
+                        >
+                            <v-row
+                                class="d-flex justify-center align-center flex-column"
+                            >
+                                <v-col>
+                                    <v-img
+                                        class="ma-3 mt-10"
+                                        :src="runningImg"
+                                    ></v-img>
+                                </v-col>
+                                <v-col
+                                    class="d-flex justify-center align-center"
+                                >
+                                    <div height="10%">달리기</div>
+                                </v-col>
+                                <v-col
+                                    class="d-flex justify-center align-center"
+                                >
+                                    <div style="font-size: large">
+                                        문해력 문제를 맞추며 달려라!
+                                    </div>
+                                </v-col>
+                            </v-row>
+                        </v-card>
 
-                        <GameButton
-                            @click-event="startWritingGame"
-                            :img="sampleImg"
-                            name="동화만들기"
-                            desc="글을 잘 쓰든 말든!!!!!!!!"
-                        ></GameButton>
+                        <v-card
+                            class="d-flex justify-center align-start"
+                            width="40%"
+                            height="90%"
+                            border-radius="1%"
+                            box-shadow="7px 7px 5px rgba(0, 0, 0, 0.25)"
+                        >
+                            <v-row
+                                class="d-flex justify-center align-center flex-column"
+                            >
+                                <v-col>
+                                    <v-img
+                                        class="ma-3 mt-10"
+                                        :src="sampleImg"
+                                    ></v-img>
+                                </v-col>
+                                <v-col
+                                    class="d-flex justify-center align-center"
+                                >
+                                    <div height="10%">동화만들기</div>
+                                </v-col>
+                                <v-col
+                                    class="d-flex justify-center align-center"
+                                >
+                                    <div style="font-size: large">
+                                        글을 잘 쓰든 말든!!!!!!!!
+                                    </div>
+                                </v-col>
+                                <v-col>
+                                    <v-row class="d-flex justify-center">
+                                        <v-col cols="8" class="pl-5">
+                                            <GenericInput
+                                                v-model="pageCount"
+                                                hint="페이지 수 입력"
+                                                class="mx-2"
+                                                type="number"
+                                                min="1"
+                                                max="10"
+                                            />
+                                        </v-col>
+                                        <v-col cols="4" class="pl-1">
+                                            <GenericButton
+                                                width="75%"
+                                                height="70%"
+                                                data="시작하기"
+                                                @click-event="startWritingGame"
+                                            />
+                                        </v-col>
+                                    </v-row>
+                                </v-col>
+                            </v-row>
+                        </v-card>
                     </div>
 
                     <div class="d-flex justify-space-evenly">
@@ -208,5 +270,19 @@ onMounted(() => {
     height: 150px;
     background-color: #d2f0ff;
     border-radius: 1%;
+}
+
+#out {
+    width: 85%;
+    height: 100px;
+    font-size: x-large;
+    font-weight: 600;
+    background-color: #9e9e9e;
+    border-radius: 1%;
+}
+.gameMember {
+    border-bottom-left-radius: 1%;
+    border-bottom-right-radius: 1%;
+    border-top-right-radius: 1%;
 }
 </style>

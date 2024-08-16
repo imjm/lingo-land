@@ -1,38 +1,44 @@
 package com.ssafy.a603.lingoland.room.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-
-import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import org.hibernate.annotations.SQLRestriction;
+
+import com.ssafy.a603.lingoland.fairyTale.entity.FairyTale;
+import com.ssafy.a603.lingoland.global.entity.BaseTimeEntity;
+
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Getter
-public class Room implements Serializable {
+@SQLRestriction("is_deleted is false")
+public class Room extends BaseTimeEntity {
+	@EmbeddedId
+	private RoomId id;
 
-    // sequence setting required
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "room_seq")
-    @SequenceGenerator(name = "room_seq", sequenceName = "room_id_seq", allocationSize = 1)
-    private Integer id;
+	@OneToOne
+	private FairyTale fairyTale;
 
-    @Transient
-    private String code;
+	private Boolean isDeleted;
 
-    @Transient
-    private int memberCount = 1;
+	private LocalDateTime deletedAt;
 
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+	@Builder
+	public Room(RoomId id, FairyTale fairyTale) {
+		this.id = id;
+		this.fairyTale = fairyTale;
+		this.isDeleted = false;
+	}
 
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
-
-    @Builder
-    public Room(String code){
-        this.code = code;
-    }
-
+	public void delete() {
+		this.isDeleted = true;
+		this.deletedAt = LocalDateTime.now();
+	}
 }

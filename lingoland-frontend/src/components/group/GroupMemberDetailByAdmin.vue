@@ -1,45 +1,34 @@
 <script setup>
-import GenericButton from "@/components/common/GenericButton.vue";
-import PageNavigationButton from "@/components/common/PageNavigationButton.vue";
 import Profile from "@/components/common/Profile.vue";
+import { onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
+import IncorrectDialogByGroupLeader from "../incorrect/IncorrectDialogByGroupLeader.vue";
 import TaleList from "../tale/TaleList.vue";
-import IncorrectList from "../incorrect/IncorrectList.vue";
+const route = useRoute();
+const userId = ref(null);
 
-import { ref } from "vue";
-import IncorrectDialog from "../incorrect/IncorrectDialog.vue";
-
-const incorrectList = ref([
-    "문제 1",
-    "문제 2",
-    "문제 3",
-    "문제 4",
-    "문제 5",
-    "문제 1",
-    "문제 2",
-    "문제 3",
-    "문제 4",
-    "문제 5",
-    // 데이터 받아오기
-]);
+onMounted(() => {
+    userId.value = route.params.memberId;
+    console.log("유저아이디", userId.value);
+});
 </script>
 
 <template>
-    <v-main class="d-flex mt-10 justify-center">
+    <v-main v-if="userId" class="d-flex justify-center">
         <v-container>
             <v-row>
                 <v-col cols="5">
-                    <v-row>
-                        <Profile source="src\\assets\\sampleImg.jpg" />
-                    </v-row>
-                    <v-row>
-                        <v-col>
-                            <IncorrectDialog :incorrects="incorrectList" />
-                        </v-col>
-                    </v-row>
+                    <div>
+                        <Profile class="mb-2" :others="true" :id="userId" />
+                    </div>
+                    <IncorrectDialogByGroupLeader
+                        :group-id="route.params.groupId"
+                        :member-id="userId"
+                    />
                 </v-col>
 
                 <v-col cols="7">
-                    <TaleList />
+                    <TaleList :others="true" :id="userId" :items-per-page=8 cols="3" :items-per-bar=4 :style="{width :'100%'}" />
                 </v-col>
             </v-row>
         </v-container>

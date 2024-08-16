@@ -74,15 +74,19 @@ public class Group extends BaseEntity {
 		this.groupImage = groupImage;
 		this.leader = leader;
 		this.memberCount = 0;
-		// this.createdAt = LocalDateTime.now();
 		this.isDeleted = false;
 	}
 
 	public void updateGroup(UpdateGroupDTO request) {
-		this.name = request.name();
-		this.password = request.password();
-		this.description = request.description();
-
+		if (request.name() != null && !request.name().isBlank()) {
+			this.name = request.name();
+		}
+		if (request.password() != null) {
+			this.password = request.password();
+		}
+		if (request.description() != null && !request.description().isBlank()) {
+			this.description = request.description();
+		}
 	}
 
 	public void delete() {
