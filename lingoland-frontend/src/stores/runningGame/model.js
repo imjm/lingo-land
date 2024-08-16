@@ -98,8 +98,16 @@ function loadMyModel(scene, renderer, callback) {
 
             const chickBoundingBox = new THREE.Box3().setFromObject(chickModel);
             const chickHeight = chickBoundingBox.max.y - chickBoundingBox.min.y;
-            chickModel.position.y = chickHeight / 2; // 맵 바닥 위로 위치 조정
+            if (modelConfiguration.models[myCharacterIndex.value].name == "dog") {
+                chickModel.position.y = chickHeight / 3; // 맵 바닥 위로 위치 조정
+                
+            } else if (modelConfiguration.models[myCharacterIndex.value].name == "cat") {
+                chickModel.position.y = chickHeight/2
 
+            } 
+            else{
+            chickModel.position.y = chickHeight / 2; // 맵 바닥 위로 위치 조정
+        }
             if (callback) callback(chickModel, mixer);
         }
     );
