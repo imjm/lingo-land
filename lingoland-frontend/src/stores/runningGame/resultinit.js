@@ -59,6 +59,9 @@ function setWinner() {
 
 function initDraw() {
     setWinner();
+    cameraSettings.distance=15
+    cameraSettings.height=5
+    cameraSettings.angle= Math.PI / 6 + Math.PI / 6 + Math.PI / 6 + Math.PI / 6 // 카메라의 각도 (라디안) // 초기 각도
 
     const canvas = document.querySelector("#c");
 
