@@ -6,9 +6,7 @@ import org.hibernate.annotations.SQLRestriction;
 
 import com.ssafy.a603.lingoland.fairyTale.entity.FairyTale;
 import com.ssafy.a603.lingoland.global.entity.BaseTimeEntity;
-import com.ssafy.a603.lingoland.member.entity.Member;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToOne;
@@ -25,7 +23,7 @@ public class Room extends BaseTimeEntity {
 	@EmbeddedId
 	private RoomId id;
 
-	@OneToOne(cascade = CascadeType.MERGE)
+	@OneToOne
 	private FairyTale fairyTale;
 
 	private Boolean isDeleted;
@@ -33,13 +31,10 @@ public class Room extends BaseTimeEntity {
 	private LocalDateTime deletedAt;
 
 	@Builder
-	public Room(String sessionId, Member starter) {
-		this.id = new RoomId(sessionId, starter.getId());
-		this.isDeleted = false;
-	}
-
-	public void setFairyTale(FairyTale fairyTale) {
+	public Room(RoomId id, FairyTale fairyTale) {
+		this.id = id;
 		this.fairyTale = fairyTale;
+		this.isDeleted = false;
 	}
 
 	public void delete() {
