@@ -114,6 +114,9 @@ public class WritingGameServiceImpl implements WritingGameService {
 		List<FairyTale> fairyTales;
 		if (sessionInfo.getMaxTurn() == request.order()) {
 			log.info("Last turn for session: {}", sessionId);
+
+			fairyTales = roomService.findFairyTalesInSession(sessionId);
+
 			CompletableFuture.runAsync(() -> endProcess(sessionId, request, customUserDetails), executor)
 				.thenRunAsync(() -> {
 					redisTemplate.delete(makeRedisMemberAliveKey(sessionId, customUserDetails.getUsername()));
@@ -121,7 +124,6 @@ public class WritingGameServiceImpl implements WritingGameService {
 					roomService.endRoom(sessionId, request.key());
 					log.info("Ended room and cleaned up session data for session: {}", sessionId);
 				}, executor);
-			fairyTales = roomService.findFairyTalesInSession(sessionId);
 		} else {
 			fairyTales = null;
 		}
