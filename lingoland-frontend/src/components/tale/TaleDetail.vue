@@ -3,13 +3,15 @@ import { useTaleStore } from "@/stores/tales";
 import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
+const { VITE_SERVER_IMAGE_URL } = import.meta.env;
+
 const route = useRoute();
 const taleStore = useTaleStore();
 const tale = ref(null);
 const activePage = ref(1);
 
 const nextPage = () => {
-    console.log("나옴")
+    console.log("나옴");
     if (activePage.value < tale.value.content.length + 1) {
         activePage.value++;
     }
@@ -22,7 +24,7 @@ const prevPage = () => {
 };
 
 const handlePageClick = (event, pageNumber) => {
-    console.log("눌림")
+    console.log("눌림");
     if (pageNumber === activePage.value) {
         nextPage();
     } else if (pageNumber === activePage.value - 1) {
@@ -33,7 +35,12 @@ const handlePageClick = (event, pageNumber) => {
 onMounted(() => {
     taleStore.oneTaleById(route.params.bookId).then((responseValue) => {
         tale.value = responseValue;
+
         console.log("tale", tale.value);
+        for (let index = 0; index < tale.value.content.length; index++) {
+            tale.value.content[index].illustration =
+                VITE_SERVER_IMAGE_URL + tale.value.content[index].illustration;
+        }
     });
 });
 
@@ -50,7 +57,7 @@ watch(activePage, (newPage) => {
 <template>
     <!-- 뒤로가기 -->
     <!-- 책 -->
-    <div v-if="tale" class="scene centered gowun-batang-regular ">
+    <div v-if="tale" class="scene centered gowun-batang-regular">
         <div class="book" ref="book">
             <!-- 첫 번째 페이지 (커버) -->
             <div
@@ -63,7 +70,10 @@ watch(activePage, (newPage) => {
             >
                 <div class="front-cover">
                     <h1>{{ tale.title }}</h1>
-                    <img class="cover-qr" :src="tale.cover" />
+                    <img
+                        class="cover-qr"
+                        :src="VITE_SERVER_IMAGE_URL + tale.cover"
+                    />
                     <div id="carbon-block"></div>
                 </div>
                 <div class="back">
@@ -102,8 +112,6 @@ watch(activePage, (newPage) => {
 </template>
 
 <style scoped>
-
-
 @import url("https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap");
 .gowun-batang-regular {
     font-family: "Gowun Batang", serif;
@@ -137,7 +145,7 @@ h3 {
 .scene.centered {
     position: fixed;
     transform: translateX(-50%);
-    left : 10px;
+    left: 10px;
 }
 
 .book {
@@ -175,7 +183,7 @@ h3 {
     height: 100%;
     padding: 5% 5% 5%;
     box-sizing: border-box;
-    box-shadow : -5px -5px 15px rgb(0,0,0,0.8);
+    box-shadow: -5px -5px 15px rgb(0, 0, 0, 0.8);
     backface-visibility: hidden;
     background-image: url(/bookCover.jpg);
     background-size: cover;
