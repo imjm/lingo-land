@@ -17,14 +17,13 @@ const { session } = openviduStore;
 const { reparticipants } = storeToRefs(openviduStore);
 
 const gameStore = useGameStore();
-const { gameRanks, wrongProblem, coinScore, coinTotalScore } =
+const { gameRanks, wrongProblem, coinScore, coinTotalScore, problemIndex } =
     storeToRefs(gameStore);
 
 let answer = null;
 let answerTimeout = null;
 let closeQuestionTimeout = null;
 const shownQuestions = new Set(); // 이미 표시된 문제를 추적
-let index = 0;
 
 // **openvidu signal
 // 문제를 정답을 확인했다. -> 시그널을 보낸다.
@@ -105,19 +104,19 @@ async function loadQuestions() {
 }
 
 function updateQuestion() {
-    if (index >= 0 && index < questions.value.length) {
+    if (problemIndex.value >= 0 && problemIndex.value < questions.value.length) {
         if (!currentQuestion.value) {
             //     // 이미 표시된 문제인지 확인하고 현재 문제가 없는지 확인
             loadQuestion();
-            console.log(index);
-            shownQuestions.add(index); // 표시된 문제로 기록
+            console.log(problemIndex.value);
+            shownQuestions.add(problemIndex.value); // 표시된 문제로 기록
         }
     }
 }
 
 function loadQuestion() {
-    if (questions.value.length > 0 && index < questions.value.length) {
-        currentQuestion.value = questions.value[index];
+    if (questions.value.length > 0 && problemIndex.value < questions.value.length) {
+        currentQuestion.value = questions.value[problemIndex.value];
         currentProblemId = currentQuestion.value.problemId;
         console.log("currentquestion", currentQuestion.value.problemId);
         options.value = [
@@ -129,7 +128,7 @@ function loadQuestion() {
         // if (answerTimeout) clearTimeout(answerTimeout);
         // if (closeQuestionTimeout) clearTimeout(closeQuestionTimeout);
     }
-    index++;
+    problemIndex.value++;
     qcountdown();
 
     answerTimeout = setTimeout(() => {
@@ -178,6 +177,5 @@ export {
     updateQuestion,
     wrongProblem,
     coinScore,
-    index,
     reparticipants
 };

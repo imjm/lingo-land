@@ -13,7 +13,6 @@ import { countdown } from "@/stores/runningGame/time";
 // 문제
 import {
     currentQuestion,
-    index,
     isCorrect,
     loadQuestions,
     options,
@@ -23,7 +22,7 @@ import {
 } from "@/stores/runningGame/question";
 
 const gameStore = useGameStore();
-const { sortedRanks, zDivided, startfunc } = storeToRefs(gameStore);
+const { sortedRanks, zDivided, startfunc, problemIndex } = storeToRefs(gameStore);
 
 onMounted(() => {
     console.log("***********************달리기 게임이 계속 불리나?");
@@ -33,7 +32,7 @@ onMounted(() => {
     initDraw();
     loadQuestions(); // 문제 로드
     const interval = setInterval(() => {
-        if (index === questions.value.length) {
+        if (problemIndex.value === questions.value.length) {
             clearInterval(interval);
         }
         updateQuestion();
