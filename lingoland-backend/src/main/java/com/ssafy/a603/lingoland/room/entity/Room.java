@@ -2,8 +2,6 @@ package com.ssafy.a603.lingoland.room.entity;
 
 import java.time.LocalDateTime;
 
-import org.hibernate.annotations.SQLRestriction;
-
 import com.ssafy.a603.lingoland.fairyTale.entity.FairyTale;
 import com.ssafy.a603.lingoland.global.entity.BaseTimeEntity;
 
@@ -18,7 +16,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@SQLRestriction("is_deleted is false")
 public class Room extends BaseTimeEntity {
 	@EmbeddedId
 	private RoomId id;
