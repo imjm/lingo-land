@@ -3,6 +3,8 @@ import { onMounted, ref, defineProps, computed } from "vue";
 import { useTaleStore } from "@/stores/tales";
 import { useRoute } from "vue-router";
 
+const { VITE_SERVER_IMAGE_URL } = import.meta.env;
+
 const route = useRoute();
 const taleStore = useTaleStore();
 const items = ref([]);
@@ -70,93 +72,99 @@ const totalPages = computed(() => {
 const onSearchInput = () => {
     currentPage.value = 1; // 검색 시 현재 페이지를 1로 초기화
 };
-
 </script>
 
 <template>
-        <v-container
-            class="bg-color d-flex flex-column justify-center align-center"
+    <v-container
+        class="bg-color d-flex flex-column justify-center align-center"
+    >
+        <v-row
+            class="d-flex justify-center align-center mt-10"
+            style="position: relative; width: 95%"
         >
-            <v-row
-                class="d-flex justify-center align-center mt-10"
-                style="position: relative; width: 95%"
-            >
-                <div
-                    v-if="paginatedItems.length > itemsPerBar"
-                    class="cube-face-bar1"
-                ></div>
-                <div
-                    v-if="paginatedItems.length > itemsPerBar"
-                    class="cube-face-bar2"
-                ></div>
-                <div
-                    v-if="paginatedItems.length <= itemsPerBar"
-                    class="cube-face-bar3"
-                ></div>
+            <div
+                v-if="paginatedItems.length > itemsPerBar"
+                class="cube-face-bar1"
+            ></div>
+            <div
+                v-if="paginatedItems.length > itemsPerBar"
+                class="cube-face-bar2"
+            ></div>
+            <div
+                v-if="paginatedItems.length <= itemsPerBar"
+                class="cube-face-bar3"
+            ></div>
 
-                <v-col
-                    v-for="item in paginatedItems"
-                    :key="item.id"
-                    :cols="cols"
-                    @click="clickBook(item)"
-                    max-width="100px"
-                    style="perspective: 1000px"
-                    class="my-3"
-                >
-                    <div
-                        class="book-container"
-                        style="
-                            position: relative;
-                            width: 100px;
-                            /* height: 150px; */
-                            transform-style: preserve-3d;
-                            transform: rotateY(-30deg);
-                            box-sizing: border-box;
-                            perspective: 400px;
-                        "
-                    >
-                        <div class="cube-face-right"></div>
-                    </div>
-                    <div class="gowun-batang-regular mt-4 truncated-text">
-                        {{ item.title }}
-                    </div>
-                </v-col>
-            </v-row>
-            <v-row
-                class="d-flex align-center"
-                style="position: fixed; bottom: 20px; right: 30px;"
+            <v-col
+                v-for="item in paginatedItems"
+                :key="item.id"
+                :cols="cols"
+                @click="clickBook(item)"
+                max-width="100px"
+                style="perspective: 1000px"
+                class="my-3"
             >
-                <v-col>
-                    <div class="d-flex justify-start">
-                        <v-text-field
-                            class="search"
-                            v-model="search"
-                            label="제목을 입력해 주세요"
-                            prepend-inner-icon="mdi-magnify"
-                            variant="solo-filled"
-                            flat
-                            hide-details
-                            single-line
-                            @input="onSearchInput"
-                        ></v-text-field>
-                    </div>
-                </v-col>
-                <v-col>
-                    <v-pagination
-                        class="pagination"
-                        v-model="currentPage"
-                        :length="totalPages"
-                        color="primary"
-                    ></v-pagination>
-                </v-col>
-            </v-row>
-        </v-container>
+                <div
+                    class="book-container"
+                    style="
+                        position: relative;
+                        width: 100px;
+                        /* height: 150px; */
+                        transform-style: preserve-3d;
+                        transform: rotateY(-30deg);
+                        box-sizing: border-box;
+                        perspective: 400px;
+                    "
+                >
+                    <v-img
+                        :src="VITE_SERVER_IMAGE_URL + item.cover"
+                        height="100%"
+                        class="image-shadow"
+                        style="position: relative; top: 10px; right: 10px"
+                    >
+                    </v-img>
+
+                    <div class="cube-face-right"></div>
+                </div>
+                <div class="gowun-batang-regular mt-4 truncated-text">
+                    {{ item.title }}
+                </div>
+            </v-col>
+        </v-row>
+        <v-row
+            class="d-flex align-center"
+            style="position: fixed; bottom: 20px; right: 30px"
+        >
+            <v-col>
+                <div class="d-flex justify-start">
+                    <v-text-field
+                        class="search"
+                        v-model="search"
+                        label="제목을 입력해 주세요"
+                        prepend-inner-icon="mdi-magnify"
+                        variant="solo-filled"
+                        flat
+                        hide-details
+                        single-line
+                        @input="onSearchInput"
+                    ></v-text-field>
+                </div>
+            </v-col>
+            <v-col>
+                <v-pagination
+                    class="pagination"
+                    v-model="currentPage"
+                    :length="totalPages"
+                    color="primary"
+                ></v-pagination>
+            </v-col>
+        </v-row>
+    </v-container>
 </template>
 
 <style scoped>
 .bg-color {
     background-color: white;
-
 }
 
 .truncated-text {
