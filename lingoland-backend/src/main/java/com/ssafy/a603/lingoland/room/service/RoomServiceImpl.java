@@ -47,21 +47,22 @@ public class RoomServiceImpl implements RoomService {
 		log.info("Saved new FairyTale with ID: {}", saved.getId());
 
 		Member member = findMemberByCustomUserDetails(customUserDetails);
-		fairyTaleMemberRepository.save(
+		FairyTaleMember fm = fairyTaleMemberRepository.save(
 			FairyTaleMember.builder()
 				.fairyTale(saved)
 				.member(member)
 				.build()
 		);
-		log.info("Saved FairyTaleMember for member ID: {}", member.getId());
-
+		log.info("Saved FairyTaleMember for member ID: {}, fairytale id : {}", fm.getMember().getId(),
+			fm.getMember().getId());
+		RoomId roomId = new RoomId(sessionId, customUserDetails.getMemberId());
 		Room room = Room.builder()
-			.sessionId(sessionId)
-			.starter(member)
+			.id(roomId)
+			.fairyTale(saved)
 			.build();
-		room.setFairyTale(saved);
 		Room savedRoom = roomRepository.save(room);
-		log.info("Saved new Room with ID: {}", savedRoom.getId());
+		log.info("Saved new Room with ID: {}", savedRoom.getId().toString());
+		log.info("saved new Room with Fairy Tale : {}", savedRoom.getFairyTale().getId());
 	}
 
 	@Override

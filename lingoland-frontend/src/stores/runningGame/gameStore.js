@@ -25,6 +25,8 @@ export const useGameStore = defineStore("gameStore", () => {
 
     const startfunc = ref(false);
 
+    const problemIndex = ref(0);
+
     function updateZCoordinate(z) {
         zCoordinate.value = z;
     }
@@ -68,6 +70,7 @@ export const useGameStore = defineStore("gameStore", () => {
         coinScore.value = 0;
         coinTotalScore.value = 0;
         startfunc.value = false;
+        problemIndex.value = 0;
 
         setGameRanks();
     }
@@ -82,6 +85,7 @@ export const useGameStore = defineStore("gameStore", () => {
         coinScore,
         coinTotalScore,
         startfunc,
+        problemIndex,
         updateZCoordinate,
         endGame,
         saveResult,

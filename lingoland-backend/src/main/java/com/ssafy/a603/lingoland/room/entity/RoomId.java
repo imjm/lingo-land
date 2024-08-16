@@ -36,4 +36,12 @@ public class RoomId implements Serializable {
 	public int hashCode() {
 		return Objects.hash(sessionId, memberId);
 	}
+
+	@Override
+	public String toString() {
+		return "RoomId{" +
+			"sessionId='" + sessionId + '\'' +
+			", memberId=" + memberId +
+			'}';
+	}
 }
