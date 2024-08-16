@@ -48,13 +48,16 @@ function titleSubmit() {
 }
 
 function submit() {
-    let myLoginId = findMyLoginId();
+    // 지금 쓰고 있는 스토리 아이디를 넣어야함
+    let myLoginId = findCurrentStoryId();
 
     const drawingDTO = {
         key: myLoginId, // 로그인 아이디
         story: textareaValue.value,
         order: Number(turn.value) + Number(1),
     };
+
+    console.log("****************제출 DTO", drawingDTO);
 
     // API 요청 보내기
     writingGameStore
