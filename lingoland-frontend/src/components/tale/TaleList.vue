@@ -125,7 +125,7 @@ const onSearchInput = () => {
                         <div class="cube-face-right"></div>
                     </div>
                     <div class="gowun-batang-regular mt-4 truncated-text">
-                        {{ item.title }}제목ㅁ제ㅓ메ㅐㄷ걷asdfasf
+                        {{ item.title }}
                     </div>
 
                     <!-- </div> -->
