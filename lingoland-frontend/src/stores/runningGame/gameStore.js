@@ -17,15 +17,20 @@ export const useGameStore = defineStore("gameStore", () => {
     const sortedRanks = computed(() => {
         return [...gameRanks.value].sort((a, b) => b.score - a.score);
     });
-
+    const cameraAnimationStartTime = ref(0);
     const coinScore = ref(0);
+    const autoForwardSpeed = ref(0);
     const coinTotalScore = ref(0);
-
+    const start = ref(false)
     const wrongProblem = ref([]);
 
     const startfunc = ref(false);
 
     const problemIndex = ref(0);
+
+    const elapsedTime = ref(0)
+
+    const startTime = ref(0)
 
     function updateZCoordinate(z) {
         zCoordinate.value = z;
@@ -71,11 +76,20 @@ export const useGameStore = defineStore("gameStore", () => {
         coinTotalScore.value = 0;
         startfunc.value = false;
         problemIndex.value = 0;
+        elapsedTime.value = 0; // 타이머 시간 실시간 표시
+        start.value= false
+        startTime.value = 0
+        cameraAnimationStartTime.value = 0
+        autoForwardSpeed.value = 0
 
         setGameRanks();
     }
 
     return {
+        cameraAnimationStartTime,
+        autoForwardSpeed,
+        startTime,
+        start,
         zCoordinate,
         zDivided,
         isGameEnded,
@@ -86,6 +100,7 @@ export const useGameStore = defineStore("gameStore", () => {
         coinTotalScore,
         startfunc,
         problemIndex,
+        elapsedTime,
         updateZCoordinate,
         endGame,
         saveResult,

@@ -28,7 +28,7 @@ let renderer,
     soundbg;
 
 const gameStore = useGameStore();
-const { isGameEnded, coinScore, coinTotalScore, startfunc } =
+const { isGameEnded, coinScore, coinTotalScore, startfunc, start, startTime } =
     storeToRefs(gameStore);
 
 const threeJsStore = useThreeJsStore();
@@ -75,12 +75,12 @@ function initDraw() {
     initCoinModels(); // 코인 모델 초기화
     initShoeModels(); // 신발 아이템 로드
 
-    let startTime = Date.now(); // 타이머 시작 시간
-    let start = false;
+    // let startTime = Date.now(); // 타이머 시작 시간
     window.addEventListener("resize", onWindowResize, false); // 창 화면 크기에 따라서 화면 정렬
 
     function animate() {
         requestAnimationFrame(animate);
+        // console.log(chickModel)
         const delta = clock.getDelta(); // delta time 계산
 
         if (mixer) mixer.update(delta); // delta를 이용한 애니메이션 업데이트
@@ -93,12 +93,12 @@ function initDraw() {
                     startfunc.value = true;
                 }
                 if (countdown.value == 0) {
-                    if (!start) {
-                        startTime = Date.now();
-                        start = true;
-                        updateTimer(startTime);
+                    if (!start.value) {
+                        startTime.value = Date.now();
+                        start.value = true;
+                        updateTimer(startTime.value);
                     } else {
-                        updateTimer(startTime);
+                        updateTimer(startTime.value);
                     }
                 }
 

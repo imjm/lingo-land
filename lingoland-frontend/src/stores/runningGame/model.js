@@ -19,12 +19,12 @@ const { session } = openviduStore;
 const { myCharacterIndex } = storeToRefs(openviduStore);
 
 const gameStore = useGameStore();
-const { isGameEnded, gameRanks } = storeToRefs(gameStore);
+const { isGameEnded, gameRanks, autoForwardSpeed } = storeToRefs(gameStore);
 
 const threeJsStore = useThreeJsStore();
 const { loader } = threeJsStore;
 
-const autoForwardSpeed = ref(0);
+// const autoForwardSpeed = ref(0);
 const selectedAnswerIndex = ref(null);
 let moveSide = ref(0);
 let chickModel;
@@ -157,6 +157,7 @@ function handleChickMovement() {
             }).then(() => {
                 chickModel.position.z = 0; // 모델의 위치 초기화
                 showRunningGameResult();
+                return
             });
         }
     }
