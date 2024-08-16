@@ -19,7 +19,7 @@ export const useTaleStore = defineStore("tale", () => {
             .get("/fairy-tales/members", { withCredentials: true })
             .then((response) => {
                 if (response.status === httpStatus.OK) {
-                    console.log(`length : ${response.data.length}`);
+                    console.log(`data : ${response.data}`);
                     return response.data; // 명확하게 응답 데이터를 반환합니다.
                 } else {
                     return []; // 예외 처리: 다른 상태 코드의 경우 빈 배열 반환

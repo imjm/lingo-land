@@ -115,20 +115,11 @@ const onSearchInput = () => {
                             perspective: 400px;
                         "
                     >
-                        <v-img
-                            :src="item.cover"
-                            height="100%"
-                            class="image-shadow"
-                            style="position: relative; top: 10px; right: 10px"
-                        >
-                        </v-img>
                         <div class="cube-face-right"></div>
                     </div>
                     <div class="gowun-batang-regular mt-4 truncated-text">
                         {{ item.title }}
                     </div>
-
-                    <!-- </div> -->
                 </v-col>
             </v-row>
             <v-row

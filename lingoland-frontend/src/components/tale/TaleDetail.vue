@@ -3,6 +3,8 @@ import { useTaleStore } from "@/stores/tales";
 import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
+const { VITE_SERVER_IMAGE_URL } = import.meta.env;
+
 const route = useRoute();
 const taleStore = useTaleStore();
 const tale = ref(null);
@@ -33,7 +35,11 @@ const handlePageClick = (event, pageNumber) => {
 onMounted(() => {
     taleStore.oneTaleById(route.params.bookId).then((responseValue) => {
         tale.value = responseValue;
+        
         console.log("tale", tale.value);
+        for(let index = 0; index<tale.value.content.length; index++){
+            tale.value.content[index].illustration =  VITE_SERVER_IMAGE_URL + tale.value.content[index].illustration
+        }
     });
 });
 
