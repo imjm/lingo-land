@@ -85,14 +85,7 @@ watch(activePage, (newPage) => {
             >
                 <div class="front d-flex justify-center align-center">
                     <p>
-                        {{ content.story }}Lorem ipsum dolor sit amet,
-                        consectetur adipiscing elit. Ut porta placerat lacus nec
-                        dapibus. In rhoncus dui metus, ut efficitur urna aliquam
-                        ut. In hac habitasse platea dictumst. Cras dictum
-                        commodo pellentesque. Donec placerat massa sit amet
-                        sapien sollicitudin, id molestie est malesuada.
-                        Suspendisse potenti. Proin leo mi, eleifend at nibh id,
-                        dignissim luctus sem.
+                        {{ content.story }}
                     </p>
                 </div>
                 <div class="back">
