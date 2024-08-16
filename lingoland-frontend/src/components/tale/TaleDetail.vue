@@ -99,7 +99,7 @@ watch(activePage, (newPage) => {
                     </p>
                 </div>
                 <div class="back">
-                    <img class="qr" :src="content.illustration" />
+                    <img v-if="index +1 < tale.content.length" class="qr" :src="tale.content[index+1].illustration" />
                     <h3>– {{ index + 2 }} –</h3>
                 </div>
             </div>
