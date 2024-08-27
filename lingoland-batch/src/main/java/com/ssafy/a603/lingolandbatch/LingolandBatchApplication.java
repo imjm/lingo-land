@@ -21,6 +21,7 @@ public class LingolandBatchApplication implements CommandLineRunner {
 
     @Autowired
     private JobLauncher jobLauncher;
+
     @Autowired
     private Job job;
 

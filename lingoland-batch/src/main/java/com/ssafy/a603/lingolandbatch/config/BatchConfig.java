@@ -32,15 +32,17 @@ public class BatchConfig {
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
 
-    private static int executionCnt = 0;
+    public static int executionCnt = 0;
+    public static Long startTime = 0L;
 
     @Value("${spring.executionCnt}")
-    private int cnt;
+    public int cnt;
 
     private static int batchExecutionMax;
 
     @PostConstruct
     public void setEnvironmentVariable(){
+        startTime = System.currentTimeMillis();
         batchExecutionMax = cnt;
     }
     @Bean

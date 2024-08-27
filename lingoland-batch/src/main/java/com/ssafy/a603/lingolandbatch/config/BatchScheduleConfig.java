@@ -21,7 +21,7 @@ public class BatchScheduleConfig {
     private final JobLauncher jobLauncher;
     private final  Job job;
 
-    @Scheduled(cron = "*/30 * * * * *")
+    @Scheduled(cron = "0 0 5 * * *")
     public void BatchJobExecution() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         log.info("start by schedule");
         JobParameters jobParameters = new JobParametersBuilder()
