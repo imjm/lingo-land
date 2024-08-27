@@ -1,6 +1,6 @@
 <script setup>
-import sampleImg from "@/assets/sampleImg.jpg";
-import runningImg from "@/assets/달리기.jpg";
+import sampleImg from "@/assets/writinggame.png";
+import runningImg from "@/assets/runninggame.png";
 import GameMemberList from "@/components/gameRoom/GameMemberList.vue";
 import { useOpenviduStore } from "@/stores/openvidu";
 import { useWritingGameStore } from "@/stores/writingGame";

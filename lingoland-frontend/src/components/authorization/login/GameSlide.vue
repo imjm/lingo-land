@@ -10,7 +10,7 @@
     >
         <v-carousel-item>
             <img
-                src="\src\assets\달리기.jpg"
+                src="\src\assets\runninggame.png"
                 width="100%"
                 height="80%"
                 margin-bottom="10px"
@@ -19,7 +19,7 @@
         </v-carousel-item>
 
         <v-carousel-item>
-            <img src="\src\assets\sampleImg.jpg" width="100%" height="80%" />
+            <img src="\src\assets\writinggame.png" width="100%" height="80%" />
             <div>릴레이로 글을 써서 동화를 만들어요!</div>
         </v-carousel-item>
     </v-carousel>
