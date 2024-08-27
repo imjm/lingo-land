@@ -3,7 +3,7 @@ spring:
     name: lingoland-batch
 
   datasource:
-    url: jdbc:postgresql://i11a603.p.ssafy.io:5432/lingoland
+    url: jdbc:postgresql://localhost:5432/lingoland
     username: postgres
     password: ssafy
     driver-class-name: org.postgresql.Driver
@@ -27,17 +27,16 @@ spring:
       io.r2dbc.postgresql: DEBUG
       org.springframework.data.r2dbc: DEBUG
 
-  http:
-    encoding:
-      charset: UTF-8
-      enabled: true
-      force: true
-
   batch:
     jdbc:
-      initialize-schema: always
+      initialize-schema: never
 
   chatGPTKey: ${CHAT_GPT_KEY}
-  executionCnt: 3
+  executionCnt: 10
 server:
   port: 8081
+  servlet:
+    encoding:
+      enabled: true
+      charset: UTF-8
+      force: true
