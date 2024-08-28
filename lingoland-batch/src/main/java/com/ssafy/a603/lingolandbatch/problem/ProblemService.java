@@ -4,4 +4,6 @@ public interface ProblemService {
 
     public void makeProblem();
     public  void makeProblemRestTemplate();
+
+    void makeProblemVirtualThread();
 }
