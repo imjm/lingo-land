@@ -27,8 +27,11 @@ public class LingolandBatchApplication implements CommandLineRunner {
 
     public static void main(String[] args) {
         log.info("app start");
+        long startTime = System.currentTimeMillis();
         SpringApplication.run(LingolandBatchApplication.class, args);
         log.info("app end");
+        long endTime = System.currentTimeMillis();
+        log.info("### app time: " + (endTime - startTime));
     }
 
     @Override

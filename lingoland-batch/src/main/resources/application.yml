@@ -15,6 +15,10 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  threads:
+    virtual:
+      enabled: true
+
   logging:
     level:
       org:
@@ -32,7 +36,7 @@ spring:
       initialize-schema: never
 
   chatGPTKey: ${CHAT_GPT_KEY}
-  executionCnt: 10
+  executionCnt: 100
 server:
   port: 8081
   servlet:
@@ -40,3 +44,4 @@ server:
       enabled: true
       charset: UTF-8
       force: true
+

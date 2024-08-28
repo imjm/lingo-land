@@ -20,8 +20,9 @@ public class BatchTasklet implements Tasklet {
         log.info("tasklet start");
         for(int i = 0; i < 1; i++){
             log.info("tasklet num : {}", i);
-            problemService.makeProblem();
-//            problemService.makeProblemRestTemplate();
+//            problemService.makeProblem();
+            problemService.makeProblemRestTemplate();
+//            problemService.makeProblemVirtualThread();
         }
         log.info("tasklet end");
         return RepeatStatus.FINISHED;
