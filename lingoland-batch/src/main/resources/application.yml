@@ -36,7 +36,8 @@ spring:
       initialize-schema: never
 
   chatGPTKey: ${CHAT_GPT_KEY}
-  executionCnt: 100
+  executionCnt: 20
+  taskletCnt: 1
 server:
   port: 8081
   servlet:

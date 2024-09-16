@@ -6,4 +6,6 @@ public interface ProblemService {
     public  void makeProblemRestTemplate();
 
     void makeProblemVirtualThread();
+
+    public void start();
 }
