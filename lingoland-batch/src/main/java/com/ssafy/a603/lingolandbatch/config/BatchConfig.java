@@ -1,6 +1,7 @@
 package com.ssafy.a603.lingolandbatch.config;
 
 
+import com.ssafy.a603.lingolandbatch.problem.ProblemService;
 import com.ssafy.a603.lingolandbatch.tasklet.BatchTasklet;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,8 @@ public class BatchConfig {
     public static int executionCnt = 0;
     public static Long startTime = 0L;
 
+    private final ProblemService problemService;
+
     @Value("${spring.executionCnt}")
     public int cnt;
 
@@ -59,7 +62,6 @@ public class BatchConfig {
 
     @Bean
     public Step batchStep(){
-
         log.info("step cont {}", executionCnt);
         return new StepBuilder("batchStep", jobRepository).tasklet(batchTasklet, transactionManager).build();
     }
@@ -70,6 +72,7 @@ public class BatchConfig {
             @Override
             public void beforeJob(JobExecution jobExecution) {
                 log.info("job start {}", LocalDateTime.now());
+                problemService.start();
                 executionCnt = 0;
             }
 

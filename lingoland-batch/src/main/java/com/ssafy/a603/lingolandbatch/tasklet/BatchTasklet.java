@@ -7,6 +7,7 @@ import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,13 +16,15 @@ import org.springframework.stereotype.Component;
 public class BatchTasklet implements Tasklet {
 
     private final ProblemService problemService;
+    @Value("${spring.taskletCnt}")
+    private int taskletCnt;
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         log.info("tasklet start");
-        for(int i = 0; i < 1; i++){
+        for(int i = 0; i < taskletCnt; i++){
             log.info("tasklet num : {}", i);
-//            problemService.makeProblem();
-            problemService.makeProblemRestTemplate();
+            problemService.makeProblem();
+//            problemService.makeProblemRestTemplate();
 //            problemService.makeProblemVirtualThread();
         }
         log.info("tasklet end");
